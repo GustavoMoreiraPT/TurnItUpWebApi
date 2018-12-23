@@ -30,7 +30,7 @@ namespace TurnItUpWebApi.Controllers
         }
 
         [HttpPost]
-        [Route("{id}/upload")]
+        [Route("{id}/digitalContents")]
         public async Task<IActionResult> UploadContent()
         {
             throw new NotImplementedException();
