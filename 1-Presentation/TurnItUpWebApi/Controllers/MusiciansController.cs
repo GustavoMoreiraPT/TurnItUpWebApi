@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Dto.Musicians;
+using Application.Requests.Musicians;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +19,26 @@ namespace TurnItUpWebApi.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> GetMusician()
+        [ProducesResponseType(200, Type = typeof(Musician))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetMusician([FromRoute] int id)
         {
             throw new NotImplementedException();
         }
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateMusician()
+        [ProducesResponseType(200, Type = typeof(Musician))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateMusician([FromRoute] int id, [FromBody] UpdateMusicianRequest updateMusicianRequest)
         {
             throw new NotImplementedException();
         }

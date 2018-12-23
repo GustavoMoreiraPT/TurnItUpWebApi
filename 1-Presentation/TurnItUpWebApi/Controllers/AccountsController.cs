@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Requests.Accounts;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,12 @@ namespace TurnItUpWebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAccount()
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> CreateAccount([FromBody]NewAccountRequest newAccountRequest)
         {
             throw new NotImplementedException();
         }
