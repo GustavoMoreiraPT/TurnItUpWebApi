@@ -8,8 +8,10 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Dto.Users;
+using Infrastructure.CrossCutting.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -50,7 +52,7 @@ namespace TurnItUpWebApi.Controllers
 				return await GenerateJwtToken(model.Email, appUser, userRoles.ToList());
 			}
 
-			throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
+			throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "INVALID_LOGIN_ATTEMPT");
 		}
 
 		[HttpPost]
@@ -72,7 +74,7 @@ namespace TurnItUpWebApi.Controllers
 				return await GenerateJwtToken(model.Email, user);
 			}
 
-			throw new ApplicationException("UNKNOWN_ERROR");
+			throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "UNKNOWN_ERROR");
 		}
 
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
