@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -25,7 +27,8 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> GetMusician([FromRoute] int id)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Musician")]
+		public async Task<IActionResult> GetMusicianAsync([FromRoute] int id)
         {
             throw new NotImplementedException();
         }
@@ -38,21 +41,24 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> UpdateMusician([FromRoute] int id, [FromBody] UpdateMusicianRequest updateMusicianRequest)
+        [Authorize/*(Policy = "musician")*/]
+		public async Task<IActionResult> UpdateMusicianAsync([FromRoute] int id, [FromBody] UpdateMusicianRequest updateMusicianRequest)
         {
             throw new NotImplementedException();
         }
 
         [HttpPost]
         [Route("{id}/digitalContents")]
-        public async Task<IActionResult> UploadContent()
+        [Authorize/*(Policy = "musician")*/]
+		public async Task<IActionResult> UploadContentAsync()
         {
             throw new NotImplementedException();
         }
 
         [HttpPost]
         [Route("{id}/offers")]
-        public async Task<IActionResult> CreateOfferAsync()
+        [Authorize/*(Policy = "musician")*/]
+		public async Task<IActionResult> CreateOfferAsync()
         {
             throw new NotImplementedException();
         }

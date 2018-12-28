@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -16,28 +17,32 @@ namespace TurnItUpWebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        [Authorize/*(Policy = "recruiter")*/]
+		public async Task<IActionResult> GetAllAsync()
         {
             throw new NotImplementedException();
         }
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> GetAsync()
+        [Authorize/*(Policy = "recruiter")*/]
+		public async Task<IActionResult> GetAsync()
         {
             throw new NotImplementedException();
         }
 
         [HttpPost]
         [Route("{id}/offers")]
-        public async Task<IActionResult> CreateOfferAsync()
+        [Authorize/*(Policy = "recruiter")*/]
+		public async Task<IActionResult> CreateOfferAsync()
         {
             throw new NotImplementedException();
         }
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateAsync()
+        [Authorize/*(Policy = "recruiter")*/]
+		public async Task<IActionResult> UpdateAsync()
         {
             throw new NotImplementedException();
         }
