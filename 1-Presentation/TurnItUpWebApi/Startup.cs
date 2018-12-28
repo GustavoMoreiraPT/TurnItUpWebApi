@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using TurnItUpWebApi.Middleware;
 
 namespace TurnItUpWebApi
 {
@@ -98,6 +99,7 @@ namespace TurnItUpWebApi
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
+				app.UseHttpStatusCodeExceptionMiddleware();
                 app.UseSwagger();
 
                 // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
@@ -111,6 +113,7 @@ namespace TurnItUpWebApi
             }
 			else
 			{
+				app.UseHttpStatusCodeExceptionMiddleware();
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
