@@ -5,11 +5,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DigitalContents\**" />
+    <Compile Remove="Offers\**" />
+    <Compile Remove="Recruiters\**" />
+    <Compile Remove="Reviews\**" />
+    <EmbeddedResource Remove="DigitalContents\**" />
+    <EmbeddedResource Remove="Offers\**" />
+    <EmbeddedResource Remove="Recruiters\**" />
+    <EmbeddedResource Remove="Reviews\**" />
+    <None Remove="DigitalContents\**" />
+    <None Remove="Offers\**" />
+    <None Remove="Recruiters\**" />
+    <None Remove="Reviews\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Accounts\Enum\" />
-    <Folder Include="DigitalContents\" />
-    <Folder Include="Reviews\" />
-    <Folder Include="Offers\" />
-    <Folder Include="Recruiters\" />
   </ItemGroup>
 
 </Project>

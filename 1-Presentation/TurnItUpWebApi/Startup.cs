@@ -42,6 +42,11 @@ namespace TurnItUpWebApi
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();
 
+			services.AddAuthorization(options =>
+			{
+				//Define necessary claims here.
+			});
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
