@@ -7,29 +7,29 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace TurnItUpWebApi.Controllers
 {
-    [Route("v1/digitalContents")]
-    [ApiController]
+	[Route("v1/digitalContents")]
+	[ApiController]
 	[Authorize]
-    public class DigitalContentsController
-    {
-        public DigitalContentsController()
-        {
+	public class DigitalContentsController
+	{
+		public DigitalContentsController()
+		{
 
-        }
+		}
 
-        [HttpGet]
-        [Authorize(Roles = "Politicians")]
+		[HttpGet]
+		[Authorize(Roles = "Politicians")]
 		public async Task<IActionResult> GetDigitalContentsAsync()
-        {
-            throw new NotImplementedException();
-        }
+		{
+			throw new NotImplementedException();
+		}
 
-        [HttpPatch]
-        [Route("{id}")]
-        [Authorize/*(Policy = "musician")*/]
+		[HttpPatch]
+		[Route("{id}")]
+		[Authorize/*(Policy = "musician")*/]
 		public async Task<IActionResult> PartialUpdateAsync()
-        {
-            throw new NotImplementedException();
-        }
-    }
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

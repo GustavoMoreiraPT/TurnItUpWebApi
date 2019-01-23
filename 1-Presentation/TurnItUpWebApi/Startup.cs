@@ -47,24 +47,24 @@ namespace TurnItUpWebApi
 				//Define necessary claims here.
 			});
 
-            // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "TurnItUp API", Version = "v1" });
+			// Register the Swagger generator, defining 1 or more Swagger documents
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new Info { Title = "TurnItUp API", Version = "v1" });
 
-	            var security = new Dictionary<string, IEnumerable<string>>
-	            {
-		            {"Bearer", new string[] { }},
-	            };
+				var security = new Dictionary<string, IEnumerable<string>>
+				{
+					{"Bearer", new string[] { }},
+				};
 
 				c.AddSecurityDefinition("Bearer", new ApiKeyScheme
-	            {
-		            Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-		            Name = "Authorization",
-		            In = "header",
-		            Type = "apiKey"
-	            });
-	            //c.AddSecurityRequirement(security);
+				{
+					Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+					Name = "Authorization",
+					In = "header",
+					Type = "apiKey"
+				});
+				//c.AddSecurityRequirement(security);
 			});
 
 			//==== Add JTW Stuff=====
@@ -105,17 +105,17 @@ namespace TurnItUpWebApi
 			{
 				app.UseDeveloperExceptionPage();
 				app.UseHttpStatusCodeExceptionMiddleware();
-                app.UseSwagger();
+				app.UseSwagger();
 
-                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
-                // specifying the Swagger JSON endpoint.
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "TurnItUp V1");
+				// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+				// specifying the Swagger JSON endpoint.
+				app.UseSwaggerUI(c =>
+				{
+					c.SwaggerEndpoint("/swagger/v1/swagger.json", "TurnItUp V1");
 
-	                c.DocExpansion("none");
+					c.DocExpansion("none");
 				});
-            }
+			}
 			else
 			{
 				app.UseHttpStatusCodeExceptionMiddleware();

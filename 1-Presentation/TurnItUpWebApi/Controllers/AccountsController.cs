@@ -18,13 +18,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace TurnItUpWebApi.Controllers
 {
-    [Route("v1/accounts")]
-    [ApiController]
-    public class AccountsController
-    {
-	    private readonly SignInManager<IdentityUser> signInManager;
-	    private readonly UserManager<IdentityUser> userManager;
-	    private readonly IConfiguration configuration;
+	[Route("v1/accounts")]
+	[ApiController]
+	public class AccountsController
+	{
+		private readonly SignInManager<IdentityUser> signInManager;
+		private readonly UserManager<IdentityUser> userManager;
+		private readonly IConfiguration configuration;
 	
 		public AccountsController(
 			UserManager<IdentityUser> userManager,
@@ -80,10 +80,10 @@ namespace TurnItUpWebApi.Controllers
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 		[HttpGet]
 		[Route("protected")]
-	    public async Task<object> Protected()
-	    {
-		    return "Protected area";
-	    }
+		public async Task<object> Protected()
+		{
+			return "Protected area";
+		}
 
 		private async Task<object> GenerateJwtToken(string email, IdentityUser user, List<string> roles = null)
 		{
@@ -116,16 +116,16 @@ namespace TurnItUpWebApi.Controllers
 			return new JwtSecurityTokenHandler().WriteToken(token);
 		}
 
-	    private List<Claim> AddRolesClaims(List<string> roleNamesList)
-	    {
-		    var roleClaims = new List<Claim>();
+		private List<Claim> AddRolesClaims(List<string> roleNamesList)
+		{
+			var roleClaims = new List<Claim>();
 
-		    foreach (var role in roleNamesList)
-		    {
-			    roleClaims.Add(new Claim(ClaimTypes.Role, role));
-		    }
+			foreach (var role in roleNamesList)
+			{
+				roleClaims.Add(new Claim(ClaimTypes.Role, role));
+			}
 
-		    return roleClaims;
-	    }
+			return roleClaims;
+		}
 	}
 }
