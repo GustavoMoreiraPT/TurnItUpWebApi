@@ -19,8 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace TurnItUpWebApi.Controllers
 {
 	[Route("v1/accounts")]
-	[ApiController]
-	public class AccountsController
+	public class AccountsController : Controller
 	{
 		private readonly SignInManager<IdentityUser> signInManager;
 		private readonly UserManager<IdentityUser> userManager;
@@ -39,7 +38,7 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpPost]
 		[Route("login")]
-		public async Task<object> Login([FromBody] LoginDto model)
+		public async Task<object> LoginAsync([FromBody] LoginDto model)
 		{
 			var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
@@ -57,7 +56,7 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpPost]
 		[Route("register")]
-		public async Task<object> Register([FromBody] RegisterDto model)
+		public async Task<object> RegisterAsync([FromBody] RegisterDto model)
 		{
 			var user = new IdentityUser
 			{
@@ -77,9 +76,18 @@ namespace TurnItUpWebApi.Controllers
 			throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "UNKNOWN_ERROR");
 		}
 
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+		[HttpPost]
+		[Route("{id}")]
+		public async Task<IActionResult> AddClaimAsync([FromRoute] Guid id, [FromBody]NewClaimRequest claim)
+		{
+			var httpContext = this.HttpContext;
+
+			return null;
+		}
+
 		[HttpGet]
 		[Route("protected")]
+		[Authorize]
 		public async Task<object> Protected()
 		{
 			return "Protected area";

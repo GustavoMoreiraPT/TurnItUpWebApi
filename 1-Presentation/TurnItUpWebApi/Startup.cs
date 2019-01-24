@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Services.Configuration;
 using Data.Repository.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -42,10 +43,9 @@ namespace TurnItUpWebApi
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();
 
-			services.AddAuthorization(options =>
-			{
-				//Define necessary claims here.
-			});
+			services.ConfigureDependencies(this.Configuration);
+
+			services.AddTokenConfiguration(this.Configuration);
 
 			// Register the Swagger generator, defining 1 or more Swagger documents
 			services.AddSwaggerGen(c =>
@@ -67,33 +67,7 @@ namespace TurnItUpWebApi
 				//c.AddSecurityRequirement(security);
 			});
 
-			//==== Add JTW Stuff=====
-			JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-			services.AddAuthentication(options =>
-				{
-					options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-					options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-					options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-				})
-				.AddJwtBearer(cfg =>
-				{
-					cfg.RequireHttpsMetadata = false;
-
-					cfg.SaveToken = true;
-
-					cfg.TokenValidationParameters = new TokenValidationParameters
-					{
-						ValidIssuer = Configuration["JwtSettings:JwtIssuer"],
-
-						ValidAudience = Configuration["JwtSettings:JwtIssuer"],
-
-						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:JwtKey"])),
-
-						ClockSkew = TimeSpan.Zero // remove delay of token when expire
-					};
-				})
-				.AddCookie(cfg => cfg.SlidingExpiration = true);
+			services.AddClaimsPolicy(this.Configuration);
 
 			services.AddMvc();
 		}
@@ -125,6 +99,9 @@ namespace TurnItUpWebApi
 			dbContext.Database.EnsureCreated();
 
 			app.UseHttpsRedirection();
+
+			app.UseAuthentication();
+
 			app.UseMvc();
 		}
 	}
