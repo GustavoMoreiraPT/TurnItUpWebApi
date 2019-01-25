@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +32,16 @@ namespace TurnItUpWebApi.Middleware
 					};
 				});
 
+			services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+				.AddCookie(options =>
+				{
+					options.Events.OnRedirectToLogin = context =>
+					{
+						context.Response.Headers["Location"] = context.RedirectUri;
+						context.Response.StatusCode = 401;
+						return Task.CompletedTask;
+					};
+				});
 
 			return services;
 		}

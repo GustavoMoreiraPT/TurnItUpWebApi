@@ -81,7 +81,7 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpPost]
 		[Route("{id}/claims")]
-		public async Task<IActionResult> AddClaimAsync([FromRoute] Guid id, [FromBody]NewClaimRequest claim)
+		public async Task<object> AddClaimAsync([FromRoute] Guid id, [FromBody]NewClaimRequest claim)
 		{
 			var user = await this.userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
@@ -95,13 +95,15 @@ namespace TurnItUpWebApi.Controllers
 			if (Enum.GetNames(typeof(AvailableClaims)).Contains(claim.Name))
 			{
 				await this.userManager.AddClaimAsync(user, new Claim(claim.Name, claim.Value));
-			}
-			else
-			{
-				return this.BadRequest();
+
+				var userRoles = await userManager.GetRolesAsync(user).ConfigureAwait(false);
+
+				var userClaims = await this.userManager.GetClaimsAsync(user).ConfigureAwait(false);
+
+				return await GenerateJwtToken(user.Email, user, userRoles.ToList(), userClaims.ToList());
 			}
 
-			return this.Ok();
+			return this.BadRequest();
 		}
 
 		[HttpGet]
@@ -135,7 +137,7 @@ namespace TurnItUpWebApi.Controllers
 
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-			var expires = DateTime.Now.AddDays(Convert.ToDouble(configuration["JwtSettings:JwtExpireDays"]));
+			var expires = DateTime.Now.AddMinutes(Convert.ToDouble(configuration["JwtSettings:JwtExpireDays"]));
 
 			var token = new JwtSecurityToken(
 				configuration["JwtSettings:JwtIssuer"],

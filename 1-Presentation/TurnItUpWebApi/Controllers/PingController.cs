@@ -27,6 +27,7 @@ namespace TurnItUpWebApi.Controllers
 		[Authorize(Policy = "PongViewer")]
 		public IActionResult GetPong()
 		{
+			var x = this.HttpContext;
 			return new OkObjectResult("Pong");
 		}
 	}

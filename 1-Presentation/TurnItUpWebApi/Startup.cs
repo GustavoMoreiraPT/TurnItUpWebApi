@@ -67,6 +67,15 @@ namespace TurnItUpWebApi
 				//c.AddSecurityRequirement(security);
 			});
 
+			services.ConfigureApplicationCookie(options =>
+			{
+				options.Events.OnRedirectToLogin = context =>
+				{
+					context.Response.StatusCode = 401;
+					return Task.CompletedTask;
+				};
+			});
+
 			services.AddClaimsPolicy(this.Configuration);
 
 			services.AddMvc();
