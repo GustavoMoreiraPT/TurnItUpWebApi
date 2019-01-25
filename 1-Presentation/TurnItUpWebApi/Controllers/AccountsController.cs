@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Remotion.Linq.Clauses.ResultOperators;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -48,7 +49,9 @@ namespace TurnItUpWebApi.Controllers
 
 				var userRoles = await userManager.GetRolesAsync(appUser).ConfigureAwait(false);
 
-				return await GenerateJwtToken(model.Email, appUser, userRoles.ToList());
+				var userClaims = await this.userManager.GetClaimsAsync(appUser).ConfigureAwait(false);
+
+				return await GenerateJwtToken(model.Email, appUser, userRoles.ToList(), userClaims.ToList());
 			}
 
 			throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "INVALID_LOGIN_ATTEMPT");
@@ -77,12 +80,28 @@ namespace TurnItUpWebApi.Controllers
 		}
 
 		[HttpPost]
-		[Route("{id}")]
+		[Route("{id}/claims")]
 		public async Task<IActionResult> AddClaimAsync([FromRoute] Guid id, [FromBody]NewClaimRequest claim)
 		{
-			var httpContext = this.HttpContext;
+			var user = await this.userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
-			return null;
+			if (id != Guid.Parse(user.Id))
+			{
+				return this.BadRequest("The id sent in the request is not the same of the authenticated user");
+			}
+
+			var x = Enum.GetNames(typeof(AvailableClaims));
+
+			if (Enum.GetNames(typeof(AvailableClaims)).Contains(claim.Name))
+			{
+				await this.userManager.AddClaimAsync(user, new Claim(claim.Name, claim.Value));
+			}
+			else
+			{
+				return this.BadRequest();
+			}
+
+			return this.Ok();
 		}
 
 		[HttpGet]
@@ -93,7 +112,7 @@ namespace TurnItUpWebApi.Controllers
 			return "Protected area";
 		}
 
-		private async Task<object> GenerateJwtToken(string email, IdentityUser user, List<string> roles = null)
+		private async Task<object> GenerateJwtToken(string email, IdentityUser user, List<string> roles = null, List<Claim> userClaims = null)
 		{
 			var claims = new List<Claim>
 			{
@@ -101,6 +120,11 @@ namespace TurnItUpWebApi.Controllers
 				new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 				new Claim(ClaimTypes.NameIdentifier, user.Id),
 			};
+
+			if (userClaims != null)
+			{
+				claims.AddRange(userClaims);
+			}
 
 			if (roles != null)
 			{
