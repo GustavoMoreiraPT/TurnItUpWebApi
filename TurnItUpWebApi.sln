@@ -29,27 +29,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{91E8BD81
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{384B14F7-1E26-4484-818B-F4F1F3BB191B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientSDK", "ClassLibrary1\ClientSDK.csproj", "{48C2907E-3459-445F-AB3E-7B53E748C387}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientSDK", "ClassLibrary1\ClientSDK.csproj", "{48C2907E-3459-445F-AB3E-7B53E748C387}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientSDK.Tests", "ClientSDK.Tests\ClientSDK.Tests.csproj", "{F3922EEF-07A1-4361-9F35-60DB05CED087}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientSDK.Tests", "ClientSDK.Tests\ClientSDK.Tests.csproj", "{F3922EEF-07A1-4361-9F35-60DB05CED087}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TurnItUpWebApi.Tests", "TurnItUpWebApi.Tests\TurnItUpWebApi.Tests.csproj", "{9C4A4C97-E6A6-44A3-90EB-E32A43A7DE73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TurnItUpWebApi.Tests", "TurnItUpWebApi.Tests\TurnItUpWebApi.Tests.csproj", "{9C4A4C97-E6A6-44A3-90EB-E32A43A7DE73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Dto", "Application.Dto\Application.Dto.csproj", "{E647D7EB-77BF-4369-B771-F5BFC9854C6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Dto", "Application.Dto\Application.Dto.csproj", "{E647D7EB-77BF-4369-B771-F5BFC9854C6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Services", "Application.Services\Application.Services.csproj", "{EA8C271F-A8F4-4E4D-A5E0-722C533BF7CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Services", "Application.Services\Application.Services.csproj", "{EA8C271F-A8F4-4E4D-A5E0-722C533BF7CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Requests", "Application.Requests\Application.Requests.csproj", "{130921D4-B636-4405-A8DB-BFA464A6BB67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Requests", "Application.Requests\Application.Requests.csproj", "{130921D4-B636-4405-A8DB-BFA464A6BB67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Model", "Domain.Model\Domain.Model.csproj", "{842B6F5A-7A62-4A38-B4C2-E0FC2F6EDF14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Model", "Domain.Model\Domain.Model.csproj", "{842B6F5A-7A62-4A38-B4C2-E0FC2F6EDF14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Core", "Domain.Core\Domain.Core.csproj", "{8390CC7F-0659-4AB9-9A02-7090A63C9058}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Core", "Domain.Core\Domain.Core.csproj", "{8390CC7F-0659-4AB9-9A02-7090A63C9058}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Repository", "Data.Repository\Data.Repository.csproj", "{547C6405-E398-4D53-B554-B1D24546DAFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Repository", "Data.Repository\Data.Repository.csproj", "{547C6405-E398-4D53-B554-B1D24546DAFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Gateway", "Data.Gateway\Data.Gateway.csproj", "{A40D9B51-DCBD-43D7-964A-0FCC06DD3621}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Gateway", "Data.Gateway\Data.Gateway.csproj", "{A40D9B51-DCBD-43D7-964A-0FCC06DD3621}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.CrossCutting", "Infrastructure.CrossCutting\Infrastructure.CrossCutting.csproj", "{317B445E-7391-4EF9-9575-34BB1FE03B99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.CrossCutting", "Infrastructure.CrossCutting\Infrastructure.CrossCutting.csproj", "{317B445E-7391-4EF9-9575-34BB1FE03B99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
