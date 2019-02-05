@@ -1,25 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using Application.Dto.Users;
 using Application.Services.Interfaces;
+using AutoMapper;
+using Data.Repository.Configuration;
+using Domain.Model.Users;
+using Infrastructure.CrossCutting.Helpers;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Application.Services.Implementations
 {
 	public class UsersService : IUsersService
 	{
-		public UsersService()
-		{
+		private readonly ApplicationDbContext identityDbContext;
+		private readonly UserManager<AppUser> userManager;
+		private readonly IMapper mapper;
 
+		public UsersService(ApplicationDbContext identityDbContext, UserManager<AppUser> userManager, IMapper mapper)
+		{
+			this.identityDbContext = identityDbContext;
+			this.userManager = userManager;
+			this.mapper = mapper;
 		}
 
-		public void RevokeRefreshToken(string token)
+		public async Task<IdentityResult> CreateUserAsync(RegisterDto user, string password)
 		{
-			throw new NotImplementedException();
-		}
+			var userIdentity = this.mapper.Map<AppUser>(user);
 
-		public void SignUp(string username, string password)
-		{
-			throw new NotImplementedException();
+			var result = await this.userManager.CreateAsync(userIdentity, password).ConfigureAwait(false);
+
+			if (!result.Succeeded)
+			{
+				return null;
+			}
+
+			await this.identityDbContext.Customers.AddAsync(new Customer{ IdentityId = userIdentity.Id, Location = user.Location});
+			await this.identityDbContext.SaveChangesAsync();
+
+			return result;
 		}
 	}
 }

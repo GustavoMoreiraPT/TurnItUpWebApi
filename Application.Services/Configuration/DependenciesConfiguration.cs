@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using Application.Services.Implementations;
 using Application.Services.Interfaces;
+using AutoMapper;
+using Data.Repository.Configuration;
+using Domain.Model.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +18,9 @@ namespace Application.Services.Configuration
 		public static IServiceCollection ConfigureDependencies(this IServiceCollection services,
 			IConfiguration configuration)
 		{
-			services.AddSingleton<IUsersService, UsersService>();
+			services.AddScoped<UserManager<AppUser>>();
+
+			services.AddScoped<IUsersService, UsersService>();
 
 			return services;
 		}

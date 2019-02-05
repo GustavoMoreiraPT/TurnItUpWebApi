@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Services.Configuration;
 using Data.Repository.Configuration;
+using Domain.Model.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +21,8 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using TurnItUpWebApi.Middleware;
+using AutoMapper;
+using FluentValidation.AspNetCore;
 
 namespace TurnItUpWebApi
 {
@@ -39,9 +42,20 @@ namespace TurnItUpWebApi
 
 			services.AddDbContext<ApplicationDbContext>();
 
-			services.AddIdentity<IdentityUser, IdentityRole>()
-				.AddEntityFrameworkStores<ApplicationDbContext>()
-				.AddDefaultTokenProviders();
+			// add identity
+			var builder = services.AddIdentityCore<AppUser>(o =>
+			{
+				// configure identity options
+				o.Password.RequireDigit = false;
+				o.Password.RequireLowercase = false;
+				o.Password.RequireUppercase = false;
+				o.Password.RequireNonAlphanumeric = false;
+				o.Password.RequiredLength = 6;
+			});
+			builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
+			builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+			services.AddAutoMapper();
 
 			services.ConfigureDependencies(this.Configuration);
 
@@ -78,7 +92,7 @@ namespace TurnItUpWebApi
 
 			services.AddClaimsPolicy(this.Configuration);
 
-			services.AddMvc();
+			services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>()); ;
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -110,6 +124,8 @@ namespace TurnItUpWebApi
 			app.UseHttpsRedirection();
 
 			app.UseAuthentication();
+
+			app.UseIdentity();
 
 			app.UseMvc();
 		}

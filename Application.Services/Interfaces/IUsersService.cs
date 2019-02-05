@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using Application.Dto.Users;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services.Interfaces
 {
 	public interface IUsersService
 	{
-		void SignUp(string username, string password);
-		void RevokeRefreshToken(string token);
+		Task<IdentityResult> CreateUserAsync(RegisterDto user, string password);
 	}
 }

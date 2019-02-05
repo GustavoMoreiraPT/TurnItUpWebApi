@@ -9,6 +9,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Dto.Users;
+using Application.Services.Interfaces;
+using Domain.Model.Users;
 using Infrastructure.CrossCutting.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -23,110 +25,52 @@ namespace TurnItUpWebApi.Controllers
 	[Route("v1/accounts")]
 	public class AccountsController : Controller
 	{
-		private readonly SignInManager<IdentityUser> signInManager;
-		private readonly UserManager<IdentityUser> userManager;
+		private readonly IUsersService userService;
 		private readonly IConfiguration configuration;
 	
 		public AccountsController(
-			UserManager<IdentityUser> userManager,
-			SignInManager<IdentityUser> signInManager,
+			IUsersService userService,
 			IConfiguration configuration
 			)
 		{
-			this.userManager = userManager;
-			this.signInManager = signInManager;
+			this.userService = userService;
 			this.configuration = configuration;
 		}
 
-		[HttpPost]
-		[Route("login")]
-		public async Task<object> LoginAsync([FromBody] LoginDto model)
-		{
-			var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-
-			if (result.Succeeded)
-			{
-				var appUser = userManager.Users.SingleOrDefault(r => r.Email == model.Email);
-
-				var userRoles = await userManager.GetRolesAsync(appUser).ConfigureAwait(false);
-
-				var userClaims = await this.userManager.GetClaimsAsync(appUser).ConfigureAwait(false);
-
-				return await GenerateJwtToken(model.Email, appUser, userRoles.ToList(), userClaims.ToList());
-			}
-
-			throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "INVALID_LOGIN_ATTEMPT");
-		}
 
 		[HttpPost]
-		[Route("register")]
-		public async Task<object> RegisterAsync([FromBody] RegisterDto model)
+		public async Task<IActionResult> Post([FromBody]RegisterDto model)
 		{
-			var user = new IdentityUser
+			if (!ModelState.IsValid)
 			{
-				UserName = model.Email,
-				Email = model.Email
-			};
-
-			var result = await userManager.CreateAsync(user, model.Password);
-
-			if (result.Succeeded)
-			{
-				await signInManager.SignInAsync(user, false);
-
-				return await GenerateJwtToken(model.Email, user);
+				return BadRequest(ModelState);
 			}
 
-			throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "UNKNOWN_ERROR");
+			var result = await this.userService.CreateUserAsync(model, model.Password);
+
+			return new OkObjectResult("Account created");
 		}
 
-		[HttpPost]
-		[Route("{id}/claims")]
-		public async Task<object> AddClaimAsync([FromRoute] Guid id, [FromBody]NewClaimRequest claim)
-		{
-			var user = await this.userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+		//[HttpPost]
+		//public IActionResult Refresh(string token, string refreshToken)
+		//{
+		//	var principal = GetPrincipalFromExpiredToken(token);
+		//	var username = principal.Identity.Name;
+		//	var savedRefreshToken = GetRefreshToken(username); //retrieve the refresh token from a data store
+		//	if (savedRefreshToken != refreshToken)
+		//		throw new SecurityTokenException("Invalid refresh token");
 
-			if (id != Guid.Parse(user.Id))
-			{
-				return this.BadRequest("The id sent in the request is not the same of the authenticated user");
-			}
+		//	var newJwtToken = GenerateJwtToken(null, null, null, principal.Claims.ToList());
+		//	var newRefreshToken = GenerateRefreshToken();
+		//	DeleteRefreshToken(username, refreshToken);
+		//	SaveRefreshToken(username, newRefreshToken);
 
-			var x = Enum.GetNames(typeof(AvailableClaims));
-
-			if (Enum.GetNames(typeof(AvailableClaims)).Contains(claim.Name))
-			{
-				await this.userManager.AddClaimAsync(user, new Claim(claim.Name, claim.Value));
-
-				var userRoles = await userManager.GetRolesAsync(user).ConfigureAwait(false);
-
-				var userClaims = await this.userManager.GetClaimsAsync(user).ConfigureAwait(false);
-
-				return await GenerateJwtToken(user.Email, user, userRoles.ToList(), userClaims.ToList());
-			}
-
-			return this.BadRequest();
-		}
-
-		[HttpPost]
-		public IActionResult Refresh(string token, string refreshToken)
-		{
-			var principal = GetPrincipalFromExpiredToken(token);
-			var username = principal.Identity.Name;
-			var savedRefreshToken = GetRefreshToken(username); //retrieve the refresh token from a data store
-			if (savedRefreshToken != refreshToken)
-				throw new SecurityTokenException("Invalid refresh token");
-
-			var newJwtToken = GenerateJwtToken(null, null, null, principal.Claims.ToList());
-			var newRefreshToken = GenerateRefreshToken();
-			DeleteRefreshToken(username, refreshToken);
-			SaveRefreshToken(username, newRefreshToken);
-
-			return new ObjectResult(new
-			{
-				token = newJwtToken,
-				refreshToken = newRefreshToken
-			});
-		}
+		//	return new ObjectResult(new
+		//	{
+		//		token = newJwtToken,
+		//		refreshToken = newRefreshToken
+		//	});
+		//}
 
 		private void SaveRefreshToken(string username, string newRefreshToken)
 		{
