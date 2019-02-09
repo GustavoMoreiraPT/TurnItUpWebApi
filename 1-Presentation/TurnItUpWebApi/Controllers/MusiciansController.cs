@@ -11,8 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace TurnItUpWebApi.Controllers
 {
 	[Route("v1/musicians")]
-	[ApiController]
-	public class MusiciansController
+	public class MusiciansController : Controller
 	{
 		public MusiciansController()
 		{
@@ -27,7 +26,6 @@ namespace TurnItUpWebApi.Controllers
 		[ProducesResponseType(403)]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(500)]
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Musician")]
 		public async Task<IActionResult> GetMusicianAsync([FromRoute] int id)
 		{
 			throw new NotImplementedException();
@@ -49,7 +47,6 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpPost]
 		[Route("{id}/digitalContents")]
-		[Authorize/*(Policy = "musician")*/]
 		public async Task<IActionResult> UploadContentAsync()
 		{
 			throw new NotImplementedException();
@@ -57,7 +54,6 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpPost]
 		[Route("{id}/offers")]
-		[Authorize/*(Policy = "musician")*/]
 		public async Task<IActionResult> CreateOfferAsync()
 		{
 			throw new NotImplementedException();

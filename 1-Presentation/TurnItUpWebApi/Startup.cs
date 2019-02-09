@@ -4,7 +4,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Services.Configuration;
 using Data.Repository.Configuration;
+using Domain.Model.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +21,9 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using TurnItUpWebApi.Middleware;
+using AutoMapper;
+using FluentValidation.AspNetCore;
+using Infrastructure.CrossCutting.Settings;
 
 namespace TurnItUpWebApi
 {
@@ -38,14 +43,24 @@ namespace TurnItUpWebApi
 
 			services.AddDbContext<ApplicationDbContext>();
 
-			services.AddIdentity<IdentityUser, IdentityRole>()
-				.AddEntityFrameworkStores<ApplicationDbContext>()
-				.AddDefaultTokenProviders();
-
-			services.AddAuthorization(options =>
+			// add identity
+			var builder = services.AddIdentityCore<AppUser>(o =>
 			{
-				//Define necessary claims here.
+				// configure identity options
+				o.Password.RequireDigit = false;
+				o.Password.RequireLowercase = false;
+				o.Password.RequireUppercase = false;
+				o.Password.RequireNonAlphanumeric = false;
+				o.Password.RequiredLength = 6;
 			});
+			builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
+			builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+			services.AddAutoMapper();
+
+			services.ConfigureDependencies(this.Configuration);
+
+			services.AddTokenConfiguration(this.Configuration);
 
 			// Register the Swagger generator, defining 1 or more Swagger documents
 			services.AddSwaggerGen(c =>
@@ -67,35 +82,18 @@ namespace TurnItUpWebApi
 				//c.AddSecurityRequirement(security);
 			});
 
-			//==== Add JTW Stuff=====
-			JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-			services.AddAuthentication(options =>
+			services.ConfigureApplicationCookie(options =>
+			{
+				options.Events.OnRedirectToLogin = context =>
 				{
-					options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-					options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-					options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-				})
-				.AddJwtBearer(cfg =>
-				{
-					cfg.RequireHttpsMetadata = false;
+					context.Response.StatusCode = 401;
+					return Task.CompletedTask;
+				};
+			});
 
-					cfg.SaveToken = true;
+			services.AddClaimsPolicy(this.Configuration);
 
-					cfg.TokenValidationParameters = new TokenValidationParameters
-					{
-						ValidIssuer = Configuration["JwtSettings:JwtIssuer"],
-
-						ValidAudience = Configuration["JwtSettings:JwtIssuer"],
-
-						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:JwtKey"])),
-
-						ClockSkew = TimeSpan.Zero // remove delay of token when expire
-					};
-				})
-				.AddCookie(cfg => cfg.SlidingExpiration = true);
-
-			services.AddMvc();
+			services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>()); ;
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -125,6 +123,11 @@ namespace TurnItUpWebApi
 			dbContext.Database.EnsureCreated();
 
 			app.UseHttpsRedirection();
+
+			app.UseAuthentication();
+
+			app.UseIdentity();
+
 			app.UseMvc();
 		}
 	}

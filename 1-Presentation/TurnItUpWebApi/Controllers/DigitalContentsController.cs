@@ -8,9 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 namespace TurnItUpWebApi.Controllers
 {
 	[Route("v1/digitalContents")]
-	[ApiController]
 	[Authorize]
-	public class DigitalContentsController
+	public class DigitalContentsController : Controller
 	{
 		public DigitalContentsController()
 		{
@@ -18,7 +17,6 @@ namespace TurnItUpWebApi.Controllers
 		}
 
 		[HttpGet]
-		[Authorize(Roles = "Politicians")]
 		public async Task<IActionResult> GetDigitalContentsAsync()
 		{
 			throw new NotImplementedException();
@@ -26,7 +24,6 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpPatch]
 		[Route("{id}")]
-		[Authorize/*(Policy = "musician")*/]
 		public async Task<IActionResult> PartialUpdateAsync()
 		{
 			throw new NotImplementedException();

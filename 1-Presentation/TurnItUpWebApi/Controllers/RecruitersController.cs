@@ -8,8 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace TurnItUpWebApi.Controllers
 {
 	[Route("v1/recruiters")]
-	[ApiController]
-	public class RecruitersController
+	public class RecruitersController : Controller
 	{
 		public RecruitersController()
 		{
@@ -17,7 +16,6 @@ namespace TurnItUpWebApi.Controllers
 		}
 
 		[HttpGet]
-		[Authorize/*(Policy = "recruiter")*/]
 		public async Task<IActionResult> GetAllAsync()
 		{
 			throw new NotImplementedException();
@@ -25,7 +23,6 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpGet]
 		[Route("{id}")]
-		[Authorize/*(Policy = "recruiter")*/]
 		public async Task<IActionResult> GetAsync()
 		{
 			throw new NotImplementedException();
@@ -33,7 +30,6 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpPost]
 		[Route("{id}/offers")]
-		[Authorize/*(Policy = "recruiter")*/]
 		public async Task<IActionResult> CreateOfferAsync()
 		{
 			throw new NotImplementedException();
@@ -41,7 +37,6 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpPut]
 		[Route("{id}")]
-		[Authorize/*(Policy = "recruiter")*/]
 		public async Task<IActionResult> UpdateAsync()
 		{
 			throw new NotImplementedException();

@@ -5,127 +5,73 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Dto.Users;
-using Infrastructure.CrossCutting.Exceptions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Infrastructure.CrossCutting.Helpers;
+using Newtonsoft.Json;
 
 namespace TurnItUpWebApi.Controllers
 {
 	[Route("v1/accounts")]
-	[ApiController]
-	public class AccountsController
+	public class AccountsController : Controller
 	{
-		private readonly SignInManager<IdentityUser> signInManager;
-		private readonly UserManager<IdentityUser> userManager;
+		private readonly IUsersService userService;
 		private readonly IConfiguration configuration;
 	
 		public AccountsController(
-			UserManager<IdentityUser> userManager,
-			SignInManager<IdentityUser> signInManager,
+			IUsersService userService,
 			IConfiguration configuration
 			)
 		{
-			this.userManager = userManager;
-			this.signInManager = signInManager;
+			this.userService = userService;
 			this.configuration = configuration;
 		}
 
 		[HttpPost]
-		[Route("login")]
-		public async Task<object> Login([FromBody] LoginDto model)
+		public async Task<IActionResult> Post([FromBody]RegisterDto model)
 		{
-			var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-
-			if (result.Succeeded)
+			if (!ModelState.IsValid)
 			{
-				var appUser = userManager.Users.SingleOrDefault(r => r.Email == model.Email);
-
-				var userRoles = await userManager.GetRolesAsync(appUser).ConfigureAwait(false);
-
-				return await GenerateJwtToken(model.Email, appUser, userRoles.ToList());
+				return BadRequest(ModelState);
 			}
 
-			throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "INVALID_LOGIN_ATTEMPT");
+			var result = await this.userService.CreateUserAsync(model, model.Password);
+
+			return new OkObjectResult("Account created");
 		}
 
-		[HttpPost]
-		[Route("register")]
-		public async Task<object> Register([FromBody] RegisterDto model)
-		{
-			var user = new IdentityUser
-			{
-				UserName = model.Email,
-				Email = model.Email
-			};
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody]LoginDto loginDto) 
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-			var result = await userManager.CreateAsync(user, model.Password);
+            var identity = await this.userService.GetClaimsIdentity(loginDto.UserName, loginDto.Password);
+            if (identity == null)
+            {
+                return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
+            }
 
-			if (result.Succeeded)
-			{
-				await signInManager.SignInAsync(user, false);
+            var jwt = await this.userService.GenerateToken(identity, loginDto.UserName, new JsonSerializerSettings { Formatting = Formatting.Indented });
+            return new OkObjectResult(jwt);
+        }
 
-				return await GenerateJwtToken(model.Email, user);
-			}
-
-			throw new HttpStatusCodeException(StatusCodes.Status400BadRequest, "UNKNOWN_ERROR");
-		}
-
-		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 		[HttpGet]
 		[Route("protected")]
-		public async Task<object> Protected()
+        [Authorize(Policy = "ApiUser")]
+        public async Task<object> Protected()
 		{
 			return "Protected area";
-		}
-
-		private async Task<object> GenerateJwtToken(string email, IdentityUser user, List<string> roles = null)
-		{
-			var claims = new List<Claim>
-			{
-				new Claim(JwtRegisteredClaimNames.Sub, email),
-				new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-				new Claim(ClaimTypes.NameIdentifier, user.Id),
-			};
-
-			if (roles != null)
-			{
-				claims.AddRange(this.AddRolesClaims(roles));
-			}
-
-			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:JwtKey"]));
-
-			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-			var expires = DateTime.Now.AddDays(Convert.ToDouble(configuration["JwtSettings:JwtExpireDays"]));
-
-			var token = new JwtSecurityToken(
-				configuration["JwtSettings:JwtIssuer"],
-				configuration["JwtSettings:JwtIssuer"],
-				claims,
-				expires: expires,
-				signingCredentials: creds
-			);
-
-			return new JwtSecurityTokenHandler().WriteToken(token);
-		}
-
-		private List<Claim> AddRolesClaims(List<string> roleNamesList)
-		{
-			var roleClaims = new List<Claim>();
-
-			foreach (var role in roleNamesList)
-			{
-				roleClaims.Add(new Claim(ClaimTypes.Role, role));
-			}
-
-			return roleClaims;
 		}
 	}
 }
