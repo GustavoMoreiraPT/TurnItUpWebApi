@@ -58,7 +58,10 @@ namespace TurnItUpWebApi
 
 			services.AddAutoMapper();
 
-			services.ConfigureDependencies(this.Configuration);
+            // Register the ConfigurationBuilder instance of FacebookAuthSettings
+            services.Configure<FacebookAuthSettings>(Configuration.GetSection(nameof(FacebookAuthSettings)));
+
+            services.ConfigureDependencies(this.Configuration);
 
 			services.AddTokenConfiguration(this.Configuration);
 

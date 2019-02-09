@@ -7,10 +7,13 @@ using Application.Services.Interfaces;
 using AutoMapper;
 using Data.Repository.Configuration;
 using Domain.Model.Users;
+using Infrastructure.CrossCutting.Helpers;
 using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
 
 namespace Application.Services.Implementations
 {
@@ -52,6 +55,40 @@ namespace Application.Services.Implementations
 
 			return result;
 		}
+
+        public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
+        {
+            var result =  await this.userManager.CreateAsync(user, password).ConfigureAwait(false);
+
+            if (!result.Succeeded) return null;
+
+            await this.identityDbContext.Customers
+                .AddAsync(new Customer
+                {
+                    IdentityId = user.Id, Location = "",
+                    Locale = facebookUserData.Locale,
+                    Gender = facebookUserData.Gender
+                });
+
+            await this.identityDbContext.SaveChangesAsync();
+
+            return result;
+        }
+
+        public async Task<AppUser> FindByEmailAsync(string email)
+        {
+            return await this.userManager.FindByEmailAsync(email).ConfigureAwait(false);
+        }
+
+        public async Task<AppUser> FindByNameAsync(string email)
+        {
+            return await this.FindByNameAsync(email).ConfigureAwait(false);
+        }
+
+        public ClaimsIdentity GenerateClaimsIdentity(string userName, string id)
+        {
+            return this.jwtFactory.GenerateClaimsIdentity(userName, id);
+        }
 
         public async Task<string> GenerateToken(ClaimsIdentity identity, string userName, JsonSerializerSettings serializerSettings)
         {
