@@ -21,6 +21,7 @@ namespace Application.Services.Configuration
 			services.AddScoped<UserManager<AppUser>>();
 
 			services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IJwtFactory, JwtFactory>();
 
 			return services;
 		}

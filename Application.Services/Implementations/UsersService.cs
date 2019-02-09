@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Application.Dto.Users;
 using Application.Services.Interfaces;
 using AutoMapper;
 using Data.Repository.Configuration;
 using Domain.Model.Users;
-using Infrastructure.CrossCutting.Helpers;
+using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Application.Services.Implementations
 {
@@ -19,13 +18,22 @@ namespace Application.Services.Implementations
 	{
 		private readonly ApplicationDbContext identityDbContext;
 		private readonly UserManager<AppUser> userManager;
+        private readonly IJwtFactory jwtFactory;
 		private readonly IMapper mapper;
+        private readonly JwtIssuerOptions jwtOptions;
 
-		public UsersService(ApplicationDbContext identityDbContext, UserManager<AppUser> userManager, IMapper mapper)
+        public UsersService(
+            ApplicationDbContext identityDbContext,
+            UserManager<AppUser> userManager,
+            IMapper mapper,
+            IJwtFactory jwtFactory,
+            IOptions<JwtIssuerOptions> jwtOptions)
 		{
 			this.identityDbContext = identityDbContext;
 			this.userManager = userManager;
 			this.mapper = mapper;
+            this.jwtFactory = jwtFactory;
+            this.jwtOptions = jwtOptions.Value;
 		}
 
 		public async Task<IdentityResult> CreateUserAsync(RegisterDto user, string password)
@@ -44,5 +52,37 @@ namespace Application.Services.Implementations
 
 			return result;
 		}
-	}
+
+        public async Task<string> GenerateToken(ClaimsIdentity identity, string userName, JsonSerializerSettings serializerSettings)
+        {
+            var response = new
+            {
+                id = identity.Claims.Single(c => c.Type == "id").Value,
+                auth_token = await this.jwtFactory.GenerateEncodedToken(userName, identity),
+                expires_in = (int)jwtOptions.ValidFor.TotalSeconds
+            };
+
+            return JsonConvert.SerializeObject(response, serializerSettings);
+        }
+
+        public async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                return await Task.FromResult<ClaimsIdentity>(null);
+
+            // get the user to verifty
+            var userToVerify = await this.userManager.FindByNameAsync(userName);
+
+            if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
+
+            // check the credentials
+            if (await this.userManager.CheckPasswordAsync(userToVerify, password))
+            {
+                return await Task.FromResult(this.jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
+            }
+
+            // Credentials are invalid, or account doesn't exist
+            return await Task.FromResult<ClaimsIdentity>(null);
+        }
+    }
 }

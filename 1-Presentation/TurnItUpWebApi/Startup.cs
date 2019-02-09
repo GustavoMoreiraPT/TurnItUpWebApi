@@ -36,9 +36,6 @@ namespace TurnItUpWebApi
 
 		public IConfiguration Configuration { get; }
 
-		private const string SecretKey = "ArminVanBuurenMottyzeRuleTheWorldForever2010"; // todo: get this from somewhere secure
-		private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
-
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
@@ -62,18 +59,6 @@ namespace TurnItUpWebApi
 			services.AddAutoMapper();
 
 			services.ConfigureDependencies(this.Configuration);
-
-			// Get options from app settings
-			var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
-
-			// Configure JwtIssuerOptions
-			services.Configure<JwtIssuerOptions>(options =>
-			{
-				options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
-				options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
-				options.SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
-			});
-
 
 			services.AddTokenConfiguration(this.Configuration);
 
