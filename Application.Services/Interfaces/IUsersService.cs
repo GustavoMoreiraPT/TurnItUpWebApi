@@ -26,5 +26,7 @@ namespace Application.Services.Interfaces
         Task<AppUser> FindByNameAsync(string email);
 
         Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password);
+
+        Task AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5);
     }
 }

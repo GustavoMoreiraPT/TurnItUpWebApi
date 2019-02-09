@@ -6,6 +6,7 @@ using Application.Dto.Users;
 using Application.Services.Interfaces;
 using AutoMapper;
 using Data.Repository.Configuration;
+using Domain.Model;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting.Helpers;
 using Infrastructure.CrossCutting.Settings;
@@ -39,7 +40,30 @@ namespace Application.Services.Implementations
             this.jwtOptions = jwtOptions.Value;
 		}
 
-		public async Task<IdentityResult> CreateUserAsync(RegisterDto user, string password)
+        public async Task AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
+        {
+            var user = await this.userManager.FindByEmailAsync(userName).ConfigureAwait(false);
+
+            if (user == null)
+            {
+                return;
+            }
+
+            var customerUser = this.identityDbContext
+                .Customers
+                .FirstOrDefault(x => x.IdentityId == user.Id);
+
+            if (customerUser == null)
+            {
+                return;
+            }
+
+            customerUser.AddRefreshToken(new RefreshToken(token, DateTime.UtcNow.AddDays(daysToExpire), userName, remoteIpAddress));
+
+            await this.identityDbContext.SaveChangesAsync();
+        }
+
+        public async Task<IdentityResult> CreateUserAsync(RegisterDto user, string password)
 		{
 			var userIdentity = this.mapper.Map<AppUser>(user);
 
