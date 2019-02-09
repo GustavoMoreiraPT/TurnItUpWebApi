@@ -68,8 +68,8 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpGet]
 		[Route("protected")]
-		[Authorize]
-		public async Task<object> Protected()
+        [Authorize(Policy = "ApiUser")]
+        public async Task<object> Protected()
 		{
 			return "Protected area";
 		}
