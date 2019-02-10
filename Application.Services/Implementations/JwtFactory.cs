@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Security.Principal;
 using Application.Services.Interfaces;
+using Application.Dto.Users;
 
 namespace Application.Services.Implementations
 {
@@ -19,7 +20,7 @@ namespace Application.Services.Implementations
             ThrowIfInvalidOptions(_jwtOptions);
         }
 
-        public async Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity)
+        public async Task<AccessToken> GenerateEncodedToken(string userName, ClaimsIdentity identity)
         {
             var claims = new[]
          {
@@ -41,7 +42,7 @@ namespace Application.Services.Implementations
 
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            return encodedJwt;
+            return new AccessToken(encodedJwt, (int)_jwtOptions.ValidFor.TotalSeconds);
         }
 
         public ClaimsIdentity GenerateClaimsIdentity(string userName, string id)

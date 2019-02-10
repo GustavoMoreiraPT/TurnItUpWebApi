@@ -8,6 +8,7 @@ using AutoMapper;
 using Data.Repository.Configuration;
 using Domain.Model;
 using Domain.Model.Users;
+using Infrastructure.CrossCutting;
 using Infrastructure.CrossCutting.Helpers;
 using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Identity;
@@ -25,28 +26,31 @@ namespace Application.Services.Implementations
         private readonly IJwtFactory jwtFactory;
 		private readonly IMapper mapper;
         private readonly JwtIssuerOptions jwtOptions;
+        private readonly ITokenFactory tokenFactory;
 
         public UsersService(
             ApplicationDbContext identityDbContext,
             UserManager<AppUser> userManager,
             IMapper mapper,
             IJwtFactory jwtFactory,
-            IOptions<JwtIssuerOptions> jwtOptions)
+            IOptions<JwtIssuerOptions> jwtOptions,
+            ITokenFactory tokenFactory)
 		{
 			this.identityDbContext = identityDbContext;
 			this.userManager = userManager;
 			this.mapper = mapper;
             this.jwtFactory = jwtFactory;
             this.jwtOptions = jwtOptions.Value;
+            this.tokenFactory = tokenFactory;
 		}
 
-        public async Task AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
+        public async Task<string> AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
         {
             var user = await this.userManager.FindByEmailAsync(userName).ConfigureAwait(false);
 
             if (user == null)
             {
-                return;
+                return string.Empty;
             }
 
             var customerUser = this.identityDbContext
@@ -55,12 +59,18 @@ namespace Application.Services.Implementations
 
             if (customerUser == null)
             {
-                return;
+                return string.Empty;
             }
+
+            var refreshToken = this.tokenFactory.GenerateToken();
 
             customerUser.AddRefreshToken(new RefreshToken(token, DateTime.UtcNow.AddDays(daysToExpire), userName, remoteIpAddress));
 
+            this.identityDbContext.Customers.Update(customerUser);
+
             await this.identityDbContext.SaveChangesAsync();
+
+            return refreshToken;
         }
 
         public async Task<IdentityResult> CreateUserAsync(RegisterDto user, string password)
@@ -114,7 +124,13 @@ namespace Application.Services.Implementations
             return this.jwtFactory.GenerateClaimsIdentity(userName, id);
         }
 
-        public async Task<string> GenerateToken(ClaimsIdentity identity, string userName, JsonSerializerSettings serializerSettings)
+        public async Task<LoginResponse> GenerateToken(
+            ClaimsIdentity identity,
+            string userName,
+            string password,
+            string remoteIpAddress,
+            JsonSerializerSettings serializerSettings
+            )
         {
             var response = new
             {
@@ -123,7 +139,15 @@ namespace Application.Services.Implementations
                 expires_in = (int)jwtOptions.ValidFor.TotalSeconds
             };
 
-            return JsonConvert.SerializeObject(response, serializerSettings);
+            var accessToken = await 
+                this.jwtFactory
+                .GenerateEncodedToken(userName, identity).ConfigureAwait(false);
+
+            var refreshToken = await
+                this.AddRefreshToken(accessToken.Token, userName, remoteIpAddress)
+                .ConfigureAwait(false);
+
+            return new LoginResponse(accessToken, refreshToken, true);
         }
 
         public async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)

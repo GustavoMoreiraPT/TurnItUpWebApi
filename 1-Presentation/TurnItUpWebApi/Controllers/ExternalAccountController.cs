@@ -76,7 +76,7 @@ namespace TurnItUpWebApi.Controllers
             }
 
             var claims = await this.userService.GetClaimsIdentity(localUser.UserName, localUser.Id);
-            var jwt = await this.userService.GenerateToken(claims, localUser.UserName, new JsonSerializerSettings { Formatting = Formatting.Indented });
+            var jwt = await this.userService.GenerateToken(claims, localUser.UserName, localUser.PasswordHash, string.Empty, new JsonSerializerSettings { Formatting = Formatting.Indented });
 
             return new OkObjectResult(jwt);
         }

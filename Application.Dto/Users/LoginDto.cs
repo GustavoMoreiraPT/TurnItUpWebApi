@@ -11,5 +11,7 @@ namespace Application.Dto.Users
 
 		[Required]
 		public string Password { get; set; }
+
+        public string RemoteIpAddress { get; set; }
 	}
 }
