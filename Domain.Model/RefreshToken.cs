@@ -6,6 +6,7 @@ namespace Domain.Model
 {
     public class RefreshToken
     {
+        public int Id { get; set; }
         public string Token { get; private set; }
         public DateTime Expires { get; private set; }
         public string UserEmail { get; private set; }
@@ -18,6 +19,10 @@ namespace Domain.Model
             Expires = expires;
             UserEmail = userEmail;
             RemoteIpAddress = remoteIpAddress;
+        }
+
+        public RefreshToken()
+        {
         }
     }
 }
