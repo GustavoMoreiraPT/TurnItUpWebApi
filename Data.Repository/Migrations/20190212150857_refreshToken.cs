@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Repository.Migrations
 {
-    public partial class RefreshTokens : Migration
+    public partial class refreshToken : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

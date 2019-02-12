@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Domain.Model.Users
@@ -26,5 +27,10 @@ namespace Domain.Model.Users
         {
             _refreshTokens.Add(token);
         }
-    }
+
+        public bool HasValidRefreshToken(string refreshToken)
+        {
+	        return _refreshTokens.Any(rt => rt.Token == refreshToken && rt.Active);
+        }
+	}
 }

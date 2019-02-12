@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190210130614_RefreshTokens")]
-    partial class RefreshTokens
+    [Migration("20190212150857_refreshToken")]
+    partial class refreshToken
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

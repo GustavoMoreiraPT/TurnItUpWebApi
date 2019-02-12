@@ -43,5 +43,7 @@ namespace Application.Services.Interfaces
             string remoteIpAddress,
             double daysToExpire = 5
             );
+
+        Task<LoginResponse> RefreshToken(ExchangeRefreshTokenRequest refreshTokenRequest);
     }
 }

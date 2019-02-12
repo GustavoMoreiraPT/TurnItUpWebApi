@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using Application.Services.Handlers;
 using Application.Services.Implementations;
 using Application.Services.Interfaces;
 using AutoMapper;
@@ -24,6 +25,8 @@ namespace Application.Services.Configuration
 			services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IJwtFactory, JwtFactory>();
             services.AddScoped<ITokenFactory, TokenFactory>();
+            services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
+            services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
 
 			return services;
 		}

@@ -27,6 +27,7 @@ namespace Application.Services.Implementations
 		private readonly IMapper mapper;
         private readonly JwtIssuerOptions jwtOptions;
         private readonly ITokenFactory tokenFactory;
+        private readonly IJwtTokenValidator jwtTokenValidator;
 
         public UsersService(
             ApplicationDbContext identityDbContext,
@@ -34,7 +35,9 @@ namespace Application.Services.Implementations
             IMapper mapper,
             IJwtFactory jwtFactory,
             IOptions<JwtIssuerOptions> jwtOptions,
-            ITokenFactory tokenFactory)
+            ITokenFactory tokenFactory,
+            IJwtTokenValidator jwtTokenValidator
+            )
 		{
 			this.identityDbContext = identityDbContext;
 			this.userManager = userManager;
@@ -42,6 +45,7 @@ namespace Application.Services.Implementations
             this.jwtFactory = jwtFactory;
             this.jwtOptions = jwtOptions.Value;
             this.tokenFactory = tokenFactory;
+            this.jwtTokenValidator = jwtTokenValidator;
 		}
 
         public async Task<string> AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
@@ -169,5 +173,21 @@ namespace Application.Services.Implementations
             // Credentials are invalid, or account doesn't exist
             return await Task.FromResult<ClaimsIdentity>(null);
         }
-    }
+
+		//FINISH THIS
+
+		public async Task<LoginResponse> RefreshToken(ExchangeRefreshTokenRequest refreshTokenRequest)
+		{
+			var claimPrincipal =
+				this.jwtTokenValidator.GetPrincipalFromToken(refreshTokenRequest.AccessToken,
+					refreshTokenRequest.SigningKey);
+
+			if (claimPrincipal != null)
+			{
+				var id = claimPrincipal.Claims.First(c => c.Type == "id");
+			}
+
+			return null;
+		}
+	}
 }
