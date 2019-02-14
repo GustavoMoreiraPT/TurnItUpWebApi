@@ -1,6 +1,8 @@
 ﻿using Application.Services.Handlers;
 using Application.Services.Implementations;
 using Application.Services.Interfaces;
+using Data.Repository.ImplementedRepositories;
+using Domain.Core.RepositoryInterfaces;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting;
 using Microsoft.AspNetCore.Identity;
@@ -21,6 +23,9 @@ namespace Application.Services.Configuration
 			services.AddScoped<ITokenFactory, TokenFactory>();
 			services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
 			services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
+
+			//TEMPORARY!! JUST TO MAKE IT WORK FOR NOW
+			services.AddScoped<IRepository<Customer>, EfRepository<Customer>>();
 
 			return services;
 		}

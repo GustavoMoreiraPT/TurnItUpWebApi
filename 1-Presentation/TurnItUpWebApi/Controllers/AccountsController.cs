@@ -64,6 +64,18 @@ namespace TurnItUpWebApi.Controllers
             return new OkObjectResult(loginResponse);
         }
 
+        // POST api/auth/refreshtoken
+        [HttpPost("refreshtoken")]
+        public async Task<ActionResult> RefreshToken([FromBody] ExchangeRefreshTokenRequest request)
+        {
+	        if (!ModelState.IsValid)
+	        {
+		        return BadRequest(ModelState);
+	        }
+
+	        return Ok(await this.userService.RefreshToken(request).ConfigureAwait(false));
+        }
+
 		[HttpGet]
 		[Route("protected")]
         [Authorize(Policy = "ApiUser")]

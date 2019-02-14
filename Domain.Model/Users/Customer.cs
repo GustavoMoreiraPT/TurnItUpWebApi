@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Domain.Model.Users
 {
-	public class Customer
+	public class Customer 
 	{
 		public int Id { get; set; }
 
@@ -29,6 +29,11 @@ namespace Domain.Model.Users
 		public bool HasValidRefreshToken(string refreshToken)
 		{
 			return _refreshTokens.Any(rt => rt.Token == refreshToken && rt.Active);
+		}
+
+		public void RemoveRefreshToken(string refreshToken)
+		{
+			_refreshTokens.Remove(_refreshTokens.First(t => t.Token == refreshToken));
 		}
 	}
 }

@@ -4,8 +4,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Application.Dto.Users;
 using Application.Services.Interfaces;
+using Application.Services.Specifications;
 using AutoMapper;
 using Data.Repository.Configuration;
+using Domain.Core.RepositoryInterfaces;
 using Domain.Model;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting;
@@ -26,6 +28,7 @@ namespace Application.Services.Implementations
 		private readonly JwtIssuerOptions jwtOptions;
 		private readonly ITokenFactory tokenFactory;
 		private readonly IJwtTokenValidator jwtTokenValidator;
+		private readonly IRepository<Customer> repository;
 
 		public UsersService(
 			ApplicationDbContext identityDbContext,
@@ -34,7 +37,8 @@ namespace Application.Services.Implementations
 			IJwtFactory jwtFactory,
 			IOptions<JwtIssuerOptions> jwtOptions,
 			ITokenFactory tokenFactory,
-			IJwtTokenValidator jwtTokenValidator
+			IJwtTokenValidator jwtTokenValidator,
+			IRepository<Customer> repository
 			)
 		{
 			this.identityDbContext = identityDbContext;
@@ -44,6 +48,7 @@ namespace Application.Services.Implementations
 			this.jwtOptions = jwtOptions.Value;
 			this.tokenFactory = tokenFactory;
 			this.jwtTokenValidator = jwtTokenValidator;
+			this.repository = repository;
 		}
 
 		public async Task<string> AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
@@ -173,7 +178,6 @@ namespace Application.Services.Implementations
 		}
 
 		//FINISH THIS
-
 		public async Task<LoginResponse> RefreshToken(ExchangeRefreshTokenRequest refreshTokenRequest)
 		{
 			var claimPrincipal =
@@ -183,6 +187,7 @@ namespace Application.Services.Implementations
 			if (claimPrincipal != null)
 			{
 				var id = claimPrincipal.Claims.First(c => c.Type == "id");
+				var user = await this.repository.GetSingleBySpec(new UserSpecification(id.Value));
 			}
 
 			return null;
