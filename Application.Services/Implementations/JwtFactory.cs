@@ -7,20 +7,51 @@ using System.Threading.Tasks;
 using System.Security.Principal;
 using Application.Services.Interfaces;
 using Application.Dto.Users;
+using Application.Services.Handlers;
 
 namespace Application.Services.Implementations
 {
     public class JwtFactory : IJwtFactory
     {
         private readonly JwtIssuerOptions _jwtOptions;
+        private readonly IJwtTokenHandler jwtHandler;
 
-        public JwtFactory(IOptions<JwtIssuerOptions> jwtOptions)
+        public JwtFactory(
+	        IOptions<JwtIssuerOptions> jwtOptions,
+			IJwtTokenHandler jwtHandler
+	        )
         {
             _jwtOptions = jwtOptions.Value;
+            this.jwtHandler = jwtHandler;
             ThrowIfInvalidOptions(_jwtOptions);
         }
 
-        public async Task<AccessToken> GenerateEncodedToken(string userName, ClaimsIdentity identity)
+        public async Task<AccessToken> GenerateEncodedToken(string id, string userName)
+        {
+	        var identity = GenerateClaimsIdentity(id, userName);
+
+	        var claims = new[]
+	        {
+		        new Claim(JwtRegisteredClaimNames.Sub, userName),
+		        new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
+		        new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
+		        identity.FindFirst(Infrastructure.CrossCutting.Helpers.Constants.Strings.JwtClaimIdentifiers.Rol),
+		        identity.FindFirst(Infrastructure.CrossCutting.Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
+	        };
+
+	        // Create the JWT security token and encode it.
+	        var jwt = new JwtSecurityToken(
+		        _jwtOptions.Issuer,
+		        _jwtOptions.Audience,
+		        claims,
+		        _jwtOptions.NotBefore,
+		        _jwtOptions.Expiration,
+		        _jwtOptions.SigningCredentials);
+
+	        return new AccessToken(this.jwtHandler.WriteToken(jwt), (int)_jwtOptions.ValidFor.TotalSeconds);
+        }
+
+		public async Task<AccessToken> GenerateEncodedToken(string userName, ClaimsIdentity identity)
         {
             var claims = new[]
          {

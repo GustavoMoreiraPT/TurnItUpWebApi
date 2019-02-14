@@ -188,6 +188,17 @@ namespace Application.Services.Implementations
 			{
 				var id = claimPrincipal.Claims.First(c => c.Type == "id");
 				var user = await this.repository.GetSingleBySpec(new UserSpecification(id.Value));
+
+				if (user.HasValidRefreshToken(refreshTokenRequest.RefreshToken))
+				{
+					var jwtToken = await this.jwtFactory.GenerateEncodedToken(user.IdentityId, user.Identity.Email);
+					var refreshToken = this.tokenFactory.GenerateToken();
+					user.RemoveRefreshToken(refreshTokenRequest.RefreshToken); // delete the token we've exchanged
+					//user.AddRefreshToken(refreshToken); // add the new one
+					await this.repository.Update(user);
+					//outputPort.Handle(new ExchangeRefreshTokenResponse(jwtToken, refreshToken, true));
+					return null;
+				}
 			}
 
 			return null;
