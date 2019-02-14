@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Infrastructure.CrossCutting.Helpers;
+﻿using Infrastructure.CrossCutting.Helpers;
 
 namespace Application.Dto.Users
 {

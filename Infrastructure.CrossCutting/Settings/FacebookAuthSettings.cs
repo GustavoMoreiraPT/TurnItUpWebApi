@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Infrastructure.CrossCutting.Settings
+﻿namespace Infrastructure.CrossCutting.Settings
 {
     public class FacebookAuthSettings
     {

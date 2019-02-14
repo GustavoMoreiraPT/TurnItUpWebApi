@@ -1,8 +1,4 @@
-﻿using Application.Requests.Accounts;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Application.Dto.Users;
 using Application.Services.Interfaces;

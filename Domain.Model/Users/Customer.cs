@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Domain.Model.Users
 {
@@ -19,18 +17,18 @@ namespace Domain.Model.Users
 
 		public string Gender { get; set; }
 
-        private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
+		private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
 
-        public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
+		public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
-        public void AddRefreshToken(RefreshToken token)
-        {
-            _refreshTokens.Add(token);
-        }
+		public void AddRefreshToken(RefreshToken token)
+		{
+			_refreshTokens.Add(token);
+		}
 
-        public bool HasValidRefreshToken(string refreshToken)
-        {
-	        return _refreshTokens.Any(rt => rt.Token == refreshToken && rt.Active);
-        }
+		public bool HasValidRefreshToken(string refreshToken)
+		{
+			return _refreshTokens.Any(rt => rt.Token == refreshToken && rt.Active);
+		}
 	}
 }

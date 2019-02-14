@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-using Application.Services.Handlers;
+﻿using Application.Services.Handlers;
 using Application.Services.Implementations;
 using Application.Services.Interfaces;
-using AutoMapper;
-using Data.Repository.Configuration;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting;
 using Microsoft.AspNetCore.Identity;
@@ -23,10 +17,10 @@ namespace Application.Services.Configuration
 			services.AddScoped<UserManager<AppUser>>();
 
 			services.AddScoped<IUsersService, UsersService>();
-            services.AddScoped<IJwtFactory, JwtFactory>();
-            services.AddScoped<ITokenFactory, TokenFactory>();
-            services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
-            services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
+			services.AddScoped<IJwtFactory, JwtFactory>();
+			services.AddScoped<ITokenFactory, TokenFactory>();
+			services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
+			services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
 
 			return services;
 		}

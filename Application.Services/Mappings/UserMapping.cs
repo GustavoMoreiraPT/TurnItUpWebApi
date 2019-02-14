@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Application.Dto.Users;
+﻿using Application.Dto.Users;
 using AutoMapper;
 using Domain.Model.Users;
 

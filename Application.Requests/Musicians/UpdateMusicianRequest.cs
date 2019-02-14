@@ -1,7 +1,4 @@
 ﻿using Application.Requests.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Requests.Musicians
 {

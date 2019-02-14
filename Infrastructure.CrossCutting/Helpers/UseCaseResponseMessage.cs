@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Infrastructure.CrossCutting.Helpers
+﻿namespace Infrastructure.CrossCutting.Helpers
 {
     public abstract class UseCaseResponseMessage
     {

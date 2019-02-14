@@ -9,10 +9,8 @@ using Data.Repository.Configuration;
 using Domain.Model;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting;
-using Infrastructure.CrossCutting.Helpers;
 using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
@@ -23,61 +21,61 @@ namespace Application.Services.Implementations
 	{
 		private readonly ApplicationDbContext identityDbContext;
 		private readonly UserManager<AppUser> userManager;
-        private readonly IJwtFactory jwtFactory;
+		private readonly IJwtFactory jwtFactory;
 		private readonly IMapper mapper;
-        private readonly JwtIssuerOptions jwtOptions;
-        private readonly ITokenFactory tokenFactory;
-        private readonly IJwtTokenValidator jwtTokenValidator;
+		private readonly JwtIssuerOptions jwtOptions;
+		private readonly ITokenFactory tokenFactory;
+		private readonly IJwtTokenValidator jwtTokenValidator;
 
-        public UsersService(
-            ApplicationDbContext identityDbContext,
-            UserManager<AppUser> userManager,
-            IMapper mapper,
-            IJwtFactory jwtFactory,
-            IOptions<JwtIssuerOptions> jwtOptions,
-            ITokenFactory tokenFactory,
-            IJwtTokenValidator jwtTokenValidator
-            )
+		public UsersService(
+			ApplicationDbContext identityDbContext,
+			UserManager<AppUser> userManager,
+			IMapper mapper,
+			IJwtFactory jwtFactory,
+			IOptions<JwtIssuerOptions> jwtOptions,
+			ITokenFactory tokenFactory,
+			IJwtTokenValidator jwtTokenValidator
+			)
 		{
 			this.identityDbContext = identityDbContext;
 			this.userManager = userManager;
 			this.mapper = mapper;
-            this.jwtFactory = jwtFactory;
-            this.jwtOptions = jwtOptions.Value;
-            this.tokenFactory = tokenFactory;
-            this.jwtTokenValidator = jwtTokenValidator;
+			this.jwtFactory = jwtFactory;
+			this.jwtOptions = jwtOptions.Value;
+			this.tokenFactory = tokenFactory;
+			this.jwtTokenValidator = jwtTokenValidator;
 		}
 
-        public async Task<string> AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
-        {
-            var user = await this.userManager.FindByEmailAsync(userName).ConfigureAwait(false);
+		public async Task<string> AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
+		{
+			var user = await this.userManager.FindByEmailAsync(userName).ConfigureAwait(false);
 
-            if (user == null)
-            {
-                return string.Empty;
-            }
+			if (user == null)
+			{
+				return string.Empty;
+			}
 
-            var customerUser = this.identityDbContext
-                .Customers
-                .FirstOrDefault(x => x.IdentityId == user.Id);
+			var customerUser = this.identityDbContext
+				.Customers
+				.FirstOrDefault(x => x.IdentityId == user.Id);
 
-            if (customerUser == null)
-            {
-                return string.Empty;
-            }
+			if (customerUser == null)
+			{
+				return string.Empty;
+			}
 
-            var refreshToken = this.tokenFactory.GenerateToken();
+			var refreshToken = this.tokenFactory.GenerateToken();
 
-            customerUser.AddRefreshToken(new RefreshToken(token, DateTime.UtcNow.AddDays(daysToExpire), userName, remoteIpAddress));
+			customerUser.AddRefreshToken(new RefreshToken(token, DateTime.UtcNow.AddDays(daysToExpire), userName, remoteIpAddress));
 
-            this.identityDbContext.Customers.Update(customerUser);
+			this.identityDbContext.Customers.Update(customerUser);
 
-            await this.identityDbContext.SaveChangesAsync();
+			await this.identityDbContext.SaveChangesAsync();
 
-            return refreshToken;
-        }
+			return refreshToken;
+		}
 
-        public async Task<IdentityResult> CreateUserAsync(RegisterDto user, string password)
+		public async Task<IdentityResult> CreateUserAsync(RegisterDto user, string password)
 		{
 			var userIdentity = this.mapper.Map<AppUser>(user);
 
@@ -94,85 +92,85 @@ namespace Application.Services.Implementations
 			return result;
 		}
 
-        public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
-        {
-            var result =  await this.userManager.CreateAsync(user, password).ConfigureAwait(false);
+		public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
+		{
+			var result =  await this.userManager.CreateAsync(user, password).ConfigureAwait(false);
 
-            if (!result.Succeeded) return null;
+			if (!result.Succeeded) return null;
 
-            await this.identityDbContext.Customers
-                .AddAsync(new Customer
-                {
-                    IdentityId = user.Id, Location = "",
-                    Locale = facebookUserData.Locale,
-                    Gender = facebookUserData.Gender
-                });
+			await this.identityDbContext.Customers
+				.AddAsync(new Customer
+				{
+					IdentityId = user.Id, Location = "",
+					Locale = facebookUserData.Locale,
+					Gender = facebookUserData.Gender
+				});
 
-            await this.identityDbContext.SaveChangesAsync();
+			await this.identityDbContext.SaveChangesAsync();
 
-            return result;
-        }
+			return result;
+		}
 
-        public async Task<AppUser> FindByEmailAsync(string email)
-        {
-            return await this.userManager.FindByEmailAsync(email).ConfigureAwait(false);
-        }
+		public async Task<AppUser> FindByEmailAsync(string email)
+		{
+			return await this.userManager.FindByEmailAsync(email).ConfigureAwait(false);
+		}
 
-        public async Task<AppUser> FindByNameAsync(string email)
-        {
-            return await this.FindByNameAsync(email).ConfigureAwait(false);
-        }
+		public async Task<AppUser> FindByNameAsync(string email)
+		{
+			return await this.FindByNameAsync(email).ConfigureAwait(false);
+		}
 
-        public ClaimsIdentity GenerateClaimsIdentity(string userName, string id)
-        {
-            return this.jwtFactory.GenerateClaimsIdentity(userName, id);
-        }
+		public ClaimsIdentity GenerateClaimsIdentity(string userName, string id)
+		{
+			return this.jwtFactory.GenerateClaimsIdentity(userName, id);
+		}
 
-        public async Task<LoginResponse> GenerateToken(
-            ClaimsIdentity identity,
-            string userName,
-            string password,
-            string remoteIpAddress,
-            JsonSerializerSettings serializerSettings
-            )
-        {
-            var response = new
-            {
-                id = identity.Claims.Single(c => c.Type == "id").Value,
-                auth_token = await this.jwtFactory.GenerateEncodedToken(userName, identity),
-                expires_in = (int)jwtOptions.ValidFor.TotalSeconds
-            };
+		public async Task<LoginResponse> GenerateToken(
+			ClaimsIdentity identity,
+			string userName,
+			string password,
+			string remoteIpAddress,
+			JsonSerializerSettings serializerSettings
+			)
+		{
+			var response = new
+			{
+				id = identity.Claims.Single(c => c.Type == "id").Value,
+				auth_token = await this.jwtFactory.GenerateEncodedToken(userName, identity),
+				expires_in = (int)jwtOptions.ValidFor.TotalSeconds
+			};
 
-            var accessToken = await 
-                this.jwtFactory
-                .GenerateEncodedToken(userName, identity).ConfigureAwait(false);
+			var accessToken = await 
+				this.jwtFactory
+				.GenerateEncodedToken(userName, identity).ConfigureAwait(false);
 
-            var refreshToken = await
-                this.AddRefreshToken(accessToken.Token, userName, remoteIpAddress)
-                .ConfigureAwait(false);
+			var refreshToken = await
+				this.AddRefreshToken(accessToken.Token, userName, remoteIpAddress)
+				.ConfigureAwait(false);
 
-            return new LoginResponse(accessToken, refreshToken, true);
-        }
+			return new LoginResponse(accessToken, refreshToken, true);
+		}
 
-        public async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
-        {
-            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
-                return await Task.FromResult<ClaimsIdentity>(null);
+		public async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
+		{
+			if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+				return await Task.FromResult<ClaimsIdentity>(null);
 
-            // get the user to verifty
-            var userToVerify = await this.userManager.FindByNameAsync(userName);
+			// get the user to verifty
+			var userToVerify = await this.userManager.FindByNameAsync(userName);
 
-            if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
+			if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
 
-            // check the credentials
-            if (await this.userManager.CheckPasswordAsync(userToVerify, password))
-            {
-                return await Task.FromResult(this.jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
-            }
+			// check the credentials
+			if (await this.userManager.CheckPasswordAsync(userToVerify, password))
+			{
+				return await Task.FromResult(this.jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
+			}
 
-            // Credentials are invalid, or account doesn't exist
-            return await Task.FromResult<ClaimsIdentity>(null);
-        }
+			// Credentials are invalid, or account doesn't exist
+			return await Task.FromResult<ClaimsIdentity>(null);
+		}
 
 		//FINISH THIS
 
