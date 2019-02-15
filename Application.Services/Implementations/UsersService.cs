@@ -182,7 +182,7 @@ namespace Application.Services.Implementations
 		{
 			var claimPrincipal =
 				this.jwtTokenValidator.GetPrincipalFromToken(refreshTokenRequest.AccessToken,
-					refreshTokenRequest.SigningKey);
+					"ArminVanBuurenMottyzeRuleTheWorldForever2010");
 
 			if (claimPrincipal != null)
 			{
