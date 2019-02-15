@@ -6,11 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services.Implementations
 {
-	internal sealed class JwtTokenValidator : IJwtTokenValidator
+	public sealed class JwtTokenValidator : IJwtTokenValidator
 	{
 		private readonly IJwtTokenHandler jwtTokenHandler;
 
-		internal JwtTokenValidator(IJwtTokenHandler jwtTokenHandler)
+		public JwtTokenValidator(IJwtTokenHandler jwtTokenHandler)
 		{
 			this.jwtTokenHandler = jwtTokenHandler;
 		}

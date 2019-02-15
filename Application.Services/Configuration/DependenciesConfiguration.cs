@@ -5,6 +5,7 @@ using Data.Repository.ImplementedRepositories;
 using Domain.Core.RepositoryInterfaces;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting;
+using Infrastructure.CrossCutting.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,9 @@ namespace Application.Services.Configuration
 		public static IServiceCollection ConfigureDependencies(this IServiceCollection services,
 			IConfiguration configuration)
 		{
+			//Infra
+			services.AddSingleton<ILogger, Logger>();
+
 			services.AddScoped<UserManager<AppUser>>();
 
 			services.AddScoped<IUsersService, UsersService>();

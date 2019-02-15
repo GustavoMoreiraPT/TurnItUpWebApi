@@ -194,10 +194,10 @@ namespace Application.Services.Implementations
 					var jwtToken = await this.jwtFactory.GenerateEncodedToken(user.IdentityId, user.Identity.Email);
 					var refreshToken = this.tokenFactory.GenerateToken();
 					user.RemoveRefreshToken(refreshTokenRequest.RefreshToken); // delete the token we've exchanged
-					//user.AddRefreshToken(refreshToken); // add the new one
+					user.AddRefreshToken(new RefreshToken(refreshToken, DateTime.UtcNow.AddDays(5), user.Identity.Email, string.Empty)); // add the new one
 					await this.repository.Update(user);
 					//outputPort.Handle(new ExchangeRefreshTokenResponse(jwtToken, refreshToken, true));
-					return null;
+					return new LoginResponse(jwtToken, refreshToken, true);
 				}
 			}
 

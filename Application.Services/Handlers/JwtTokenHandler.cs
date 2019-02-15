@@ -1,17 +1,17 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.Extensions.Logging;
+using Infrastructure.CrossCutting.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services.Handlers
 {
-	internal sealed class JwtTokenHandler : IJwtTokenHandler
+	public sealed class JwtTokenHandler : IJwtTokenHandler
 	{
 		private readonly JwtSecurityTokenHandler jwtSecurityTokenHandler;
 		private readonly ILogger logger;
 
-		internal JwtTokenHandler(ILogger logger)
+		public JwtTokenHandler(ILogger logger)
 		{
 			if (this.jwtSecurityTokenHandler == null)
 			{

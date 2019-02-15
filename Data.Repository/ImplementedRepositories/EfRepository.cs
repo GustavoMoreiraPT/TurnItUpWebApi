@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Repository.Configuration;
 using Domain.Core;
 using Domain.Core.RepositoryInterfaces;
 using Domain.Model.Users;
@@ -14,9 +15,9 @@ namespace Data.Repository.ImplementedRepositories
 	//THIS IS A TEMPORARY SOLUTION AND IT SHOULD BE MOVED TO A BASE ENTITY IN REGARDS 
 	public class EfRepository<T> : IRepository<T> where T : Customer
 	{
-		protected readonly IdentityDbContext _appDbContext;
+		protected readonly ApplicationDbContext _appDbContext;
 
-		protected EfRepository(IdentityDbContext appDbContext)
+		public EfRepository(ApplicationDbContext appDbContext)
 		{
 			_appDbContext = appDbContext;
 		}
