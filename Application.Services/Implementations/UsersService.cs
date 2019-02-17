@@ -71,7 +71,7 @@ namespace Application.Services.Implementations
 
 			var refreshToken = this.tokenFactory.GenerateToken();
 
-			customerUser.AddRefreshToken(new RefreshToken(token, DateTime.UtcNow.AddDays(daysToExpire), userName, remoteIpAddress));
+			customerUser.AddRefreshToken(new RefreshToken(refreshToken, DateTime.UtcNow.AddDays(daysToExpire), userName, remoteIpAddress));
 
 			this.identityDbContext.Customers.Update(customerUser);
 
@@ -189,9 +189,11 @@ namespace Application.Services.Implementations
 				var id = claimPrincipal.Claims.First(c => c.Type == "id");
 				var user = await this.repository.GetSingleBySpec(new UserSpecification(id.Value));
 
+                var appUser = await this.userManager.FindByIdAsync(user.IdentityId).ConfigureAwait(false);
+
 				if (user.HasValidRefreshToken(refreshTokenRequest.RefreshToken))
 				{
-					var jwtToken = await this.jwtFactory.GenerateEncodedToken(user.IdentityId, user.Identity.Email);
+					var jwtToken = await this.jwtFactory.GenerateEncodedToken(user.IdentityId, appUser.Email);
 					var refreshToken = this.tokenFactory.GenerateToken();
 					user.RemoveRefreshToken(refreshTokenRequest.RefreshToken); // delete the token we've exchanged
 					user.AddRefreshToken(new RefreshToken(refreshToken, DateTime.UtcNow.AddDays(5), user.Identity.Email, string.Empty)); // add the new one

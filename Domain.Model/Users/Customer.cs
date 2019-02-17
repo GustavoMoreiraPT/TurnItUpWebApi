@@ -19,7 +19,7 @@ namespace Domain.Model.Users
 
 		private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
 
-		public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
+		public List<RefreshToken> RefreshTokens => _refreshTokens;
 
 		public void AddRefreshToken(RefreshToken token)
 		{
