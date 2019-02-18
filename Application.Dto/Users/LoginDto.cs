@@ -3,13 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.Dto.Users
 {
-    [Validator(typeof(LoginDto))]
-    public class LoginDto
+	[Validator(typeof(LoginDto))]
+	public class LoginDto
 	{
 		[Required]
 		public string UserName { get; set; }
 
 		[Required]
 		public string Password { get; set; }
+
+		public string RemoteIpAddress { get; set; }
 	}
 }

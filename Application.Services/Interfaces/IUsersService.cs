@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Application.Dto.Users;
 using Domain.Model.Users;
@@ -19,12 +16,31 @@ namespace Application.Services.Interfaces
 
         ClaimsIdentity GenerateClaimsIdentity(string userName, string id);
 
-        Task<string> GenerateToken(ClaimsIdentity identity, string userName, JsonSerializerSettings serializerSettings);
+        Task<LoginResponse> GenerateToken(
+            ClaimsIdentity identity,
+            string userName,
+            string password,
+            string remoteIpAddress,
+            JsonSerializerSettings serializerSettings
+            );
 
         Task<AppUser> FindByEmailAsync(string email);
 
         Task<AppUser> FindByNameAsync(string email);
 
-        Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password);
+        Task<IdentityResult> CreateUserAsync(
+            AppUser user,
+            FacebookUserData facebookUserData,
+            string password
+            );
+
+        Task<string> AddRefreshToken(
+            string token,
+            string userName,
+            string remoteIpAddress,
+            double daysToExpire = 5
+            );
+
+        Task<LoginResponse> RefreshToken(ExchangeRefreshTokenRequest refreshTokenRequest);
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Application.Requests.Enums
+﻿namespace Application.Requests.Enums
 {
     public enum AccountType
     {

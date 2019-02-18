@@ -1,8 +1,4 @@
-﻿using Application.Requests.Accounts;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Application.Dto.Users;
 using Application.Services.Interfaces;
@@ -56,8 +52,28 @@ namespace TurnItUpWebApi.Controllers
                 return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
             }
 
-            var jwt = await this.userService.GenerateToken(identity, loginDto.UserName, new JsonSerializerSettings { Formatting = Formatting.Indented });
-            return new OkObjectResult(jwt);
+            var loginResponse = await this.userService
+                .GenerateToken(
+                identity,
+                loginDto.UserName,
+                loginDto.Password,
+                loginDto.RemoteIpAddress,
+                new JsonSerializerSettings { Formatting = Formatting.Indented }
+                );
+
+            return new OkObjectResult(loginResponse);
+        }
+
+        // POST api/auth/refreshtoken
+        [HttpPost("refreshtoken")]
+        public async Task<ActionResult> RefreshToken([FromBody] ExchangeRefreshTokenRequest request)
+        {
+	        if (!ModelState.IsValid)
+	        {
+		        return BadRequest(ModelState);
+	        }
+
+	        return Ok(await this.userService.RefreshToken(request).ConfigureAwait(false));
         }
 
 		[HttpGet]

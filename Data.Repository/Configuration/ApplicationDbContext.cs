@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Domain.Model;
 using Domain.Model.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +8,8 @@ namespace Data.Repository.Configuration
 	public class ApplicationDbContext : IdentityDbContext
 	{
 		public DbSet<Customer> Customers { get; set; }
+
+		public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
@@ -28,13 +28,13 @@ namespace Data.Repository.Configuration
 
 			return $"Server=localhost;" +
 
-			       $"database={databaseName};" +
+				   $"database={databaseName};" +
 
-			       $"uid={databaseUser};" +
+				   $"uid={databaseUser};" +
 
-			       $"pwd={databasePass};" +
+				   $"pwd={databasePass};" +
 
-			       $"pooling=true;";
+				   $"pooling=true;";
 		}
 	}
 }

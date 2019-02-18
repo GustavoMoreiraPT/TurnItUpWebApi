@@ -5,8 +5,6 @@ using Infrastructure.CrossCutting.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Infrastructure.CrossCutting.Settings;
@@ -76,7 +74,7 @@ namespace TurnItUpWebApi.Controllers
             }
 
             var claims = await this.userService.GetClaimsIdentity(localUser.UserName, localUser.Id);
-            var jwt = await this.userService.GenerateToken(claims, localUser.UserName, new JsonSerializerSettings { Formatting = Formatting.Indented });
+            var jwt = await this.userService.GenerateToken(claims, localUser.UserName, localUser.PasswordHash, string.Empty, new JsonSerializerSettings { Formatting = Formatting.Indented });
 
             return new OkObjectResult(jwt);
         }

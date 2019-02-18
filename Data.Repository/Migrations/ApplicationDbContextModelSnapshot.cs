@@ -17,6 +17,28 @@ namespace Data.Repository.Migrations
                 .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("Domain.Model.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("CustomerId");
+
+                    b.Property<DateTime>("Expires");
+
+                    b.Property<string>("RemoteIpAddress");
+
+                    b.Property<string>("Token");
+
+                    b.Property<string>("UserEmail");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Domain.Model.Users.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -212,6 +234,13 @@ namespace Data.Repository.Migrations
                     b.Property<string>("PictureUrl");
 
                     b.HasDiscriminator().HasValue("AppUser");
+                });
+
+            modelBuilder.Entity("Domain.Model.RefreshToken", b =>
+                {
+                    b.HasOne("Domain.Model.Users.Customer")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("CustomerId");
                 });
 
             modelBuilder.Entity("Domain.Model.Users.Customer", b =>
