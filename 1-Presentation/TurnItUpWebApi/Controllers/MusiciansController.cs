@@ -3,6 +3,7 @@ using Application.Requests.Musicians;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
 namespace TurnItUpWebApi.Controllers
@@ -10,14 +11,16 @@ namespace TurnItUpWebApi.Controllers
 	[Route("v1/musicians")]
 	public class MusiciansController : Controller
 	{
-		public MusiciansController()
-		{
+		private readonly IMusicianService musicianService;
 
+		public MusiciansController(IMusicianService musicianService)
+		{
+			this.musicianService = musicianService;
 		}
 
 		[HttpGet]
 		[Route("{id}")]
-		[ProducesResponseType(200, Type = typeof(Musician))]
+		[ProducesResponseType(200, Type = typeof(MusicianAboutDto))]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(401)]
 		[ProducesResponseType(403)]
@@ -28,9 +31,27 @@ namespace TurnItUpWebApi.Controllers
 			throw new NotImplementedException();
 		}
 
+		[HttpGet]
+		[Route("{id}/about")]
+		[ProducesResponseType(200, Type = typeof(MusicianAboutDto))]
+		[ProducesResponseType(400)]
+		[ProducesResponseType(401)]
+		[ProducesResponseType(403)]
+		[ProducesResponseType(404)]
+		[ProducesResponseType(500)]
+		public async Task<IActionResult> GetMusicianDetailsAsync([FromRoute] int id)
+		{
+			if (id < 1)
+			{
+				return this.BadRequest("Musician ID must be greater than 0");
+			}
+
+			return this.Ok(await this.musicianService.GetMusicianDetails(id).ConfigureAwait(false));
+		}
+
 		[HttpPut]
 		[Route("{id}")]
-		[ProducesResponseType(200, Type = typeof(Musician))]
+		[ProducesResponseType(200)]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(401)]
 		[ProducesResponseType(403)]
