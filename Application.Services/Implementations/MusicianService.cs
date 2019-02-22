@@ -16,7 +16,7 @@ namespace Application.Services.Implementations
 			this.context = context;
 		}
 
-		public async Task<MusicianAboutDto> CreateMusicianDetails(MusicianAboutDto musicianAboutDto)
+		public async Task<MusicianAboutDto> CreateOrUpdateMusicianDetails(MusicianAboutDto musicianAboutDto)
 		{
 			var musician = await this.context.Musicians.FindAsync(musicianAboutDto.Id).ConfigureAwait(false);
 

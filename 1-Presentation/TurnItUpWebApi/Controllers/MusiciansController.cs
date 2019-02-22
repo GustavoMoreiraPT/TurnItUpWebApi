@@ -19,16 +19,28 @@ namespace TurnItUpWebApi.Controllers
 		}
 
 		[HttpGet]
-		[Route("{id}")]
+		[Route("{id}/about")]
 		[ProducesResponseType(200, Type = typeof(MusicianAboutDto))]
 		[ProducesResponseType(400)]
 		[ProducesResponseType(401)]
 		[ProducesResponseType(403)]
 		[ProducesResponseType(404)]
 		[ProducesResponseType(500)]
-		public async Task<IActionResult> GetMusicianAsync([FromRoute] int id)
+		public async Task<IActionResult> CreateOrUpdateMusicianDetailsAsync([FromRoute] int id, [FromBody]MusicianAboutDto details)
 		{
-			throw new NotImplementedException();
+			if (id < 1)
+			{
+				return this.BadRequest("Musician ID must be greater than 0");
+			}
+
+			if (id != details.Id)
+			{
+				return this.BadRequest("Musician ID from body and from Route do not correspond. Please fix it and try again");
+			}
+
+			var accesToken = Request.Headers["Authorization"];
+
+			return this.Ok(await this.musicianService.CreateOrUpdateMusicianDetails(details).ConfigureAwait(false));
 		}
 
 		[HttpGet]

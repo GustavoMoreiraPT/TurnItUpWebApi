@@ -10,6 +10,6 @@ namespace Application.Services.Interfaces
 	{
 		Task<MusicianAboutDto> GetMusicianDetails(int musicianId);
 
-		Task<MusicianAboutDto> CreateMusicianDetails(MusicianAboutDto musicianAboutDto);
+		Task<MusicianAboutDto> CreateOrUpdateMusicianDetails(MusicianAboutDto musicianAboutDto);
 	}
 }

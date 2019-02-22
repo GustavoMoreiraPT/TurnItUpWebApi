@@ -177,6 +177,11 @@ namespace Application.Services.Implementations
 			return await Task.FromResult<ClaimsIdentity>(null);
 		}
 
+		public Task<int> GetCustomerIdByToken(string token)
+		{
+			throw new NotImplementedException();
+		}
+
 		//FINISH THIS
 		public async Task<LoginResponse> RefreshToken(ExchangeRefreshTokenRequest refreshTokenRequest)
 		{
@@ -189,7 +194,7 @@ namespace Application.Services.Implementations
 				var id = claimPrincipal.Claims.First(c => c.Type == "id");
 				var user = await this.repository.GetSingleBySpec(new UserSpecification(id.Value));
 
-                var appUser = await this.userManager.FindByIdAsync(user.IdentityId).ConfigureAwait(false);
+				var appUser = await this.userManager.FindByIdAsync(user.IdentityId).ConfigureAwait(false);
 
 				if (user.HasValidRefreshToken(refreshTokenRequest.RefreshToken))
 				{
