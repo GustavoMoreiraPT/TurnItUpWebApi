@@ -9,5 +9,7 @@ namespace Application.Services.Interfaces
 	public interface IMusicianService
 	{
 		Task<MusicianAboutDto> GetMusicianDetails(int musicianId);
+
+		Task<MusicianAboutDto> CreateMusicianDetails(MusicianAboutDto musicianAboutDto);
 	}
 }

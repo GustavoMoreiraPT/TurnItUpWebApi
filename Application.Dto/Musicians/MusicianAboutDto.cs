@@ -12,9 +12,11 @@ namespace Application.Dto.Musicians
 
 		public string FirstName { get; set; }
 
+		public int Age { get; set; }
+
 		public decimal Price { get; set; }
 
-		public List<string> Genders { get; set; }
+		public List<GenderDto> Genders { get; set; }
 
 		public string Country { get; set; }
 

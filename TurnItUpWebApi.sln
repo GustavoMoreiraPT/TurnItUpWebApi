@@ -51,6 +51,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Gateway", "Data.Gatewa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.CrossCutting", "Infrastructure.CrossCutting\Infrastructure.CrossCutting.csproj", "{317B445E-7391-4EF9-9575-34BB1FE03B99}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{7D50B50F-726C-488E-8858-9C28E3840D0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4094D0FB-77D3-47F6-9318-25557BCB341B}"
+	ProjectSection(SolutionItems) = preProject
+		01- ListOfCountries.sql = 01- ListOfCountries.sql
+		02 - Add Cities from Portugal.sql = 02 - Add Cities from Portugal.sql
+		03- Portugal locations.sql = 03- Portugal locations.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +137,7 @@ Global
 		{547C6405-E398-4D53-B554-B1D24546DAFA} = {6EF67BED-12F3-461E-B09A-37F418E739E7}
 		{A40D9B51-DCBD-43D7-964A-0FCC06DD3621} = {6EF67BED-12F3-461E-B09A-37F418E739E7}
 		{317B445E-7391-4EF9-9575-34BB1FE03B99} = {CC560F2C-D052-4AE7-954A-F2A55EAC243A}
+		{4094D0FB-77D3-47F6-9318-25557BCB341B} = {7D50B50F-726C-488E-8858-9C28E3840D0F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4455D8C3-23AE-4639-A733-262C9BCFE3D2}

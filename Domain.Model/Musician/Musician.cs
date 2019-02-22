@@ -37,5 +37,10 @@ namespace Domain.Model.Musician
 		{
 			throw new NotImplementedException();
 		}
+
+		public void ClearGenders()
+		{
+			this.Genders.Clear();
+		}
 	}
 }

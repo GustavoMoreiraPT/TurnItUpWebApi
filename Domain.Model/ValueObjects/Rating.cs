@@ -8,7 +8,7 @@ namespace Domain.Model.ValueObjects
 	{
 		public int Id { get; set; }
 
-		private decimal Value;
+		public decimal Value { get; set; }
 
 		public void SetValue(decimal value)
 		{
