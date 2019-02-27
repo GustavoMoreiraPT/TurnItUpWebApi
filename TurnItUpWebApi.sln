@@ -58,6 +58,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4094
 		01- ListOfCountries.sql = 01- ListOfCountries.sql
 		02 - Add Cities from Portugal.sql = 02 - Add Cities from Portugal.sql
 		03- Portugal locations.sql = 03- Portugal locations.sql
+		04-Initial prices from 1 to 50.sql = 04-Initial prices from 1 to 50.sql
+		05- Initial ages from 5 to 99.sql = 05- Initial ages from 5 to 99.sql
 	EndProjectSection
 EndProject
 Global

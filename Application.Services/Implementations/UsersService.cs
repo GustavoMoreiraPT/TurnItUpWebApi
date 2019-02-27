@@ -13,6 +13,7 @@ using Domain.Model.Users;
 using Infrastructure.CrossCutting;
 using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
@@ -91,10 +92,17 @@ namespace Application.Services.Implementations
 				return null;
 			}
 
-			await this.identityDbContext.Customers.AddAsync(new Customer{ IdentityId = userIdentity.Id, Location = user.Location});
+			var customer = await this.identityDbContext.Customers.AddAsync(new Customer{ IdentityId = userIdentity.Id, Location = user.Location});
+
+			await this.CreateAccountType(customer);
 			await this.identityDbContext.SaveChangesAsync();
 
 			return result;
+		}
+
+		private Task CreateAccountType(EntityEntry<Customer> customer)
+		{
+			throw new NotImplementedException();
 		}
 
 		public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
