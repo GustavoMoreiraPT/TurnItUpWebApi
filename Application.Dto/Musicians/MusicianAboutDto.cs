@@ -12,6 +12,8 @@ namespace Application.Dto.Musicians
 
 		public string FirstName { get; set; }
 
+		public string LastName { get; set; }
+
 		public int Age { get; set; }
 
 		public decimal Price { get; set; }

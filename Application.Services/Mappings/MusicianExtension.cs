@@ -36,17 +36,36 @@ namespace Application.Services.Mappings
 		{
 			musician.Price = AdaptPrice(musician.Price, details.Price);
 			musician.Age = AdaptAge(musician.Age, details.Age);
+			musician.Rating = AdaptRating(musician.Rating, details.Rating);
 			musician.ArtisticName = details.ArtisticName;
 			musician.Details = details.Details;
-			musician.FirstName = musician.FirstName;
-			musician.LastName = musician.LastName;
+			musician.FirstName = details.FirstName;
+			musician.LastName = details.LastName;
 			musician.Genders = AdaptGenders(musician.Genders, details.Genders);
 
 			return musician;
 		}
 
+		private static Rating AdaptRating(Rating ratingToUpdate, decimal currentRating)
+		{
+			if (ratingToUpdate == null)
+			{
+				ratingToUpdate = new Rating();
+				ratingToUpdate.Value = currentRating;
+				return ratingToUpdate;
+			}
+
+			ratingToUpdate.Value = currentRating;
+			return ratingToUpdate;
+		}
+
 		private static List<Gender> AdaptGenders(List<Gender> gendersToUpdate, List<GenderDto> currentGenders)
 		{
+			if (gendersToUpdate == null)
+			{
+				gendersToUpdate = new List<Gender>();
+			}
+
 			gendersToUpdate.Clear();
 
 			foreach (var item in currentGenders)
@@ -59,12 +78,25 @@ namespace Application.Services.Mappings
 
 		private static Age AdaptAge(Age ageToUpdate, int currentAge)
 		{
+			if (ageToUpdate == null)
+			{
+				ageToUpdate = new Age();
+				ageToUpdate.Value = currentAge;
+				return ageToUpdate;
+			}
+
 			ageToUpdate.SetAge(currentAge);
 			return ageToUpdate;
 		}
 
 		private static Price AdaptPrice(Price priceToUpdate, decimal currentPrice)
 		{
+			if (priceToUpdate == null)
+			{
+				priceToUpdate = new Price(currentPrice);
+				return priceToUpdate;
+			}
+
 			priceToUpdate.SetPrice(currentPrice);
 			return priceToUpdate;
 		}

@@ -18,7 +18,7 @@ namespace TurnItUpWebApi.Controllers
 			this.musicianService = musicianService;
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route("{id}/about")]
 		[ProducesResponseType(200, Type = typeof(MusicianAboutDto))]
 		[ProducesResponseType(400)]
