@@ -5,6 +5,9 @@ using System;
 using System.Threading.Tasks;
 using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -38,9 +41,15 @@ namespace TurnItUpWebApi.Controllers
 				return this.BadRequest("Musician ID from body and from Route do not correspond. Please fix it and try again");
 			}
 
-			var accesToken = Request.Headers["Authorization"];
+			var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-			return this.Ok(await this.musicianService.CreateOrUpdateMusicianDetails(details).ConfigureAwait(false));
+			if (identity != null)
+			{
+				List<Claim> claims = identity.Claims.ToList();
+				return this.Ok(await this.musicianService.CreateOrUpdateMusicianDetails(details, claims).ConfigureAwait(false));
+			}
+
+			return this.BadRequest("Bad service token");
 		}
 
 		[HttpGet]

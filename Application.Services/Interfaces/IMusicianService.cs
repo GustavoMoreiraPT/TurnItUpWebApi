@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Dto.Musicians;
@@ -14,6 +15,6 @@ namespace Application.Services.Interfaces
 
 		Task<MusicianAboutDto> GetMusicianDetails(int musicianId);
 
-		Task<MusicianAboutDto> CreateOrUpdateMusicianDetails(MusicianAboutDto musicianAboutDto);
+		Task<MusicianAboutDto> CreateOrUpdateMusicianDetails(MusicianAboutDto musicianAboutDto, List<Claim> claims);
 	}
 }
