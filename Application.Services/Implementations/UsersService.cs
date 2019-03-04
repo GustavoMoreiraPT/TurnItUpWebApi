@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Application.Dto.Enum;
 using Application.Dto.Users;
 using Application.Services.Interfaces;
 using Application.Services.Specifications;
@@ -13,6 +14,7 @@ using Domain.Model.Users;
 using Infrastructure.CrossCutting;
 using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
@@ -29,6 +31,7 @@ namespace Application.Services.Implementations
 		private readonly ITokenFactory tokenFactory;
 		private readonly IJwtTokenValidator jwtTokenValidator;
 		private readonly IRepository<Customer> repository;
+		private readonly IMusicianService musicianService;
 
 		public UsersService(
 			ApplicationDbContext identityDbContext,
@@ -38,7 +41,8 @@ namespace Application.Services.Implementations
 			IOptions<JwtIssuerOptions> jwtOptions,
 			ITokenFactory tokenFactory,
 			IJwtTokenValidator jwtTokenValidator,
-			IRepository<Customer> repository
+			IRepository<Customer> repository,
+			IMusicianService musicianService
 			)
 		{
 			this.identityDbContext = identityDbContext;
@@ -49,6 +53,7 @@ namespace Application.Services.Implementations
 			this.tokenFactory = tokenFactory;
 			this.jwtTokenValidator = jwtTokenValidator;
 			this.repository = repository;
+			this.musicianService = musicianService;
 		}
 
 		public async Task<string> AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
@@ -91,10 +96,20 @@ namespace Application.Services.Implementations
 				return null;
 			}
 
-			await this.identityDbContext.Customers.AddAsync(new Customer{ IdentityId = userIdentity.Id, Location = user.Location});
+			var customer = await this.identityDbContext.Customers.AddAsync(new Customer{ IdentityId = userIdentity.Id, Location = user.Location});
+
+			await this.CreateAccountType(customer, user);
 			await this.identityDbContext.SaveChangesAsync();
 
 			return result;
+		}
+
+		private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterDto user)
+		{
+			if (user.AccountType == AccountTypes.Musician)
+			{
+				await this.musicianService.CreateMusician(customer.Entity).ConfigureAwait(false);
+			}
 		}
 
 		public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
@@ -177,6 +192,11 @@ namespace Application.Services.Implementations
 			return await Task.FromResult<ClaimsIdentity>(null);
 		}
 
+		public Task<int> GetCustomerIdByToken(string token)
+		{
+			throw new NotImplementedException();
+		}
+
 		//FINISH THIS
 		public async Task<LoginResponse> RefreshToken(ExchangeRefreshTokenRequest refreshTokenRequest)
 		{
@@ -189,7 +209,7 @@ namespace Application.Services.Implementations
 				var id = claimPrincipal.Claims.First(c => c.Type == "id");
 				var user = await this.repository.GetSingleBySpec(new UserSpecification(id.Value));
 
-                var appUser = await this.userManager.FindByIdAsync(user.IdentityId).ConfigureAwait(false);
+				var appUser = await this.userManager.FindByIdAsync(user.IdentityId).ConfigureAwait(false);
 
 				if (user.HasValidRefreshToken(refreshTokenRequest.RefreshToken))
 				{
@@ -198,7 +218,6 @@ namespace Application.Services.Implementations
 					user.RemoveRefreshToken(refreshTokenRequest.RefreshToken); // delete the token we've exchanged
 					user.AddRefreshToken(new RefreshToken(refreshToken, DateTime.UtcNow.AddDays(5), user.Identity.Email, string.Empty)); // add the new one
 					await this.repository.Update(user);
-					//outputPort.Handle(new ExchangeRefreshTokenResponse(jwtToken, refreshToken, true));
 					return new LoginResponse(jwtToken, refreshToken, true);
 				}
 			}

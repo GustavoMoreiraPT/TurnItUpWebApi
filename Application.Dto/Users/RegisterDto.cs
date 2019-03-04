@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Application.Dto.Enum;
+using Application.Requests.Enums;
 
 namespace Application.Dto.Users
 {
@@ -13,5 +15,7 @@ namespace Application.Dto.Users
 		public string LastName { get; set; }
 
 		public string Location { get; set; }
+
+		public AccountTypes AccountType { get; set; }
 	}
 }

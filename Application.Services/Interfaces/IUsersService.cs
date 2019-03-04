@@ -42,5 +42,7 @@ namespace Application.Services.Interfaces
             );
 
         Task<LoginResponse> RefreshToken(ExchangeRefreshTokenRequest refreshTokenRequest);
+
+        Task<int> GetCustomerIdByToken(string token);
     }
 }

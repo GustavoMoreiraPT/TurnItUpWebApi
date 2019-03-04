@@ -1,5 +1,7 @@
 ﻿using Domain.Model;
+using Domain.Model.Musician;
 using Domain.Model.Users;
+using Domain.Model.ValueObjects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,25 @@ namespace Data.Repository.Configuration
 		public DbSet<Customer> Customers { get; set; }
 
 		public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+		public DbSet<TurnItUpUser> TurnItUpUsers { get; set; }
+
+		public DbSet<Musician> Musicians { get; set; }
+
+		public DbSet<City> Cities { get; set; }
+
+		public DbSet<Age> Ages { get; set; }
+
+		public DbSet<Country> Countries { get; set; }
+
+		public DbSet<Gender> Genders { get; set; }
+
+		public DbSet<Location> Locations { get; set; }
+
+		public DbSet<Price> Prices { get; set; }
+
+		public DbSet<Rating> Ratings { get; set; }
+
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

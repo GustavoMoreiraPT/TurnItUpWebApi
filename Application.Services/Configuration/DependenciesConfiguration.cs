@@ -20,6 +20,8 @@ namespace Application.Services.Configuration
 			//Infra
 			services.AddSingleton<ILogger, Logger>();
 
+			services.AddScoped<IMusicianService, MusicianService>();
+
 			services.AddScoped<UserManager<AppUser>>();
 
 			services.AddScoped<IUsersService, UsersService>();
