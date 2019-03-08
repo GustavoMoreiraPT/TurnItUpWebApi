@@ -2,6 +2,7 @@
 using Domain.Model;
 using Domain.Model.Events;
 using Domain.Model.Musician;
+using Domain.Model.Recruiter;
 using Domain.Model.Users;
 using Domain.Model.ValueObjects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -41,6 +42,7 @@ namespace Data.Repository.Configuration
 
 		public DbSet<EventLocation> EventLocations { get; set; }
 
+		public DbSet<Recruiter> Recruiters { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
