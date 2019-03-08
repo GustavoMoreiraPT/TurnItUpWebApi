@@ -8,7 +8,7 @@ namespace Application.Dto.Events
 	{
 		public string Name { get; set; }
 
-		public string RecruiterName { get; set; }
+		public string RecruiterEmail { get; set; }
 
 		public DateTime Date { get; set; }
 

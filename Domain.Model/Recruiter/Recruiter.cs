@@ -8,5 +8,7 @@ namespace Domain.Model.Recruiter
 	public class Recruiter : TurnItUpUser
 	{
 		public string Name { get; set; }
+
+		public string Email { get; set; }
 	}
 }
