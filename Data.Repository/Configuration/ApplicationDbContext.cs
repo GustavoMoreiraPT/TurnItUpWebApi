@@ -1,4 +1,6 @@
-﻿using Domain.Model;
+﻿using System.Diagnostics;
+using Domain.Model;
+using Domain.Model.Events;
 using Domain.Model.Musician;
 using Domain.Model.Users;
 using Domain.Model.ValueObjects;
@@ -30,6 +32,14 @@ namespace Data.Repository.Configuration
 		public DbSet<Price> Prices { get; set; }
 
 		public DbSet<Rating> Ratings { get; set; }
+
+		public DbSet<Role> Role { get; set; }
+
+		public DbSet<Event> Events { get; set; }
+
+		public DbSet<EventState> EventState { get; set; }
+
+		public DbSet<EventLocation> EventLocations { get; set; }
 
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

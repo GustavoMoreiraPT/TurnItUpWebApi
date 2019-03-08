@@ -3,14 +3,16 @@ using System;
 using Data.Repository.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190308115404_EventsSupport")]
+    partial class EventsSupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,67 +28,23 @@ namespace Data.Repository.Migrations
 
                     b.Property<DateTime>("EndTime");
 
-                    b.Property<int?>("LocationId");
-
                     b.Property<int>("MusicianId");
 
-                    b.Property<string>("Name");
-
                     b.Property<int?>("PriceId");
-
-                    b.Property<int?>("RatingId");
 
                     b.Property<int>("RoleId");
 
                     b.Property<DateTime>("StartTime");
 
-                    b.Property<int?>("StateId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
 
                     b.HasIndex("MusicianId");
 
                     b.HasIndex("PriceId");
 
-                    b.HasIndex("RatingId");
-
                     b.HasIndex("RoleId");
 
-                    b.HasIndex("StateId");
-
                     b.ToTable("Events");
-                });
-
-            modelBuilder.Entity("Domain.Model.Events.EventLocation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("LocationId");
-
-                    b.Property<string>("StreetName");
-
-                    b.Property<int>("StreetNumber");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
-
-                    b.ToTable("EventLocations");
-                });
-
-            modelBuilder.Entity("Domain.Model.Events.EventState", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("State");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EventState");
                 });
 
             modelBuilder.Entity("Domain.Model.RefreshToken", b =>
@@ -472,10 +430,6 @@ namespace Data.Repository.Migrations
 
             modelBuilder.Entity("Domain.Model.Events.Event", b =>
                 {
-                    b.HasOne("Domain.Model.Events.EventLocation", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
                     b.HasOne("Domain.Model.Musician.Musician", "Musician")
                         .WithMany()
                         .HasForeignKey("MusicianId")
@@ -485,25 +439,10 @@ namespace Data.Repository.Migrations
                         .WithMany()
                         .HasForeignKey("PriceId");
 
-                    b.HasOne("Domain.Model.ValueObjects.Rating", "Rating")
-                        .WithMany()
-                        .HasForeignKey("RatingId");
-
                     b.HasOne("Domain.Model.ValueObjects.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Domain.Model.Events.EventState", "State")
-                        .WithMany()
-                        .HasForeignKey("StateId");
-                });
-
-            modelBuilder.Entity("Domain.Model.Events.EventLocation", b =>
-                {
-                    b.HasOne("Domain.Model.ValueObjects.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
                 });
 
             modelBuilder.Entity("Domain.Model.RefreshToken", b =>
