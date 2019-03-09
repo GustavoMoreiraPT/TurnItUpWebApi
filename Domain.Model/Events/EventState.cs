@@ -9,5 +9,15 @@ namespace Domain.Model.Events
 		public int Id { get; set; }
 
 		public string State { get; set; }
+
+        public EventState(string stateName)
+        {
+            this.State = "Scheduled";
+        }
+
+        public EventState()
+        {
+
+        }
 	}
 }

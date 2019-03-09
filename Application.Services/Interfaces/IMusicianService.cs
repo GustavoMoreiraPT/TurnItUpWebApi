@@ -11,7 +11,7 @@ namespace Application.Services.Interfaces
 	public interface IMusicianService
 	{
 
-		Task<MusicianAboutDto> CreateMusician(Customer customer);
+		
 
 		Task<MusicianAboutDto> GetMusicianDetails(int musicianId);
 

@@ -3,14 +3,16 @@ using System;
 using Data.Repository.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190309152847_migrationsEvents")]
+    partial class migrationsEvents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -458,9 +460,6 @@ namespace Data.Repository.Migrations
             modelBuilder.Entity("Domain.Model.Recruiter.Recruiter", b =>
                 {
                     b.HasBaseType("Domain.Model.TurnItUpUser");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnName("Recruiter_CustomerId");
 
                     b.Property<string>("Email");
 

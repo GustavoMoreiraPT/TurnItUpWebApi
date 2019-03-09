@@ -20,6 +20,8 @@ namespace Application.Dto.Events
 
 		public string Location { get; set; }
 
+        public int LocationNumber { get; set; }
+
 		public string CityName { get; set; }
 
 		public string CountryName { get; set; }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Application.Dto.Enum;
+using Application.Dto.Musicians;
 using Application.Dto.Users;
 using Application.Services.Interfaces;
 using Application.Services.Specifications;
@@ -10,6 +11,8 @@ using AutoMapper;
 using Data.Repository.Configuration;
 using Domain.Core.RepositoryInterfaces;
 using Domain.Model;
+using Domain.Model.Musician;
+using Domain.Model.Recruiter;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting;
 using Infrastructure.CrossCutting.Settings;
@@ -31,7 +34,6 @@ namespace Application.Services.Implementations
 		private readonly ITokenFactory tokenFactory;
 		private readonly IJwtTokenValidator jwtTokenValidator;
 		private readonly IRepository<Customer> repository;
-		private readonly IMusicianService musicianService;
 
 		public UsersService(
 			ApplicationDbContext identityDbContext,
@@ -41,8 +43,7 @@ namespace Application.Services.Implementations
 			IOptions<JwtIssuerOptions> jwtOptions,
 			ITokenFactory tokenFactory,
 			IJwtTokenValidator jwtTokenValidator,
-			IRepository<Customer> repository,
-			IMusicianService musicianService
+			IRepository<Customer> repository
 			)
 		{
 			this.identityDbContext = identityDbContext;
@@ -53,7 +54,6 @@ namespace Application.Services.Implementations
 			this.tokenFactory = tokenFactory;
 			this.jwtTokenValidator = jwtTokenValidator;
 			this.repository = repository;
-			this.musicianService = musicianService;
 		}
 
 		public async Task<string> AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
@@ -108,11 +108,39 @@ namespace Application.Services.Implementations
 		{
 			if (user.AccountType == AccountTypes.Musician)
 			{
-				await this.musicianService.CreateMusician(customer.Entity).ConfigureAwait(false);
+				await this.CreateTurnItUpUser(customer.Entity, "Musician").ConfigureAwait(false);
 			}
+
+            if (user.AccountType == AccountTypes.Recruiter)
+            {
+                await this.CreateTurnItUpUser(customer.Entity, "Recruiter").ConfigureAwait(false);
+            }
 		}
 
-		public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
+        public async Task CreateTurnItUpUser(Customer customer, string userType)
+        {
+            if (userType == "Musician")
+            {
+                var newMusician = new Musician
+                {
+                    CustomerId = customer.Id,
+                };
+                this.identityDbContext.TurnItUpUsers.Add(newMusician);
+            }
+
+            if (userType == "Recruiter")
+            {
+                var newRecruiter = new Recruiter
+                {
+                    CustomerId = customer.Id,
+                };
+                this.identityDbContext.TurnItUpUsers.Add(newRecruiter);
+            }
+
+            await this.identityDbContext.SaveChangesAsync();
+        }
+
+        public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
 		{
 			var result =  await this.userManager.CreateAsync(user, password).ConfigureAwait(false);
 

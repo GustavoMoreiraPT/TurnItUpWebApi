@@ -20,7 +20,7 @@ namespace Application.Services.Implementations
 			this.context = context;
 		}
 
-		public Task CreateEvent(CreateEventDto eventDto)
+		public async Task CreateEvent(CreateEventDto eventDto)
 		{
 			var newEvent = new Event();
 
@@ -53,7 +53,29 @@ namespace Application.Services.Implementations
 				throw new ArgumentException();
 			}
 
-			return null;
+            newEvent.State = new EventState("Scheduled");
+            newEvent.Name = eventDto.Name;
+            newEvent.CreatorId = recruiter.Id;
+            newEvent.Location = new EventLocation
+            {
+                Location = location,
+                StreetName = eventDto.Location,
+                StreetNumber = eventDto.LocationNumber,
+            };
+            newEvent.StartTime = eventDto.Date;
+            TimeSpan startingHour = new TimeSpan((int)eventDto.StartingHour, 0, 0);
+            newEvent.StartTime = newEvent.StartTime + startingHour;
+            TimeSpan endingHour = 
+                new TimeSpan((int)eventDto.StartingHour + (int)eventDto.DurationInHours, 0, 0);
+            newEvent.EndTime = eventDto.Date;
+            newEvent.EndTime = newEvent.EndTime + endingHour;
+
+            newEvent.Price = this.context.Prices.FirstOrDefault(x => x.Value == eventDto.Price);
+            newEvent.Role = this.context.Role.FirstOrDefault(x => x.Name == eventDto.RoleName);
+            newEvent.RoleId = newEvent.Role.Id;
+
+            this.context.Events.Add(newEvent);
+            await this.context.SaveChangesAsync().ConfigureAwait(false);
 		}
 	}
 }
