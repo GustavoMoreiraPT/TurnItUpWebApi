@@ -29,10 +29,6 @@ namespace Domain.Model.Musician
 
 		public int ReviewsCount { get; }
 
-		public int CustomerId { get; set; }
-
-		public virtual Customer Customer { get; set; }
-
 		public void SetReviewsCount(int reviewsCount)
 		{
 			throw new NotImplementedException();

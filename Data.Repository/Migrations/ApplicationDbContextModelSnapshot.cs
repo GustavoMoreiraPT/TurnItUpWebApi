@@ -116,10 +116,14 @@ namespace Data.Repository.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("CustomerId");
+
                     b.Property<string>("Discriminator")
                         .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("TurnItUpUsers");
 
@@ -426,8 +430,6 @@ namespace Data.Repository.Migrations
 
                     b.Property<string>("ArtisticName");
 
-                    b.Property<int>("CustomerId");
-
                     b.Property<string>("Details");
 
                     b.Property<string>("FirstName");
@@ -444,8 +446,6 @@ namespace Data.Repository.Migrations
 
                     b.HasIndex("AgeId");
 
-                    b.HasIndex("CustomerId");
-
                     b.HasIndex("LocationId");
 
                     b.HasIndex("PriceId");
@@ -458,9 +458,6 @@ namespace Data.Repository.Migrations
             modelBuilder.Entity("Domain.Model.Recruiter.Recruiter", b =>
                 {
                     b.HasBaseType("Domain.Model.TurnItUpUser");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnName("Recruiter_CustomerId");
 
                     b.Property<string>("Email");
 
@@ -525,6 +522,14 @@ namespace Data.Repository.Migrations
                     b.HasOne("Domain.Model.Users.Customer")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("CustomerId");
+                });
+
+            modelBuilder.Entity("Domain.Model.TurnItUpUser", b =>
+                {
+                    b.HasOne("Domain.Model.Users.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.Model.Users.Customer", b =>
@@ -610,11 +615,6 @@ namespace Data.Repository.Migrations
                     b.HasOne("Domain.Model.ValueObjects.Age", "Age")
                         .WithMany()
                         .HasForeignKey("AgeId");
-
-                    b.HasOne("Domain.Model.Users.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Domain.Model.ValueObjects.Location", "Location")
                         .WithMany()
