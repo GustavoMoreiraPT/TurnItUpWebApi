@@ -15,6 +15,7 @@ using Domain.Model.Musician;
 using Domain.Model.Recruiter;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting;
+using Infrastructure.CrossCutting.Helpers;
 using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -91,6 +92,12 @@ namespace Application.Services.Implementations
 
 			var result = await this.userManager.CreateAsync(userIdentity, password).ConfigureAwait(false);
 
+			await this.userManager.AddClaimAsync(userIdentity,
+				new Claim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+
+			await this.userManager.AddClaimAsync(userIdentity,
+				new Claim(Constants.Strings.JwtClaimIdentifiers.Events, Constants.Strings.JwtClaims.EventsAccess));
+
 			if (!result.Succeeded)
 			{
 				return null;
@@ -111,36 +118,36 @@ namespace Application.Services.Implementations
 				await this.CreateTurnItUpUser(customer.Entity, "Musician").ConfigureAwait(false);
 			}
 
-            if (user.AccountType == AccountTypes.Recruiter)
-            {
-                await this.CreateTurnItUpUser(customer.Entity, "Recruiter").ConfigureAwait(false);
-            }
+			if (user.AccountType == AccountTypes.Recruiter)
+			{
+				await this.CreateTurnItUpUser(customer.Entity, "Recruiter").ConfigureAwait(false);
+			}
 		}
 
-        public async Task CreateTurnItUpUser(Customer customer, string userType)
-        {
-            if (userType == "Musician")
-            {
-                var newMusician = new Musician
-                {
-                    CustomerId = customer.Id,
-                };
-                this.identityDbContext.TurnItUpUsers.Add(newMusician);
-            }
+		public async Task CreateTurnItUpUser(Customer customer, string userType)
+		{
+			if (userType == "Musician")
+			{
+				var newMusician = new Musician
+				{
+					CustomerId = customer.Id,
+				};
+				this.identityDbContext.TurnItUpUsers.Add(newMusician);
+			}
 
-            if (userType == "Recruiter")
-            {
-                var newRecruiter = new Recruiter
-                {
-                    CustomerId = customer.Id,
-                };
-                this.identityDbContext.TurnItUpUsers.Add(newRecruiter);
-            }
+			if (userType == "Recruiter")
+			{
+				var newRecruiter = new Recruiter
+				{
+					CustomerId = customer.Id,
+				};
+				this.identityDbContext.TurnItUpUsers.Add(newRecruiter);
+			}
 
-            await this.identityDbContext.SaveChangesAsync();
-        }
+			await this.identityDbContext.SaveChangesAsync();
+		}
 
-        public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
+		public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
 		{
 			var result =  await this.userManager.CreateAsync(user, password).ConfigureAwait(false);
 
