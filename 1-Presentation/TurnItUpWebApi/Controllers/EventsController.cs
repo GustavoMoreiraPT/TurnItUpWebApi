@@ -9,28 +9,35 @@ using System.Threading.Tasks;
 
 namespace TurnItUpWebApi.Controllers
 {
-    [Route("v1/events")]
-    public class EventsController : Controller
-    {
-        private readonly IEventService eventService;
-        
-        public EventsController(IEventService eventService)
-        {
-            this.eventService = eventService;
-        }
+	[Route("v1/events")]
+	public class EventsController : Controller
+	{
+		private readonly IEventService eventService;
+		
+		public EventsController(IEventService eventService)
+		{
+			this.eventService = eventService;
+		}
 
-        [HttpPost]
-        [Authorize(Policy = "ApiUser")]
-        public async Task<IActionResult> CreateEvent([FromBody]CreateEventDto eventDto)
-        {
-            if (eventDto == null)
-            {
-                return this.BadRequest();
-            }
+		[HttpPost]
+		[Authorize(Policy = "ApiUser")]
+		public async Task<IActionResult> CreateEvent([FromBody]CreateEventDto eventDto)
+		{
+			if (eventDto == null)
+			{
+				return this.BadRequest();
+			}
 
-            await this.eventService.CreateEvent(eventDto).ConfigureAwait(false);
+			await this.eventService.CreateEvent(eventDto).ConfigureAwait(false);
 
-            return this.Ok();
-        }
-    }
+			return this.Ok();
+		}
+
+		[HttpGet]
+		[Authorize(Policy = "ApiUser")]
+		public async Task<IActionResult> GetEvents()
+		{
+			return Ok(this.eventService.GetEvents());
+		}
+	}
 }

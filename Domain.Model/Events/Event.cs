@@ -32,6 +32,8 @@ namespace Domain.Model.Events
 
 		public virtual  Musician.Musician Musician { get; set; }
 
+		public virtual Recruiter.Recruiter Recruiter { get; set; }
+
 		public virtual Role Role { get; set; }
 	}
 }

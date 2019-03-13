@@ -47,5 +47,7 @@ namespace Application.Services.Interfaces
         Task<int> GetCustomerIdByToken(string token);
 
         Task CreateTurnItUpUser(Customer customer, string userType);
-    }
+
+		Task AddClaimToUser(ClaimsIdentity identity, string claimType, string claimValue);
+	}
 }

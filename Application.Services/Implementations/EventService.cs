@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.Dto.Events;
 using Application.Services.Interfaces;
+using Application.Services.Mappings;
 using Data.Repository.Configuration;
 using Domain.Model.Events;
 
@@ -76,6 +77,13 @@ namespace Application.Services.Implementations
 
             this.context.Events.Add(newEvent);
             await this.context.SaveChangesAsync().ConfigureAwait(false);
+		}
+
+		public List<EventSummaryDto> GetEvents()
+		{
+			var events = this.context.Events.ToList();
+
+			return events.ToSummaryDtos();
 		}
 	}
 }

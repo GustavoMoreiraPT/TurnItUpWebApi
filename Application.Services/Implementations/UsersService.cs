@@ -19,6 +19,7 @@ using Infrastructure.CrossCutting.Helpers;
 using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
@@ -230,6 +231,20 @@ namespace Application.Services.Implementations
 		public Task<int> GetCustomerIdByToken(string token)
 		{
 			throw new NotImplementedException();
+		}
+
+		public async Task AddClaimToUser(ClaimsIdentity identity, string claimType, string claimValue)
+		{
+			var userEmail = identity.Claims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value;
+
+			var identityUser = await FindByEmailAsync(userEmail).ConfigureAwait(false);
+
+			if (identityUser == null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			await this.userManager.AddClaimAsync(identityUser, new Claim(claimType, claimValue));
 		}
 
 		//FINISH THIS
