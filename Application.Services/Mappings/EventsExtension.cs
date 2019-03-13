@@ -17,7 +17,12 @@ namespace Application.Services.Mappings
 				CreatorName = e.Recruiter.Name,
 				Day = e.StartTime.Date,
 				DurationTime = (e.EndTime - e.StartTime).Hours.ToString(),
-				Hours = e.StartTime.Hour.ToString()
+				Hours = e.StartTime.Hour.ToString(),
+                Location = e.Location.StreetNumber + ',' + e.Location.StreetName,
+                MusicianName = e.Musician.ArtisticName,
+                Price = e.Price.Value.ToString(),
+                Rating = e.Rating.Value,
+                Role = e.Role.Name
 			}).ToList();
 		}
 	}

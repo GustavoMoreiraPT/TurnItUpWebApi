@@ -21,6 +21,7 @@ namespace Application.Services.Configuration
 			services.AddSingleton<ILogger, Logger>();
 
 			services.AddScoped<IMusicianService, MusicianService>();
+            services.AddScoped<IRecruiterService, RecruiterService>();
 			services.AddScoped<IEventService, EventService>();
 
 			services.AddScoped<UserManager<AppUser>>();

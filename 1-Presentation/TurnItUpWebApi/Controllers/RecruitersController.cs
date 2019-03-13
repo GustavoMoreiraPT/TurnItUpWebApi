@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Dto.Recruiters;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
@@ -12,7 +13,35 @@ namespace TurnItUpWebApi.Controllers
 
 		}
 
-		[HttpGet]
+        [HttpPost]
+        [Route("{id}/about")]
+        [ProducesResponseType(200, Type = typeof(RecruiterAboutDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> CreateOrUpdateRecruiterDetailsAsync([FromRoute] int id, [FromBody] RecruiterAboutDto recruiterAboutDto)
+        {
+            if (id < 1)
+            {
+                return this.BadRequest("Recruiter ID can't be less than 1");
+            }
+
+            if (recruiterAboutDto == null)
+            {
+                return this.BadRequest("Recruiter body cannot be null");
+            }
+
+            if (id != recruiterAboutDto.Id)
+            {
+                return this.BadRequest("Id from route and body mismatch");
+            }
+
+            
+        }
+
+        [HttpGet]
 		public async Task<IActionResult> GetAllAsync()
 		{
 			throw new NotImplementedException();
