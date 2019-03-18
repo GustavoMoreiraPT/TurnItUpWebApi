@@ -2,15 +2,21 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using Application.Services.Interfaces;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Linq;
 
 namespace TurnItUpWebApi.Controllers
 {
 	[Route("v1/recruiters")]
 	public class RecruitersController : Controller
 	{
-		public RecruitersController()
-		{
+		private readonly IRecruiterService recruitersService;
 
+		public RecruitersController(IRecruiterService recruiterService)
+		{
+			this.recruitersService = recruiterService;
 		}
 
         [HttpPost]
@@ -38,7 +44,15 @@ namespace TurnItUpWebApi.Controllers
                 return this.BadRequest("Id from route and body mismatch");
             }
 
-            
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            if (identity != null)
+            {
+	            List<Claim> claims = identity.Claims.ToList();
+	            return this.Ok(await this.recruitersService.CreateOrUpdateRecruiterDetails(recruiterAboutDto, claims).ConfigureAwait(false));
+            }
+
+            return this.BadRequest();
         }
 
         [HttpGet]

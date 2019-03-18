@@ -1,4 +1,5 @@
 ﻿using Domain.Model.Users;
+using Domain.Model.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,6 +11,8 @@ namespace Domain.Model.Recruiter
 	{
 		public string Name { get; set; }
 
-		public string Email { get; set; }
-    }
+		public string Details { get; set; }
+
+		public int ReviewsCount { get; }
+	}
 }
