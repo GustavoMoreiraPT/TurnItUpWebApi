@@ -35,9 +35,17 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpGet]
 		[Authorize(Policy = "ApiUser")]
-		public async Task<IActionResult> GetEvents()
+		public IActionResult GetEvents()
 		{
 			return Ok(this.eventService.GetEvents());
+		}
+
+		[HttpGet]
+		[Route("{id}")]
+		[Authorize(Policy = "ApiUser")]
+		public async Task<IActionResult> GetEvent([FromRoute] int id)
+		{
+			return Ok(this.eventService.GetEvent(id));
 		}
 	}
 }

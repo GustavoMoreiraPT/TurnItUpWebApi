@@ -79,6 +79,18 @@ namespace Application.Services.Implementations
             await this.context.SaveChangesAsync().ConfigureAwait(false);
 		}
 
+		public EventSummaryDto GetEvent(int eventId)
+		{
+			var musicEvent = this.context.Events.FirstOrDefault(x => x.Id == eventId);
+
+			if (musicEvent == null)
+			{
+				throw new ArgumentNullException();
+			}
+
+			return musicEvent.ToSummaryDto();
+		}
+
 		public List<EventSummaryDto> GetEvents()
 		{
 			var events = this.context.Events.ToList();

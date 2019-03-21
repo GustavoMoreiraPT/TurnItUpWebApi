@@ -25,5 +25,22 @@ namespace Application.Services.Mappings
                 Role = e.Role.Name
 			}).ToList();
 		}
+
+		public static EventSummaryDto ToSummaryDto(this Event musicEvent)
+		{
+			return new EventSummaryDto
+			{
+				EventName = musicEvent.Name,
+				CreatorName = musicEvent.Recruiter.Name,
+				Day = musicEvent.StartTime.Date,
+				DurationTime = (musicEvent.EndTime - musicEvent.StartTime).Hours.ToString(),
+				Hours = musicEvent.StartTime.Hour.ToString(),
+				Location = musicEvent.Location.StreetNumber + ',' + musicEvent.Location.StreetName,
+				MusicianName = musicEvent.Musician.ArtisticName,
+				Price = musicEvent.Price.Value.ToString(),
+				Rating = musicEvent.Rating.Value,
+				Role = musicEvent.Role.Name
+			};
+		}
 	}
 }
