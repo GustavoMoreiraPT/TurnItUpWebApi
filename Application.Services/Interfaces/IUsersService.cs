@@ -5,6 +5,7 @@ using Domain.Model.Users;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
+using Application.Dto.Musicians;
 
 namespace Application.Services.Interfaces
 {
@@ -44,5 +45,9 @@ namespace Application.Services.Interfaces
         Task<LoginResponse> RefreshToken(ExchangeRefreshTokenRequest refreshTokenRequest);
 
         Task<int> GetCustomerIdByToken(string token);
-    }
+
+        Task CreateTurnItUpUser(Customer customer, string userType);
+
+		Task AddClaimToUser(ClaimsIdentity identity, string claimType, string claimValue);
+	}
 }

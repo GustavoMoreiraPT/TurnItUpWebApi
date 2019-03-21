@@ -58,6 +58,7 @@ namespace TurnItUpWebApi.Middleware
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy("EventsCreator", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Events, Constants.Strings.JwtClaims.EventsAccess));
             });
 
             return services;

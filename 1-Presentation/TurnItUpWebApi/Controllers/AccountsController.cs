@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Infrastructure.CrossCutting.Helpers;
 using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -74,6 +75,23 @@ namespace TurnItUpWebApi.Controllers
 			}
 
 			return Ok(await this.userService.RefreshToken(request).ConfigureAwait(false));
+		}
+
+		[HttpPost]
+		[Route("{id}/claims")]
+		public async Task<IActionResult> AddClaim([FromRoute] int customerId, [FromQuery] string claimType,
+			[FromQuery] string claimValue)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+			await this.userService.AddClaimToUser(identity, claimType, claimValue);
+
+			return Ok();
 		}
 
 		[HttpGet]

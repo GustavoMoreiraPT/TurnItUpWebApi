@@ -1,5 +1,8 @@
-﻿using Domain.Model;
+﻿using System.Diagnostics;
+using Domain.Model;
+using Domain.Model.Events;
 using Domain.Model.Musician;
+using Domain.Model.Recruiter;
 using Domain.Model.Users;
 using Domain.Model.ValueObjects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -31,6 +34,15 @@ namespace Data.Repository.Configuration
 
 		public DbSet<Rating> Ratings { get; set; }
 
+		public DbSet<Role> Role { get; set; }
+
+		public DbSet<Event> Events { get; set; }
+
+		public DbSet<EventState> EventState { get; set; }
+
+		public DbSet<EventLocation> EventLocations { get; set; }
+
+		public DbSet<Recruiter> Recruiters { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

@@ -3,14 +3,16 @@ using System;
 using Data.Repository.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190308120455_EventsSupportLocationsAndState")]
+    partial class EventsSupportLocationsAndState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,8 +31,6 @@ namespace Data.Repository.Migrations
                     b.Property<int?>("LocationId");
 
                     b.Property<int>("MusicianId");
-
-                    b.Property<string>("Name");
 
                     b.Property<int?>("PriceId");
 
@@ -116,14 +116,10 @@ namespace Data.Repository.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("CustomerId");
-
                     b.Property<string>("Discriminator")
                         .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
 
                     b.ToTable("TurnItUpUsers");
 
@@ -430,6 +426,8 @@ namespace Data.Repository.Migrations
 
                     b.Property<string>("ArtisticName");
 
+                    b.Property<int>("CustomerId");
+
                     b.Property<string>("Details");
 
                     b.Property<string>("FirstName");
@@ -446,6 +444,8 @@ namespace Data.Repository.Migrations
 
                     b.HasIndex("AgeId");
 
+                    b.HasIndex("CustomerId");
+
                     b.HasIndex("LocationId");
 
                     b.HasIndex("PriceId");
@@ -453,17 +453,6 @@ namespace Data.Repository.Migrations
                     b.HasIndex("RatingId");
 
                     b.HasDiscriminator().HasValue("Musician");
-                });
-
-            modelBuilder.Entity("Domain.Model.Recruiter.Recruiter", b =>
-                {
-                    b.HasBaseType("Domain.Model.TurnItUpUser");
-
-                    b.Property<string>("Email");
-
-                    b.Property<string>("Name");
-
-                    b.HasDiscriminator().HasValue("Recruiter");
                 });
 
             modelBuilder.Entity("Domain.Model.Users.AppUser", b =>
@@ -522,14 +511,6 @@ namespace Data.Repository.Migrations
                     b.HasOne("Domain.Model.Users.Customer")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("CustomerId");
-                });
-
-            modelBuilder.Entity("Domain.Model.TurnItUpUser", b =>
-                {
-                    b.HasOne("Domain.Model.Users.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.Model.Users.Customer", b =>
@@ -615,6 +596,11 @@ namespace Data.Repository.Migrations
                     b.HasOne("Domain.Model.ValueObjects.Age", "Age")
                         .WithMany()
                         .HasForeignKey("AgeId");
+
+                    b.HasOne("Domain.Model.Users.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Domain.Model.ValueObjects.Location", "Location")
                         .WithMany()

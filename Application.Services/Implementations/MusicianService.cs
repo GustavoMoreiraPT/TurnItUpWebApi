@@ -28,20 +28,6 @@ namespace Application.Services.Implementations
 			this.usersService = usersService;
 		}
 
-		public async Task<MusicianAboutDto> CreateMusician(Customer customer)
-		{
-			var newMusician = new Musician
-			{
-
-				CustomerId = customer.Id,
-			};
-
-			this.context.TurnItUpUsers.Add(newMusician);
-			await this.context.SaveChangesAsync();
-
-			return null;
-		}
-
 		public async Task<MusicianAboutDto> CreateOrUpdateMusicianDetails(MusicianAboutDto musicianAboutDto, List<Claim> musicianClaims)
 		{
 			var musicianEmail = musicianClaims.FirstOrDefault(x => x.Type.Contains("nameidentifier")).Value;

@@ -9,29 +9,9 @@ namespace Domain.Model.Musician
 	{
 		public string FirstName { get; set; }
 
-		public string LastName { get; set; }
-
 		public string ArtisticName { get; set; }
 
-		public string PhotoUrl { get; set; }
-
-		public Location Location { get; set; }
-
-		public Price Price { get; set; }
-
 		public Age Age { get; set; }
-
-		public Rating Rating { get; set; }
-
-		public List<Gender> Genders { get; set; }
-
-		public string Details { get; set; }
-
-		public int ReviewsCount { get; }
-
-		public int CustomerId { get; set; }
-
-		public virtual Customer Customer { get; set; }
 
 		public void SetReviewsCount(int reviewsCount)
 		{
