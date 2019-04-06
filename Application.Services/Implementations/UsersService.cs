@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Application.Dto.Enum;
 using Application.Dto.Musicians;
@@ -208,27 +209,32 @@ namespace Application.Services.Implementations
 			return new LoginResponse(accessToken, refreshToken, true);
 		}
 
-		public async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
-		{
-			if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
-				return await Task.FromResult<ClaimsIdentity>(null);
+        public async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                return await Task.FromResult<ClaimsIdentity>(null);
 
-			// get the user to verifty
-			var userToVerify = await this.userManager.FindByNameAsync(userName);
+            // get the user to verifty
+            var userToVerify = await this.userManager.FindByNameAsync(userName);
 
-			if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
+            var userClaims = await this.userManager.GetClaimsAsync(userToVerify);
 
-			// check the credentials
-			if (await this.userManager.CheckPasswordAsync(userToVerify, password))
-			{
-				return await Task.FromResult(this.jwtFactory.GenerateClaimsIdentity(userName, userToVerify.Id));
-			}
+            userClaims.Add(new Claim(Constants.Strings.JwtClaimIdentifiers.Id, userToVerify.Id));
 
-			// Credentials are invalid, or account doesn't exist
-			return await Task.FromResult<ClaimsIdentity>(null);
-		}
 
-		public Task<int> GetCustomerIdByToken(string token)
+            if (userToVerify == null) return await Task.FromResult<ClaimsIdentity>(null);
+
+            // check the credentials
+            if (await this.userManager.CheckPasswordAsync(userToVerify, password))
+            {
+                return new ClaimsIdentity(new GenericIdentity(userName, "Token"), userClaims);
+            }
+
+            // Credentials are invalid, or account doesn't exist
+            return await Task.FromResult<ClaimsIdentity>(null);
+        }
+
+        public Task<int> GetCustomerIdByToken(string token)
 		{
 			throw new NotImplementedException();
 		}

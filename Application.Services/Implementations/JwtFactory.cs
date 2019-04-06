@@ -8,6 +8,8 @@ using System.Security.Principal;
 using Application.Services.Interfaces;
 using Application.Dto.Users;
 using Application.Services.Handlers;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Application.Services.Implementations
 {
@@ -53,14 +55,14 @@ namespace Application.Services.Implementations
 
 		public async Task<AccessToken> GenerateEncodedToken(string userName, ClaimsIdentity identity)
         {
-            var claims = new[]
+            var claims = new List<Claim>
          {
                  new Claim(JwtRegisteredClaimNames.Sub, userName),
                  new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                  new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
-                 identity.FindFirst(Infrastructure.CrossCutting.Helpers.Constants.Strings.JwtClaimIdentifiers.Rol),
-                 identity.FindFirst(Infrastructure.CrossCutting.Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
              };
+
+            claims.AddRange(identity.Claims);
 
             // Create the JWT security token and encode it.
             var jwt = new JwtSecurityToken(

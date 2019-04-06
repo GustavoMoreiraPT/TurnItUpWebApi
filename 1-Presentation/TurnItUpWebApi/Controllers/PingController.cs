@@ -19,7 +19,6 @@ namespace TurnItUpWebApi.Controllers
 
 		[HttpGet]
 		[Route("pong")]
-		[Authorize(Policy = "PongViewer")]
 		public IActionResult GetPong()
 		{
 			var x = this.HttpContext;
