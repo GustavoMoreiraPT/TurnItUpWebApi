@@ -26,26 +26,38 @@ namespace TurnItUpWebApi.Controllers
 			this.configuration = configuration;
 		}
 
+        /// <summary>
+        /// Creates a new account within the system.
+        /// </summary>
+        /// <param name="registerDto">TBody containing password and email to create the account.</param>
+        /// <returns></returns>
 		[HttpPost]
         [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Post([FromBody]RegisterCreateDto model)
+        public async Task<IActionResult> Post([FromBody]RegisterCreateDto registerDto)
 		{
 			if (!ModelState.IsValid)
 			{
 				return BadRequest(ModelState);
 			}
 
-			var result = await this.userService.CreateUserAsync(model, model.Password);
+			var result = await this.userService.CreateUserAsync(registerDto, registerDto.Password);
 
-			return new OkObjectResult("Account created");
+			return new CreatedResult("1", "Account created");
 		}
 
+        /// <summary>
+        /// Edits an existing account with additional info provided after the inital register.
+        /// </summary>
+        /// <param name="id">The id of the account to be edited.</param>
+        /// <param name="editDto">TThe information to be used in the update. Used as body of the request.</param>
+        /// <returns></returns>
         [HttpPut]
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> EditUserAsync([FromRoute] int id, [FromBody] RegisterEditDto editDto)
         {
@@ -92,21 +104,21 @@ namespace TurnItUpWebApi.Controllers
 		//	return Ok(await this.userService.RefreshToken(request).ConfigureAwait(false));
 		//}
 
-		[HttpPost]
-		[Route("{id}/claims")]
-		public async Task<IActionResult> AddClaim([FromRoute] int customerId, [FromQuery] string claimType,
-			[FromQuery] string claimValue)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
+		//[HttpPost]
+		//[Route("{id}/claims")]
+		//public async Task<IActionResult> AddClaim([FromRoute] int customerId, [FromQuery] string claimType,
+		//	[FromQuery] string claimValue)
+		//{
+		//	if (!ModelState.IsValid)
+		//	{
+		//		return BadRequest(ModelState);
+		//	}
 
-			var identity = HttpContext.User.Identity as ClaimsIdentity;
+		//	var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-			await this.userService.AddClaimToUser(identity, claimType, claimValue);
+		//	await this.userService.AddClaimToUser(identity, claimType, claimValue);
 
-			return Ok();
-		}
+		//	return Ok();
+		//}
 	}
 }

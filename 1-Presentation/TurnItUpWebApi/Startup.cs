@@ -14,6 +14,10 @@ using TurnItUpWebApi.Middleware;
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using Infrastructure.CrossCutting.Settings;
+using TurnItUpWebApi.Filters;
+using System.Reflection;
+using System.IO;
+using System;
 
 namespace TurnItUpWebApi
 {
@@ -60,7 +64,9 @@ namespace TurnItUpWebApi
 			{
 				c.SwaggerDoc("v1", new Info { Title = "TurnItUp API", Version = "v1" });
 
-				var security = new Dictionary<string, IEnumerable<string>>
+                c.OperationFilter<FormFileSwaggerFilter>();
+
+            var security = new Dictionary<string, IEnumerable<string>>
 				{
 					{"Bearer", new string[] { }},
 				};
@@ -72,8 +78,12 @@ namespace TurnItUpWebApi
 					In = "header",
 					Type = "apiKey"
 				});
-				//c.AddSecurityRequirement(security);
-			});
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+                //c.AddSecurityRequirement(security);
+            });
 
 			services.ConfigureApplicationCookie(options =>
 			{
