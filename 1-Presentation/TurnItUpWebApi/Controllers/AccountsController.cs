@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Infrastructure.CrossCutting.Helpers;
 using Newtonsoft.Json;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -26,7 +27,10 @@ namespace TurnItUpWebApi.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Post([FromBody]RegisterDto model)
+        [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Post([FromBody]RegisterCreateDto model)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -38,44 +42,55 @@ namespace TurnItUpWebApi.Controllers
 			return new OkObjectResult("Account created");
 		}
 
-		[HttpPost]
-		[Route("login")]
-		public async Task<IActionResult> Login([FromBody]LoginDto loginDto) 
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
+        [HttpPut]
+        [Route("{id")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> EditUserAsync([FromRoute] int id, [FromBody] RegisterEditDto editDto)
+        {
 
-			var identity = await this.userService.GetClaimsIdentity(loginDto.UserName, loginDto.Password);
-			if (identity == null)
-			{
-				return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
-			}
+            return null;
+        }
 
-			var loginResponse = await this.userService
-				.GenerateToken(
-				identity,
-				loginDto.UserName,
-				loginDto.Password,
-				loginDto.RemoteIpAddress,
-				new JsonSerializerSettings { Formatting = Formatting.Indented }
-				);
+		//[HttpPost]
+		//[Route("login")]
+		//public async Task<IActionResult> Login([FromBody]LoginDto loginDto) 
+		//{
+		//	if (!ModelState.IsValid)
+		//	{
+		//		return BadRequest(ModelState);
+		//	}
 
-			return new OkObjectResult(loginResponse);
-		}
+		//	var identity = await this.userService.GetClaimsIdentity(loginDto.UserName, loginDto.Password);
+		//	if (identity == null)
+		//	{
+		//		return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
+		//	}
 
-		// POST api/auth/refreshtoken
-		[HttpPost("refreshtoken")]
-		public async Task<ActionResult> RefreshToken([FromBody] ExchangeRefreshTokenRequest request)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
+		//	var loginResponse = await this.userService
+		//		.GenerateToken(
+		//		identity,
+		//		loginDto.UserName,
+		//		loginDto.Password,
+		//		loginDto.RemoteIpAddress,
+		//		new JsonSerializerSettings { Formatting = Formatting.Indented }
+		//		);
 
-			return Ok(await this.userService.RefreshToken(request).ConfigureAwait(false));
-		}
+		//	return new OkObjectResult(loginResponse);
+		//}
+
+		//// POST api/auth/refreshtoken
+		//[HttpPost("refreshtoken")]
+		//public async Task<ActionResult> RefreshToken([FromBody] ExchangeRefreshTokenRequest request)
+		//{
+		//	if (!ModelState.IsValid)
+		//	{
+		//		return BadRequest(ModelState);
+		//	}
+
+		//	return Ok(await this.userService.RefreshToken(request).ConfigureAwait(false));
+		//}
 
 		[HttpPost]
 		[Route("{id}/claims")]
@@ -92,14 +107,6 @@ namespace TurnItUpWebApi.Controllers
 			await this.userService.AddClaimToUser(identity, claimType, claimValue);
 
 			return Ok();
-		}
-
-		[HttpGet]
-		[Route("protected")]
-		[Authorize(Policy = "ApiUser")]
-		public async Task<object> Protected()
-		{
-			return "Protected area";
 		}
 	}
 }

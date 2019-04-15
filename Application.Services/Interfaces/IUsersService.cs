@@ -11,7 +11,7 @@ namespace Application.Services.Interfaces
 {
     public interface IUsersService
     {
-        Task<IdentityResult> CreateUserAsync(RegisterDto user, string password);
+        Task<IdentityResult> CreateUserAsync(RegisterCreateDto user, string password);
 
         Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password);
 

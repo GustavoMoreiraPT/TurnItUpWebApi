@@ -88,7 +88,7 @@ namespace Application.Services.Implementations
 			return refreshToken;
 		}
 
-		public async Task<IdentityResult> CreateUserAsync(RegisterDto user, string password)
+		public async Task<IdentityResult> CreateUserAsync(RegisterCreateDto user, string password)
 		{
 			var userIdentity = this.mapper.Map<AppUser>(user);
 
@@ -113,7 +113,7 @@ namespace Application.Services.Implementations
 			return result;
 		}
 
-		private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterDto user)
+		private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterCreateDto user)
 		{
 			if (user.AccountType == AccountTypes.Musician)
 			{
