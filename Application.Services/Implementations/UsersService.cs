@@ -105,7 +105,7 @@ namespace Application.Services.Implementations
 				return null;
 			}
 
-			var customer = await this.identityDbContext.Customers.AddAsync(new Customer{ IdentityId = userIdentity.Id, Location = user.Location});
+			var customer = await this.identityDbContext.Customers.AddAsync(new Customer{ IdentityId = userIdentity.Id, /*Location = user.Location*/});
 
 			await this.CreateAccountType(customer, user);
 			await this.identityDbContext.SaveChangesAsync();
@@ -115,15 +115,15 @@ namespace Application.Services.Implementations
 
 		private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterCreateDto user)
 		{
-			if (user.AccountType == AccountTypes.Musician)
-			{
-				await this.CreateTurnItUpUser(customer.Entity, "Musician").ConfigureAwait(false);
-			}
+			//if (user.AccountType == AccountTypes.Musician)
+			//{
+			//	await this.CreateTurnItUpUser(customer.Entity, "Musician").ConfigureAwait(false);
+			//}
 
-			if (user.AccountType == AccountTypes.Recruiter)
-			{
-				await this.CreateTurnItUpUser(customer.Entity, "Recruiter").ConfigureAwait(false);
-			}
+			//if (user.AccountType == AccountTypes.Recruiter)
+			//{
+			//	await this.CreateTurnItUpUser(customer.Entity, "Recruiter").ConfigureAwait(false);
+			//}
 		}
 
 		public async Task CreateTurnItUpUser(Customer customer, string userType)

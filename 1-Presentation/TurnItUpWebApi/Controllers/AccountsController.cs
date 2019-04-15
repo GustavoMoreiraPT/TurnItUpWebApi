@@ -43,7 +43,7 @@ namespace TurnItUpWebApi.Controllers
 		}
 
         [HttpPut]
-        [Route("{id")]
+        [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

@@ -16,7 +16,7 @@ namespace TurnItUpWebApi.Controllers
         }
 
         [HttpPost]
-        public async Task UploadFile([FromRoute] int id, [FromBody] IFormFile track)
+        public async Task UploadFile([FromRoute] int id)
         {
 
         }
