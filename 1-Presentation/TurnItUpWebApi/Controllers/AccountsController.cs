@@ -2,11 +2,7 @@
 using System.Threading.Tasks;
 using Application.Dto.Users;
 using Application.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
-using Infrastructure.CrossCutting.Helpers;
-using Newtonsoft.Json;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using TurnItUpWebApi.ResponseModels;

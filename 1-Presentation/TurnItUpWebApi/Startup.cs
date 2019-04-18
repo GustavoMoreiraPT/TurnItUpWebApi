@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Application.Services.Configuration;
+﻿using Application.Services.Configuration;
+using AutoMapper;
 using Data.Repository.Configuration;
 using Domain.Model.Users;
+using FluentValidation.AspNetCore;
+using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -10,18 +11,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
-using TurnItUpWebApi.Middleware;
-using AutoMapper;
-using FluentValidation.AspNetCore;
-using Infrastructure.CrossCutting.Settings;
-using TurnItUpWebApi.Filters;
-using System.Reflection;
-using System.IO;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using TurnItUpWebApi.Filters;
+using TurnItUpWebApi.Middleware;
 
 namespace TurnItUpWebApi
 {
-	public class Startup
+    public class Startup
 	{
 		public Startup(IConfiguration configuration)
 		{
@@ -123,7 +123,7 @@ namespace TurnItUpWebApi
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
-			dbContext.Database.EnsureCreated();
+			//dbContext.Database.EnsureCreated();
 
 			app.UseHttpsRedirection();
 
