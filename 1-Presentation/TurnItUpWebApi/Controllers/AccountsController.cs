@@ -8,6 +8,8 @@ using Infrastructure.CrossCutting.Helpers;
 using Newtonsoft.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using TurnItUpWebApi.ResponseModels;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -33,7 +35,7 @@ namespace TurnItUpWebApi.Controllers
         /// <returns></returns>
 		[HttpPost]
         [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody]RegisterCreateDto registerDto)
 		{
@@ -56,7 +58,7 @@ namespace TurnItUpWebApi.Controllers
         [HttpPut]
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> EditUserAsync([FromRoute] int id, [FromBody] RegisterEditDto editDto)
