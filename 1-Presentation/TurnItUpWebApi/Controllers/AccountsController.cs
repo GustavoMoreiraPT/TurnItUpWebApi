@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using TurnItUpWebApi.ResponseModels;
+using Infrastructure.CrossCutting.Helpers;
+using Newtonsoft.Json;
 
 namespace TurnItUpWebApi.Controllers
 {
