@@ -1,10 +1,11 @@
 ﻿using Application.Dto.Countries;
+using Application.Dto.QueryParams;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using TurnItUpWebApi.ResponseModels;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -21,8 +22,9 @@ namespace TurnItUpWebApi.Controllers
         /// </summary>
         [HttpGet]
         [ProducesResponseType(typeof(List<Country>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] Language language)
         {
             throw new NotImplementedException();
         }
