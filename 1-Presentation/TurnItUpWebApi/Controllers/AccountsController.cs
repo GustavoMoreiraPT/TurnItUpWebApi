@@ -65,60 +65,60 @@ namespace TurnItUpWebApi.Controllers
             return null;
         }
 
-		//[HttpPost]
-		//[Route("login")]
-		//public async Task<IActionResult> Login([FromBody]LoginDto loginDto) 
-		//{
-		//	if (!ModelState.IsValid)
-		//	{
-		//		return BadRequest(ModelState);
-		//	}
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-		//	var identity = await this.userService.GetClaimsIdentity(loginDto.UserName, loginDto.Password);
-		//	if (identity == null)
-		//	{
-		//		return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
-		//	}
+            var identity = await this.userService.GetClaimsIdentity(loginDto.UserName, loginDto.Password);
+            if (identity == null)
+            {
+                return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
+            }
 
-		//	var loginResponse = await this.userService
-		//		.GenerateToken(
-		//		identity,
-		//		loginDto.UserName,
-		//		loginDto.Password,
-		//		loginDto.RemoteIpAddress,
-		//		new JsonSerializerSettings { Formatting = Formatting.Indented }
-		//		);
+            var loginResponse = await this.userService
+                .GenerateToken(
+                identity,
+                loginDto.UserName,
+                loginDto.Password,
+                loginDto.RemoteIpAddress,
+                new JsonSerializerSettings { Formatting = Formatting.Indented }
+                );
 
-		//	return new OkObjectResult(loginResponse);
-		//}
+            return new OkObjectResult(loginResponse);
+        }
 
-		//// POST api/auth/refreshtoken
-		//[HttpPost("refreshtoken")]
-		//public async Task<ActionResult> RefreshToken([FromBody] ExchangeRefreshTokenRequest request)
-		//{
-		//	if (!ModelState.IsValid)
-		//	{
-		//		return BadRequest(ModelState);
-		//	}
+        //// POST api/auth/refreshtoken
+        //[HttpPost("refreshtoken")]
+        //public async Task<ActionResult> RefreshToken([FromBody] ExchangeRefreshTokenRequest request)
+        //{
+        //	if (!ModelState.IsValid)
+        //	{
+        //		return BadRequest(ModelState);
+        //	}
 
-		//	return Ok(await this.userService.RefreshToken(request).ConfigureAwait(false));
-		//}
+        //	return Ok(await this.userService.RefreshToken(request).ConfigureAwait(false));
+        //}
 
-		//[HttpPost]
-		//[Route("{id}/claims")]
-		//public async Task<IActionResult> AddClaim([FromRoute] int customerId, [FromQuery] string claimType,
-		//	[FromQuery] string claimValue)
-		//{
-		//	if (!ModelState.IsValid)
-		//	{
-		//		return BadRequest(ModelState);
-		//	}
+        //[HttpPost]
+        //[Route("{id}/claims")]
+        //public async Task<IActionResult> AddClaim([FromRoute] int customerId, [FromQuery] string claimType,
+        //	[FromQuery] string claimValue)
+        //{
+        //	if (!ModelState.IsValid)
+        //	{
+        //		return BadRequest(ModelState);
+        //	}
 
-		//	var identity = HttpContext.User.Identity as ClaimsIdentity;
+        //	var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-		//	await this.userService.AddClaimToUser(identity, claimType, claimValue);
+        //	await this.userService.AddClaimToUser(identity, claimType, claimValue);
 
-		//	return Ok();
-		//}
-	}
+        //	return Ok();
+        //}
+    }
 }
