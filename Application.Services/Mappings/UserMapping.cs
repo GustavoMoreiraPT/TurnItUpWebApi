@@ -9,7 +9,7 @@ namespace Application.Services.Mappings
 	{
 		public UserMapping()
 		{
-			CreateMap<RegisterDto, AppUser>().ForMember(au => au.UserName, map => map.MapFrom(vm => vm.Email));
+			CreateMap<RegisterCreateDto, AppUser>().ForMember(au => au.UserName, map => map.MapFrom(vm => vm.Email));
 		}
 	}
 }

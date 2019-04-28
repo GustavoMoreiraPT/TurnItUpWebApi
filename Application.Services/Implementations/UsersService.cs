@@ -88,7 +88,7 @@ namespace Application.Services.Implementations
 			return refreshToken;
 		}
 
-		public async Task<IdentityResult> CreateUserAsync(RegisterDto user, string password)
+		public async Task<IdentityResult> CreateUserAsync(RegisterCreateDto user, string password)
 		{
 			var userIdentity = this.mapper.Map<AppUser>(user);
 
@@ -105,7 +105,7 @@ namespace Application.Services.Implementations
 				return null;
 			}
 
-			var customer = await this.identityDbContext.Customers.AddAsync(new Customer{ IdentityId = userIdentity.Id, Location = user.Location});
+			var customer = await this.identityDbContext.Customers.AddAsync(new Customer{ IdentityId = userIdentity.Id, /*Location = user.Location*/});
 
 			await this.CreateAccountType(customer, user);
 			await this.identityDbContext.SaveChangesAsync();
@@ -113,17 +113,17 @@ namespace Application.Services.Implementations
 			return result;
 		}
 
-		private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterDto user)
+		private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterCreateDto user)
 		{
-			if (user.AccountType == AccountTypes.Musician)
-			{
-				await this.CreateTurnItUpUser(customer.Entity, "Musician").ConfigureAwait(false);
-			}
+			//if (user.AccountType == AccountTypes.Musician)
+			//{
+			//	await this.CreateTurnItUpUser(customer.Entity, "Musician").ConfigureAwait(false);
+			//}
 
-			if (user.AccountType == AccountTypes.Recruiter)
-			{
-				await this.CreateTurnItUpUser(customer.Entity, "Recruiter").ConfigureAwait(false);
-			}
+			//if (user.AccountType == AccountTypes.Recruiter)
+			//{
+			//	await this.CreateTurnItUpUser(customer.Entity, "Recruiter").ConfigureAwait(false);
+			//}
 		}
 
 		public async Task CreateTurnItUpUser(Customer customer, string userType)

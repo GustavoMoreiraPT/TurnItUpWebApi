@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Application.Services.Configuration;
+﻿using Application.Services.Configuration;
+using AutoMapper;
 using Data.Repository.Configuration;
 using Domain.Model.Users;
+using FluentValidation.AspNetCore;
+using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -10,14 +11,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using TurnItUpWebApi.Filters;
 using TurnItUpWebApi.Middleware;
-using AutoMapper;
-using FluentValidation.AspNetCore;
-using Infrastructure.CrossCutting.Settings;
 
 namespace TurnItUpWebApi
 {
-	public class Startup
+    public class Startup
 	{
 		public Startup(IConfiguration configuration)
 		{
@@ -60,7 +64,9 @@ namespace TurnItUpWebApi
 			{
 				c.SwaggerDoc("v1", new Info { Title = "TurnItUp API", Version = "v1" });
 
-				var security = new Dictionary<string, IEnumerable<string>>
+                c.OperationFilter<FormFileSwaggerFilter>();
+
+            var security = new Dictionary<string, IEnumerable<string>>
 				{
 					{"Bearer", new string[] { }},
 				};
@@ -72,8 +78,12 @@ namespace TurnItUpWebApi
 					In = "header",
 					Type = "apiKey"
 				});
-				//c.AddSecurityRequirement(security);
-			});
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+                //c.AddSecurityRequirement(security);
+            });
 
 			services.ConfigureApplicationCookie(options =>
 			{
@@ -113,7 +123,7 @@ namespace TurnItUpWebApi
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
-			dbContext.Database.EnsureCreated();
+			//dbContext.Database.EnsureCreated();
 
 			app.UseHttpsRedirection();
 
