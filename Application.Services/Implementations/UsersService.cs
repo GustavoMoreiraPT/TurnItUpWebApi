@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using Application.Dto.Enum;
 using Application.Dto.Musicians;
 using Application.Dto.Users;
+using Application.Dto.Users.Responses;
 using Application.Services.Interfaces;
 using Application.Services.Specifications;
 using AutoMapper;
@@ -88,11 +90,16 @@ namespace Application.Services.Implementations
 			return refreshToken;
 		}
 
-		public async Task<IdentityResult> CreateUserAsync(RegisterCreateDto user, string password)
+		public async Task<RegisterResponseDto> CreateUserAsync(RegisterCreateDto user, string password)
 		{
 			var userIdentity = this.mapper.Map<AppUser>(user);
 
 			var result = await this.userManager.CreateAsync(userIdentity, password).ConfigureAwait(false);
+
+            if (result.Errors.Any())
+            {
+               return this.FillRegisterErrors(result.Errors.ToList());
+            }
 
 			await this.userManager.AddClaimAsync(userIdentity,
 				new Claim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
@@ -110,10 +117,31 @@ namespace Application.Services.Implementations
 			await this.CreateAccountType(customer, user);
 			await this.identityDbContext.SaveChangesAsync();
 
-			return result;
+			return new RegisterResponseDto
+            {
+                IdentityResult = result,
+                UserCreatedId = customer.Entity.Id.ToString(),
+                Errors = new List<Error>(),
+            };
 		}
 
-		private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterCreateDto user)
+        private RegisterResponseDto FillRegisterErrors(List<IdentityError> errors)
+        {
+            var apiErrors = new List<Error>();
+
+            foreach (var error in errors)
+            {
+                var newError = new Error(error.Code, error.Description);
+                apiErrors.Add(newError);
+            }
+
+            return new RegisterResponseDto
+            {
+                Errors = apiErrors
+            };
+        }
+
+        private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterCreateDto user)
 		{
 			//if (user.AccountType == AccountTypes.Musician)
 			//{
@@ -280,5 +308,10 @@ namespace Application.Services.Implementations
 
 			return null;
 		}
-	}
+
+        public Task<RegisterEditResponseDto> EditUserAsync(RegisterEditDto user)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

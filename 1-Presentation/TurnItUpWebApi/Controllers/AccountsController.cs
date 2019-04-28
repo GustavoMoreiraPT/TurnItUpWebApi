@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using TurnItUpWebApi.ResponseModels;
 using Infrastructure.CrossCutting.Helpers;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -32,7 +33,7 @@ namespace TurnItUpWebApi.Controllers
         /// <param name="registerDto">TBody containing password and email to create the account.</param>
         /// <returns></returns>
 		[HttpPost]
-        [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody]RegisterCreateDto registerDto)
@@ -44,7 +45,12 @@ namespace TurnItUpWebApi.Controllers
 
 			var result = await this.userService.CreateUserAsync(registerDto, registerDto.Password);
 
-			return new CreatedResult("1", "Account created");
+            if (result.Errors.Any())
+            {
+                return this.BadRequest(result.Errors);
+            }
+
+			return new CreatedResult(result.UserCreatedId, "Account created");
 		}
 
         /// <summary>

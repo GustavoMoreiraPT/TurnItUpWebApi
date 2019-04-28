@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
 using Application.Dto.Musicians;
+using Application.Dto.Users.Responses;
 
 namespace Application.Services.Interfaces
 {
     public interface IUsersService
     {
-        Task<IdentityResult> CreateUserAsync(RegisterCreateDto user, string password);
+        Task<RegisterResponseDto> CreateUserAsync(RegisterCreateDto user, string password);
+
+        Task<RegisterEditResponseDto> EditUserAsync(RegisterEditDto user);
 
         Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password);
 
