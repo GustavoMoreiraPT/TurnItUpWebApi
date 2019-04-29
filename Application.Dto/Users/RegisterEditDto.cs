@@ -13,7 +13,9 @@ namespace Application.Dto.Users
 
         public string ProfileName { get; set; }
 
-        public byte[] Photo { get; set; }
+        public Photo ProfilePhoto { get; set; }
+        
+        public Photo HeaderPhoto { get; set; }
 
         public List<RoleDto> Roles { get; set; }
 

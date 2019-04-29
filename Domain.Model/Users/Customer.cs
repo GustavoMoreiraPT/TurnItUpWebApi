@@ -1,23 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using Domain.Model.Images;
+using Domain.Model.ValueObjects;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Domain.Model.Users
 {
-	public class Customer 
-	{
-		public int Id { get; set; }
+    public class Customer
+    {
+        public int Id { get; set; }
 
-		public string IdentityId { get; set; }
+        public string IdentityId { get; set; }
 
-		public AppUser Identity { get; set; }  // navigation property
+        public AppUser Identity { get; set; }  // navigation property
 
-		public string Location { get; set; }
+        public string Location { get; set; }
 
-		public string Locale { get; set; }
+        public string Locale { get; set; }
 
-		public string Gender { get; set; }
+        public string Gender { get; set; }
 
-		private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
+        public CustomerType CustomerType { get; set; }
+
+        public string Description { get; set; }
+
+        public Image ProfilePhoto { get; set; }
+
+        public Image HeaderPhoto {get;set;}
+
+        public List<Gender> Genders { get; set; }
+
+        public List<Role> Roles { get; set; }
+
+        private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
 
 		public List<RefreshToken> RefreshTokens => _refreshTokens;
 

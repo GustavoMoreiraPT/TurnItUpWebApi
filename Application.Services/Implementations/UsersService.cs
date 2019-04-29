@@ -14,8 +14,6 @@ using AutoMapper;
 using Data.Repository.Configuration;
 using Domain.Core.RepositoryInterfaces;
 using Domain.Model;
-using Domain.Model.Musician;
-using Domain.Model.Recruiter;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting;
 using Infrastructure.CrossCutting.Helpers;
@@ -152,29 +150,6 @@ namespace Application.Services.Implementations
 			//{
 			//	await this.CreateTurnItUpUser(customer.Entity, "Recruiter").ConfigureAwait(false);
 			//}
-		}
-
-		public async Task CreateTurnItUpUser(Customer customer, string userType)
-		{
-			if (userType == "Musician")
-			{
-				var newMusician = new Musician
-				{
-					CustomerId = customer.Id,
-				};
-				this.identityDbContext.TurnItUpUsers.Add(newMusician);
-			}
-
-			if (userType == "Recruiter")
-			{
-				var newRecruiter = new Recruiter
-				{
-					CustomerId = customer.Id,
-				};
-				this.identityDbContext.TurnItUpUsers.Add(newRecruiter);
-			}
-
-			await this.identityDbContext.SaveChangesAsync();
 		}
 
 		public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)

@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
 using Domain.Model;
 using Domain.Model.Events;
-using Domain.Model.Musician;
-using Domain.Model.Recruiter;
+using Domain.Model.Images;
 using Domain.Model.Users;
 using Domain.Model.ValueObjects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,10 +14,6 @@ namespace Data.Repository.Configuration
 		public DbSet<Customer> Customers { get; set; }
 
 		public DbSet<RefreshToken> RefreshTokens { get; set; }
-
-		public DbSet<TurnItUpUser> TurnItUpUsers { get; set; }
-
-		public DbSet<Musician> Musicians { get; set; }
 
 		public DbSet<City> Cities { get; set; }
 
@@ -42,7 +37,7 @@ namespace Data.Repository.Configuration
 
 		public DbSet<EventLocation> EventLocations { get; set; }
 
-		public DbSet<Recruiter> Recruiters { get; set; }
+        public DbSet<Image> Images { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
