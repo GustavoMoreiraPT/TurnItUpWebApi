@@ -19,6 +19,10 @@ namespace Domain.Model.Users
 
         public string Gender { get; set; }
 
+        public decimal Price { get; set; }
+
+        public string ProfileName { get; set; }
+
         public CustomerType CustomerType { get; set; }
 
         public string Description { get; set; }

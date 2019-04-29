@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -284,9 +285,79 @@ namespace Application.Services.Implementations
 			return null;
 		}
 
-        public Task<RegisterEditResponseDto> EditUserAsync(RegisterEditDto user)
+        public async Task<RegisterEditResponseDto> EditUserAsync(RegisterEditDto user)
         {
-            throw new NotImplementedException();
+            if (user == null)
+            {
+                return new RegisterEditResponseDto
+                {
+                    Errors = new List<Error>
+                    {
+                        new Error("Invalid register dto", "Register dto cannot be null")
+                    }
+                };
+            }
+
+            var identityUser = await this.userManager.FindByEmailAsync(user.Email).ConfigureAwait(false);
+
+            if (identityUser == null)
+            {
+                return new RegisterEditResponseDto
+                {
+                    Errors = new List<Error>
+                    {
+                        new Error("Invalid user email", "Email not found")
+                    }
+                };
+            }
+
+            var customer = this.identityDbContext.Customers.FirstOrDefault(x => x.IdentityId == identityUser.Id);
+
+            if (customer == null)
+            {
+                return new RegisterEditResponseDto
+                {
+                    Errors = new List<Error>
+                    {
+                        new Error("Customer not found", "Customer not found")
+                    }
+                };
+            }
+
+            customer.Description = user.Description;
+            customer.CustomerType = (CustomerType)user.AccountType;
+            customer.ProfileName = user.ProfileName;
+            customer.Price = user.Price;
+
+            byte[] profilePhotoBytes = System.Convert.FromBase64String(user.ProfilePhoto.Content);
+
+            File.WriteAllBytes($@"C:\TurnItUp\ProfilePhotos\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
+
+            customer.ProfilePhoto = new Domain.Model.Images.Image
+            {
+                Name = user.ProfilePhoto.Name,
+                Extension = user.ProfilePhoto.Extension
+            };
+
+            byte[] headerPhotoBytes = System.Convert.FromBase64String(user.HeaderPhoto.Content);
+
+            File.WriteAllBytes($@"C:\TurnItUp\HeaderPhotos\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
+
+            customer.HeaderPhoto = new Domain.Model.Images.Image
+            {
+                Name = user.HeaderPhoto.Name,
+                Extension = user.HeaderPhoto.Extension
+            };
+
+
+
+            this.identityDbContext.Customers.Update(customer);
+            await this.identityDbContext.SaveChangesAsync();
+
+            return new RegisterEditResponseDto
+            {
+                Errors = new List<Error>()
+            };
         }
     }
 }

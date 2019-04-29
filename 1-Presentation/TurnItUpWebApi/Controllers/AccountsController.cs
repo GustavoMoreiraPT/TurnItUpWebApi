@@ -9,6 +9,8 @@ using TurnItUpWebApi.ResponseModels;
 using Infrastructure.CrossCutting.Helpers;
 using Newtonsoft.Json;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -65,10 +67,26 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
         public async Task<IActionResult> EditUserAsync([FromRoute] int id, [FromBody] RegisterEditDto editDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return null;
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            //Check if identity is same as id to register
+
+            var response = await this.userService.EditUserAsync(editDto).ConfigureAwait(false);
+
+            if (response.Errors.Any())
+            {
+                return this.BadRequest(response.Errors);
+            }
+
+            return Ok(response);
         }
 
         [HttpPost]
