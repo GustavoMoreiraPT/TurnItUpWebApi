@@ -3,14 +3,16 @@ using System;
 using Data.Repository.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190429171443_tracksupport")]
+    partial class tracksupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,15 +314,15 @@ namespace Data.Repository.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("CustomerId");
+
                     b.Property<string>("Language");
 
                     b.Property<string>("Name");
 
-                    b.Property<int?>("customerId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("customerId");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("CustomerRoles");
                 });
@@ -590,9 +592,9 @@ namespace Data.Repository.Migrations
 
             modelBuilder.Entity("Domain.Model.ValueObjects.Role", b =>
                 {
-                    b.HasOne("Domain.Model.Users.Customer", "customer")
+                    b.HasOne("Domain.Model.Users.Customer")
                         .WithMany("Roles")
-                        .HasForeignKey("customerId");
+                        .HasForeignKey("CustomerId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

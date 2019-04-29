@@ -4,6 +4,7 @@ using Domain.Model.Events;
 using Domain.Model.Genres;
 using Domain.Model.Images;
 using Domain.Model.Roles;
+using Domain.Model.Tracks;
 using Domain.Model.Users;
 using Domain.Model.ValueObjects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -45,12 +46,29 @@ namespace Data.Repository.Configuration
 
         public DbSet<LanguageGenrer> LanguageGenres { get; set; }
 
+        public DbSet<Track> Tracks { get; set; }
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseMySql(GetConnectionString(), b => b.MigrationsAssembly("Data.Repository"));
 		}
 
-		private static string GetConnectionString()
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Genders);
+
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Tracks);
+
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Roles)
+                .WithOne(x => x.customer);
+        }
+
+        private static string GetConnectionString()
 		{
 			const string databaseName = "webapijwt";
 

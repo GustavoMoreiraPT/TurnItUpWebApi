@@ -26,6 +26,7 @@ namespace Application.Services.Configuration
             services.AddScoped<ICountriesService, CountriesService>();
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<IGenresService, GenresService>();
+            services.AddScoped<ITrackService, TrackService>();
 
             services.AddScoped<UserManager<AppUser>>();
 

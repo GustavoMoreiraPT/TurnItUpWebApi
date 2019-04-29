@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Application.Dto.Tracks;
+using Application.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -7,9 +9,11 @@ namespace TurnItUpWebApi.Controllers
     [Route("v1/accounts/{id}/tracks")]
     public class TracksController : Controller
     {
-        public TracksController()
-        {
+        public ITrackService trackService;
 
+        public TracksController(ITrackService trackService)
+        {
+            this.trackService = trackService;
         }
 
         /// <summary>
@@ -24,9 +28,12 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task UploadFile([FromRoute] int id, [FromForm] IFormFile audioTrack)
+        public async Task<IActionResult> UploadFile([FromRoute] int id, [FromBody]Track audioTrack)
         {
+            //check for identityId here
+            await this.trackService.UploadTrack(id, audioTrack);
 
+            return this.Ok();
         }
     }
 }

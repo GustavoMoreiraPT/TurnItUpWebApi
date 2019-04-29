@@ -1,5 +1,6 @@
 ﻿using Domain.Model.Images;
 using Domain.Model.ValueObjects;
+using Domain.Model.Tracks;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,9 +32,11 @@ namespace Domain.Model.Users
 
         public Image HeaderPhoto {get;set;}
 
-        public List<Gender> Genders { get; set; }
+        public ICollection<Track> Tracks { get; set; }
 
-        public List<Role> Roles { get; set; }
+        public ICollection<Gender> Genders { get; set; }
+
+        public ICollection<Role> Roles { get; set; }
 
         private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
 

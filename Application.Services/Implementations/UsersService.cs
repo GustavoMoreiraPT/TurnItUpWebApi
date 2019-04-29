@@ -25,6 +25,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Implementations
 {
@@ -311,7 +312,12 @@ namespace Application.Services.Implementations
                 };
             }
 
-            var customer = this.identityDbContext.Customers.FirstOrDefault(x => x.IdentityId == identityUser.Id);
+            var customer = this.identityDbContext
+                .Customers
+                .Include(x => x.Genders)
+                .Include(x => x.Roles)
+                .Include(x => x.Tracks)
+                .FirstOrDefault(x => x.IdentityId == identityUser.Id);
 
             if (customer == null)
             {
@@ -331,17 +337,21 @@ namespace Application.Services.Implementations
 
             byte[] profilePhotoBytes = System.Convert.FromBase64String(user.ProfilePhoto.Content);
 
-            File.WriteAllBytes($@"C:\TurnItUp\ProfilePhotos\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
+            Directory.CreateDirectory($@"C:\TurnItUp\ProfilePhotos\{customer.Id}");
+
+            File.WriteAllBytes($@"C:\TurnItUp\ProfilePhotos\{customer.Id}\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
 
             customer.ProfilePhoto = new Domain.Model.Images.Image
             {
                 Name = user.ProfilePhoto.Name,
                 Extension = user.ProfilePhoto.Extension
             };
+            
+            Directory.CreateDirectory($@"C:\TurnItUp\HeaderPhotos\{customer.Id}");
 
             byte[] headerPhotoBytes = System.Convert.FromBase64String(user.HeaderPhoto.Content);
 
-            File.WriteAllBytes($@"C:\TurnItUp\HeaderPhotos\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
+            File.WriteAllBytes($@"C:\TurnItUp\HeaderPhotos\{customer.Id}\{user.HeaderPhoto.Name}.{user.HeaderPhoto.Extension}", headerPhotoBytes);
 
             customer.HeaderPhoto = new Domain.Model.Images.Image
             {
@@ -349,7 +359,31 @@ namespace Application.Services.Implementations
                 Extension = user.HeaderPhoto.Extension
             };
 
+            if (customer.Roles == null)
+            {
+                customer.Roles = new List<Domain.Model.ValueObjects.Role>();
+            }
 
+            foreach (var role in user.Roles)
+            {
+                customer.Roles.Add(new Domain.Model.ValueObjects.Role
+                {
+                    Name = role.Name,
+                });
+            }
+
+            if (customer.Genders == null)
+            {
+                customer.Genders = new List<Domain.Model.ValueObjects.Gender>();
+            }
+
+            foreach (var genre in user.Genres)
+            {
+                customer.Genders.Add(new Domain.Model.ValueObjects.Gender
+                {
+                    Name = genre.Name
+                });
+            }
 
             this.identityDbContext.Customers.Update(customer);
             await this.identityDbContext.SaveChangesAsync();

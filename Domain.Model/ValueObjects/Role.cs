@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Model.Users;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,5 +12,7 @@ namespace Domain.Model.ValueObjects
 		public string Name { get; set; }
 
         public string Language { get; set; }
+
+        public Customer customer { get; set; }
 	}
 }
