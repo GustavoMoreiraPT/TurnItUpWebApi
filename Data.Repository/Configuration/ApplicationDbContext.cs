@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using Domain.Model;
 using Domain.Model.Events;
+using Domain.Model.Genres;
 using Domain.Model.Images;
+using Domain.Model.Roles;
 using Domain.Model.Users;
 using Domain.Model.ValueObjects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -21,7 +23,7 @@ namespace Data.Repository.Configuration
 
 		public DbSet<Country> Countries { get; set; }
 
-		public DbSet<Gender> Genders { get; set; }
+		public DbSet<Gender> CustomerGenres { get; set; }
 
 		public DbSet<Location> Locations { get; set; }
 
@@ -29,7 +31,7 @@ namespace Data.Repository.Configuration
 
 		public DbSet<Rating> Ratings { get; set; }
 
-		public DbSet<Role> Role { get; set; }
+		public DbSet<Role> CustomerRoles { get; set; }
 
 		public DbSet<Event> Events { get; set; }
 
@@ -38,6 +40,10 @@ namespace Data.Repository.Configuration
 		public DbSet<EventLocation> EventLocations { get; set; }
 
         public DbSet<Image> Images { get; set; }
+
+        public DbSet<LanguageRole> LanguageRoles { get; set; }
+
+        public DbSet<LanguageGenrer> LanguageGenres { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
