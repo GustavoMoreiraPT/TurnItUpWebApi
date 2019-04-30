@@ -286,7 +286,7 @@ namespace Application.Services.Implementations
 			return null;
 		}
 
-        public async Task<RegisterEditResponseDto> EditUserAsync(RegisterEditDto user)
+        public async Task<RegisterEditResponseDto> EditUserAsync(int customerId, ClaimsIdentity identity, RegisterEditDto user)
         {
             if (user == null)
             {

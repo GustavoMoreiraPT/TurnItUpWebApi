@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.IO;
+using Application.Dto.Tracks.Responses;
 
 namespace Application.Services.Implementations
 {
@@ -20,7 +21,7 @@ namespace Application.Services.Implementations
             this.context = context;
         }
 
-        public async Task UploadTrack(int customerId, Track track)
+        public async Task<CreateTracksResponse> UploadTrack(int customerId, Track track)
         {
             var customer = this.context.Customers
                 .Include(x => x.Tracks)
@@ -28,7 +29,13 @@ namespace Application.Services.Implementations
 
             if (customer == null)
             {
-                throw new ArgumentException();
+                return new CreateTracksResponse
+                {
+                    Errors = new List<Infrastructure.CrossCutting.Helpers.Error>
+                    {
+                        new Infrastructure.CrossCutting.Helpers.Error("Invalid track request", "Customer id provided does not belong to any customer")
+                    }
+                };
             }
 
             if (customer.Tracks == null)
@@ -44,7 +51,13 @@ namespace Application.Services.Implementations
 
             if (mb > 50)
             {
-                throw new ArgumentNullException();
+                return new CreateTracksResponse
+                {
+                    Errors = new List<Infrastructure.CrossCutting.Helpers.Error>
+                    {
+                        new Infrastructure.CrossCutting.Helpers.Error("Invalid track request", "File to upload cannot exceed 50 mb")
+                    }
+                };
             }
 
             File.WriteAllBytes($@"C:\TurnItUp\Tracks\{customer.Id}\{track.Name}.{track.Extension}", trackBytes);
@@ -58,6 +71,8 @@ namespace Application.Services.Implementations
             this.context.Customers.Update(customer);
 
             await this.context.SaveChangesAsync();
+
+            return new CreateTracksResponse();
         }
     }
 }

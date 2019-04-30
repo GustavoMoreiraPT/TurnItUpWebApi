@@ -79,14 +79,14 @@ namespace TurnItUpWebApi.Controllers
 
             //Check if identity is same as id to register
 
-            var response = await this.userService.EditUserAsync(editDto).ConfigureAwait(false);
+            var response = await this.userService.EditUserAsync(id, identity, editDto).ConfigureAwait(false);
 
             if (response.Errors.Any())
             {
                 return this.BadRequest(response.Errors);
             }
 
-            return Ok(response);
+            return Ok();
         }
 
         [HttpPost]
