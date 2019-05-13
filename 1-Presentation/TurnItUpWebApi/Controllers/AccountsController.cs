@@ -77,7 +77,14 @@ namespace TurnItUpWebApi.Controllers
 
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
-            //Check if identity is same as id to register
+            var userIdFromToken = identity.Claims.FirstOrDefault(x => x.Type == "id");
+            
+            var claimValue = userIdFromToken.Value;
+
+            if (claimValue != id.ToString())
+            {
+                return this.StatusCode(403);
+            }
 
             var response = await this.userService.EditUserAsync(id, identity, editDto).ConfigureAwait(false);
 
