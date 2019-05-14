@@ -203,6 +203,8 @@ namespace Application.Services.Implementations
 				expires_in = (int)jwtOptions.ValidFor.TotalSeconds
 			};
 
+            var customerGuid = identity.Claims.FirstOrDefault(x => x.Type == "id").Value;
+
 			var accessToken = await 
 				this.jwtFactory
 				.GenerateEncodedToken(userName, identity).ConfigureAwait(false);
@@ -211,7 +213,10 @@ namespace Application.Services.Implementations
 				this.AddRefreshToken(accessToken.Token, userName, remoteIpAddress)
 				.ConfigureAwait(false);
 
-			return new LoginResponse(accessToken, refreshToken, true);
+            var loginResponse = new LoginResponse(accessToken, refreshToken, true);
+            loginResponse.CustomerGuid = customerGuid;
+
+            return loginResponse;
 		}
 
         public async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
