@@ -14,20 +14,20 @@ using System.Security.Claims;
 
 namespace TurnItUpWebApi.Controllers
 {
-	[Route("v1/accounts")]
-	public class AccountsController : Controller
-	{
-		private readonly IUsersService userService;
-		private readonly IConfiguration configuration;
-	
-		public AccountsController(
-			IUsersService userService,
-			IConfiguration configuration
-			)
-		{
-			this.userService = userService;
-			this.configuration = configuration;
-		}
+    [Route("v1/accounts")]
+    public class AccountsController : Controller
+    {
+        private readonly IUsersService userService;
+        private readonly IConfiguration configuration;
+
+        public AccountsController(
+            IUsersService userService,
+            IConfiguration configuration
+            )
+        {
+            this.userService = userService;
+            this.configuration = configuration;
+        }
 
         /// <summary>
         /// Creates a new account within the system.
@@ -39,21 +39,21 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody]RegisterCreateDto registerDto)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-			var result = await this.userService.CreateUserAsync(registerDto, registerDto.Password);
+            var result = await this.userService.CreateUserAsync(registerDto, registerDto.Password);
 
             if (result.Errors.Any())
             {
                 return this.BadRequest(result.Errors);
             }
 
-			return new CreatedResult(result.UserCreatedId, "Account created");
-		}
+            return new CreatedResult(result.UserCreatedId, "Account created");
+        }
 
         /// <summary>
         /// Edits an existing account with additional info provided after the inital register.
@@ -78,7 +78,7 @@ namespace TurnItUpWebApi.Controllers
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             var userIdFromToken = identity.Claims.FirstOrDefault(x => x.Type == "id");
-            
+
             var claimValue = userIdFromToken.Value;
 
             if (claimValue != id.ToString())
@@ -121,6 +121,13 @@ namespace TurnItUpWebApi.Controllers
                 );
 
             return new OkObjectResult(loginResponse);
+        }
+
+        [HttpPost]
+        [Route("forgottenPassword")]
+        public async Task<IActionResult> RecoverPassword([FromBody]string email)
+        {
+            return null;
         }
 
         //// POST api/auth/refreshtoken
