@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 using System;
 using System.IO;
@@ -12,16 +13,16 @@ namespace TurnItUpWebApi
         public static int Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-             .MinimumLevel.Information()
-             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-             .Enrich.FromLogContext()
-             .WriteTo.Console()
-             .CreateLogger();
+           .MinimumLevel.Debug()
+           .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+           .Enrich.FromLogContext()
+           .WriteTo.RollingFile("logs/log-{Date}.txt")
+           .CreateLogger();
 
             try
             {
                 Log.Information("Starting web host");
-                WebHostExtensions.Run(Program.BuildWebHost(args));
+                BuildWebHost(args).Run();
                 return 0;
             }
             catch (Exception ex)
@@ -33,11 +34,15 @@ namespace TurnItUpWebApi
             {
                 Log.CloseAndFlush();
             }
+
         }
 
-        public static IWebHost BuildWebHost(string[] args)
-        {
-            return SerilogWebHostBuilderExtensions.UseSerilog(WebHostBuilderExtensions.UseStartup<Startup>(WebHost.CreateDefaultBuilder(args)), (ILogger)null, false).Build();
-        }
+        public static IWebHost BuildWebHost(string[] args) =>
+              WebHost.CreateDefaultBuilder(args)
+              .UseStartup<Startup>()
+              .UseSerilog()
+              .Build();
+
     }
 }
+
