@@ -106,16 +106,7 @@ namespace TurnItUpWebApi
 			{
 				app.UseDeveloperExceptionPage();
 				app.UseHttpStatusCodeExceptionMiddleware();
-				app.UseSwagger();
-
-				//// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
-				// specifying the Swagger JSON endpoint.
-				app.UseSwaggerUI(c =>
-				{
-					c.SwaggerEndpoint("/swagger/v1/swagger.json", "TurnItUp V1");
-
-					c.DocExpansion("none");
-				});
+			
 			}
 			else
 			{
@@ -125,7 +116,18 @@ namespace TurnItUpWebApi
 			}
 			dbContext.Database.EnsureCreated();
 
-			app.UseHttpsRedirection();
+            app.UseSwagger();
+
+            //// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TurnItUp V1");
+
+                c.DocExpansion("none");
+            });
+
+            app.UseHttpsRedirection();
 
 			app.UseAuthentication();
 
