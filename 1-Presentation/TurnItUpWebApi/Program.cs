@@ -40,7 +40,7 @@ namespace TurnItUpWebApi
         public static IWebHost BuildWebHost(string[] args) =>
               WebHost.CreateDefaultBuilder(args)
               .UseStartup<Startup>()
-              .UseSerilog()
+               .UseSerilog()
               .Build();
 
     }
