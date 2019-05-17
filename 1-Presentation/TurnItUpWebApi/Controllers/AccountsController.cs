@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using TurnItUpWebApi.Filters;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -98,6 +99,7 @@ namespace TurnItUpWebApi.Controllers
 
         [HttpPost]
         [Route("login")]
+        [Throttle(Name = "LoginThrottle", Seconds = 3)]
         public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
         {
             if (!ModelState.IsValid)
