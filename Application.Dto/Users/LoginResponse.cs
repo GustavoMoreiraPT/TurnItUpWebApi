@@ -1,5 +1,4 @@
 ﻿using Infrastructure.CrossCutting.Helpers;
-using System;
 using System.Collections.Generic;
 
 namespace Application.Dto.Users

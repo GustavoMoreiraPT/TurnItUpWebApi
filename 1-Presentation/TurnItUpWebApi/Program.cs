@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
 using System;
-using System.IO;
 
 namespace TurnItUpWebApi
 {

@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /1-Presentation/TurnItUpWebApi/Properties/PublishProfiles/FolderProfile.pubxml
 /Data.Gateway/TurnItUpWebApi.Tests/UnitTest1.cs
+/1-Presentation/TurnItUpWebApi/logs

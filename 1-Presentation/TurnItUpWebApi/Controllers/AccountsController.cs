@@ -120,7 +120,6 @@ namespace TurnItUpWebApi.Controllers
                 identity,
                 loginDto.UserName,
                 loginDto.Password,
-                loginDto.RemoteIpAddress,
                 new JsonSerializerSettings { Formatting = Formatting.Indented }
                 );
 

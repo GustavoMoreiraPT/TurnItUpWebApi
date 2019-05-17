@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Application.Dto.Tracks
+﻿namespace Application.Dto.Tracks
 {
     public class Track
     {
