@@ -24,7 +24,6 @@ namespace Application.Services.Interfaces
             ClaimsIdentity identity,
             string userName,
             string password,
-            string remoteIpAddress,
             JsonSerializerSettings serializerSettings
             );
 
@@ -41,7 +40,6 @@ namespace Application.Services.Interfaces
         Task<string> AddRefreshToken(
             string token,
             string userName,
-            string remoteIpAddress,
             double daysToExpire = 5
             );
 

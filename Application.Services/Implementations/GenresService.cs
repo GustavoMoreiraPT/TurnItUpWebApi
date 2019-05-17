@@ -1,10 +1,8 @@
 ﻿using Application.Dto.Users;
 using Application.Services.Interfaces;
 using Data.Repository.Configuration;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Application.Services.Implementations
 {

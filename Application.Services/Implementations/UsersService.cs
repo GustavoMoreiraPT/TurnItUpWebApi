@@ -61,7 +61,7 @@ namespace Application.Services.Implementations
 			this.repository = repository;
 		}
 
-		public async Task<string> AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
+		public async Task<string> AddRefreshToken(string token, string userName, double daysToExpire = 5)
 		{
 			var user = await this.userManager.FindByEmailAsync(userName).ConfigureAwait(false);
 
@@ -81,7 +81,7 @@ namespace Application.Services.Implementations
 
 			var refreshToken = this.tokenFactory.GenerateToken();
 
-			customerUser.AddRefreshToken(new RefreshToken(refreshToken, DateTime.UtcNow.AddDays(daysToExpire), userName, remoteIpAddress));
+			customerUser.AddRefreshToken(new RefreshToken(refreshToken, DateTime.UtcNow.AddDays(daysToExpire), userName, string.Empty));
 
 			this.identityDbContext.Customers.Update(customerUser);
 
@@ -192,7 +192,6 @@ namespace Application.Services.Implementations
 			ClaimsIdentity identity,
 			string userName,
 			string password,
-			string remoteIpAddress,
 			JsonSerializerSettings serializerSettings
 			)
 		{
@@ -210,7 +209,7 @@ namespace Application.Services.Implementations
 				.GenerateEncodedToken(userName, identity).ConfigureAwait(false);
 
 			var refreshToken = await
-				this.AddRefreshToken(accessToken.Token, userName, remoteIpAddress)
+				this.AddRefreshToken(accessToken.Token, userName)
 				.ConfigureAwait(false);
 
             var loginResponse = new LoginResponse(accessToken, refreshToken, true);

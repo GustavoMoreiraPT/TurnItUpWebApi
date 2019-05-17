@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using TurnItUpWebApi.Filters;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -38,6 +39,7 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
         public async Task<IActionResult> Post([FromBody]RegisterCreateDto registerDto)
         {
             if (!ModelState.IsValid)
@@ -68,6 +70,7 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Policy = "ApiUser")]
+        [Throttle(Name = "EditUserThrottle", Seconds = 5)]
         public async Task<IActionResult> EditUserAsync([FromRoute] int id, [FromBody] RegisterEditDto editDto)
         {
             if (!ModelState.IsValid)
@@ -98,6 +101,7 @@ namespace TurnItUpWebApi.Controllers
 
         [HttpPost]
         [Route("login")]
+        [Throttle(Name = "LoginThrottle", Seconds = 10)]
         public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
         {
             if (!ModelState.IsValid)
@@ -116,7 +120,6 @@ namespace TurnItUpWebApi.Controllers
                 identity,
                 loginDto.UserName,
                 loginDto.Password,
-                loginDto.RemoteIpAddress,
                 new JsonSerializerSettings { Formatting = Formatting.Indented }
                 );
 
