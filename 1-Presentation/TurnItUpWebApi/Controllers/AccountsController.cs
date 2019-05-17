@@ -99,7 +99,7 @@ namespace TurnItUpWebApi.Controllers
 
         [HttpPost]
         [Route("login")]
-        [Throttle(Name = "LoginThrottle", Seconds = 3)]
+        [Throttle(Name = "LoginThrottle", Seconds = 10)]
         public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
         {
             if (!ModelState.IsValid)
