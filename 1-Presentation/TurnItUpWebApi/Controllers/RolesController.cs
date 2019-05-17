@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TurnItUpWebApi.Filters;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -25,6 +26,7 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Policy = "ApiUser")]
+        [Throttle(Name = "RolesThrottle", Seconds = 5)]
         public IActionResult GetAll([FromQuery] Language language)
         {
             if (language == null)
