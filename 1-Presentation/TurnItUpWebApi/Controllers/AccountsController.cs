@@ -8,23 +8,27 @@ using System.Collections.Generic;
 using TurnItUpWebApi.ResponseModels;
 using Infrastructure.CrossCutting.Helpers;
 using Newtonsoft.Json;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using TurnItUpWebApi.Filters;
 
 namespace TurnItUpWebApi.Controllers
 {
-	[Route("v1/accounts")]
-	public class AccountsController : Controller
-	{
-		private readonly IUsersService userService;
-		private readonly IConfiguration configuration;
-	
-		public AccountsController(
-			IUsersService userService,
-			IConfiguration configuration
-			)
-		{
-			this.userService = userService;
-			this.configuration = configuration;
-		}
+    [Route("v1/accounts")]
+    public class AccountsController : Controller
+    {
+        private readonly IUsersService userService;
+        private readonly IConfiguration configuration;
+
+        public AccountsController(
+            IUsersService userService,
+            IConfiguration configuration
+            )
+        {
+            this.userService = userService;
+            this.configuration = configuration;
+        }
 
         /// <summary>
         /// Creates a new account within the system.
@@ -32,20 +36,26 @@ namespace TurnItUpWebApi.Controllers
         /// <param name="registerDto">TBody containing password and email to create the account.</param>
         /// <returns></returns>
 		[HttpPost]
-        [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
         public async Task<IActionResult> Post([FromBody]RegisterCreateDto registerDto)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-			var result = await this.userService.CreateUserAsync(registerDto, registerDto.Password);
+            var result = await this.userService.CreateUserAsync(registerDto, registerDto.Password);
 
-			return new CreatedResult("1", "Account created");
-		}
+            if (result.Errors.Any())
+            {
+                return this.BadRequest(result.Errors);
+            }
+
+            return new CreatedResult(result.UserCreatedId, "Account created");
+        }
 
         /// <summary>
         /// Edits an existing account with additional info provided after the inital register.
@@ -59,14 +69,39 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
+        [Throttle(Name = "EditUserThrottle", Seconds = 5)]
         public async Task<IActionResult> EditUserAsync([FromRoute] int id, [FromBody] RegisterEditDto editDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return null;
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            var userIdFromToken = identity.Claims.FirstOrDefault(x => x.Type == "id");
+
+            var claimValue = userIdFromToken.Value;
+
+            if (claimValue != id.ToString())
+            {
+                return this.StatusCode(403);
+            }
+
+            var response = await this.userService.EditUserAsync(id, identity, editDto).ConfigureAwait(false);
+
+            if (response.Errors.Any())
+            {
+                return this.BadRequest(response.Errors);
+            }
+
+            return Ok();
         }
 
         [HttpPost]
         [Route("login")]
+        [Throttle(Name = "LoginThrottle", Seconds = 10)]
         public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
         {
             if (!ModelState.IsValid)
@@ -85,11 +120,17 @@ namespace TurnItUpWebApi.Controllers
                 identity,
                 loginDto.UserName,
                 loginDto.Password,
-                loginDto.RemoteIpAddress,
                 new JsonSerializerSettings { Formatting = Formatting.Indented }
                 );
 
             return new OkObjectResult(loginResponse);
+        }
+
+        [HttpPost]
+        [Route("forgottenPassword")]
+        public async Task<IActionResult> RecoverPassword([FromBody]string email)
+        {
+            return null;
         }
 
         //// POST api/auth/refreshtoken

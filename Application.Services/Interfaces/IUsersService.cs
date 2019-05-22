@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
 using Application.Dto.Musicians;
+using Application.Dto.Users.Responses;
 
 namespace Application.Services.Interfaces
 {
     public interface IUsersService
     {
-        Task<IdentityResult> CreateUserAsync(RegisterCreateDto user, string password);
+        Task<RegisterResponseDto> CreateUserAsync(RegisterCreateDto user, string password);
+
+        Task<RegisterEditResponseDto> EditUserAsync(int customerId, ClaimsIdentity identity, RegisterEditDto user);
 
         Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password);
 
@@ -21,7 +24,6 @@ namespace Application.Services.Interfaces
             ClaimsIdentity identity,
             string userName,
             string password,
-            string remoteIpAddress,
             JsonSerializerSettings serializerSettings
             );
 
@@ -38,15 +40,12 @@ namespace Application.Services.Interfaces
         Task<string> AddRefreshToken(
             string token,
             string userName,
-            string remoteIpAddress,
             double daysToExpire = 5
             );
 
         Task<LoginResponse> RefreshToken(ExchangeRefreshTokenRequest refreshTokenRequest);
 
         Task<int> GetCustomerIdByToken(string token);
-
-        Task CreateTurnItUpUser(Customer customer, string userType);
 
 		Task AddClaimToUser(ClaimsIdentity identity, string claimType, string claimValue);
 	}

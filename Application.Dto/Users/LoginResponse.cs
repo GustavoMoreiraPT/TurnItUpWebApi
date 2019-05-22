@@ -7,6 +7,9 @@ namespace Application.Dto.Users
     {
         public AccessToken AccessToken { get; }
         public string RefreshToken { get; }
+
+        public string CustomerGuid { get; set; }
+
         public IEnumerable<Error> Errors { get; }
 
         public LoginResponse(IEnumerable<Error> errors, bool success = false, string message = null) : base(success, message)

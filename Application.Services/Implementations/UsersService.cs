@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -6,14 +8,13 @@ using System.Threading.Tasks;
 using Application.Dto.Enum;
 using Application.Dto.Musicians;
 using Application.Dto.Users;
+using Application.Dto.Users.Responses;
 using Application.Services.Interfaces;
 using Application.Services.Specifications;
 using AutoMapper;
 using Data.Repository.Configuration;
 using Domain.Core.RepositoryInterfaces;
 using Domain.Model;
-using Domain.Model.Musician;
-using Domain.Model.Recruiter;
 using Domain.Model.Users;
 using Infrastructure.CrossCutting;
 using Infrastructure.CrossCutting.Helpers;
@@ -24,6 +25,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Implementations
 {
@@ -59,7 +61,7 @@ namespace Application.Services.Implementations
 			this.repository = repository;
 		}
 
-		public async Task<string> AddRefreshToken(string token, string userName, string remoteIpAddress, double daysToExpire = 5)
+		public async Task<string> AddRefreshToken(string token, string userName, double daysToExpire = 5)
 		{
 			var user = await this.userManager.FindByEmailAsync(userName).ConfigureAwait(false);
 
@@ -79,7 +81,7 @@ namespace Application.Services.Implementations
 
 			var refreshToken = this.tokenFactory.GenerateToken();
 
-			customerUser.AddRefreshToken(new RefreshToken(refreshToken, DateTime.UtcNow.AddDays(daysToExpire), userName, remoteIpAddress));
+			customerUser.AddRefreshToken(new RefreshToken(refreshToken, DateTime.UtcNow.AddDays(daysToExpire), userName, string.Empty));
 
 			this.identityDbContext.Customers.Update(customerUser);
 
@@ -88,11 +90,16 @@ namespace Application.Services.Implementations
 			return refreshToken;
 		}
 
-		public async Task<IdentityResult> CreateUserAsync(RegisterCreateDto user, string password)
+		public async Task<RegisterResponseDto> CreateUserAsync(RegisterCreateDto user, string password)
 		{
 			var userIdentity = this.mapper.Map<AppUser>(user);
 
 			var result = await this.userManager.CreateAsync(userIdentity, password).ConfigureAwait(false);
+
+            if (result.Errors.Any())
+            {
+               return this.FillRegisterErrors(result.Errors.ToList());
+            }
 
 			await this.userManager.AddClaimAsync(userIdentity,
 				new Claim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
@@ -110,10 +117,31 @@ namespace Application.Services.Implementations
 			await this.CreateAccountType(customer, user);
 			await this.identityDbContext.SaveChangesAsync();
 
-			return result;
+			return new RegisterResponseDto
+            {
+                IdentityResult = result,
+                UserCreatedId = customer.Entity.Id.ToString(),
+                Errors = new List<Error>(),
+            };
 		}
 
-		private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterCreateDto user)
+        private RegisterResponseDto FillRegisterErrors(List<IdentityError> errors)
+        {
+            var apiErrors = new List<Error>();
+
+            foreach (var error in errors)
+            {
+                var newError = new Error(error.Code, error.Description);
+                apiErrors.Add(newError);
+            }
+
+            return new RegisterResponseDto
+            {
+                Errors = apiErrors
+            };
+        }
+
+        private async Task CreateAccountType(EntityEntry<Customer> customer, RegisterCreateDto user)
 		{
 			//if (user.AccountType == AccountTypes.Musician)
 			//{
@@ -124,29 +152,6 @@ namespace Application.Services.Implementations
 			//{
 			//	await this.CreateTurnItUpUser(customer.Entity, "Recruiter").ConfigureAwait(false);
 			//}
-		}
-
-		public async Task CreateTurnItUpUser(Customer customer, string userType)
-		{
-			if (userType == "Musician")
-			{
-				var newMusician = new Musician
-				{
-					CustomerId = customer.Id,
-				};
-				this.identityDbContext.TurnItUpUsers.Add(newMusician);
-			}
-
-			if (userType == "Recruiter")
-			{
-				var newRecruiter = new Recruiter
-				{
-					CustomerId = customer.Id,
-				};
-				this.identityDbContext.TurnItUpUsers.Add(newRecruiter);
-			}
-
-			await this.identityDbContext.SaveChangesAsync();
 		}
 
 		public async Task<IdentityResult> CreateUserAsync(AppUser user, FacebookUserData facebookUserData, string password)
@@ -187,7 +192,6 @@ namespace Application.Services.Implementations
 			ClaimsIdentity identity,
 			string userName,
 			string password,
-			string remoteIpAddress,
 			JsonSerializerSettings serializerSettings
 			)
 		{
@@ -198,15 +202,20 @@ namespace Application.Services.Implementations
 				expires_in = (int)jwtOptions.ValidFor.TotalSeconds
 			};
 
+            var customerGuid = identity.Claims.FirstOrDefault(x => x.Type == "id").Value;
+
 			var accessToken = await 
 				this.jwtFactory
 				.GenerateEncodedToken(userName, identity).ConfigureAwait(false);
 
 			var refreshToken = await
-				this.AddRefreshToken(accessToken.Token, userName, remoteIpAddress)
+				this.AddRefreshToken(accessToken.Token, userName)
 				.ConfigureAwait(false);
 
-			return new LoginResponse(accessToken, refreshToken, true);
+            var loginResponse = new LoginResponse(accessToken, refreshToken, true);
+            loginResponse.CustomerGuid = customerGuid;
+
+            return loginResponse;
 		}
 
         public async Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password)
@@ -280,5 +289,113 @@ namespace Application.Services.Implementations
 
 			return null;
 		}
-	}
+
+        public async Task<RegisterEditResponseDto> EditUserAsync(int customerId, ClaimsIdentity identity, RegisterEditDto user)
+        {
+            if (user == null)
+            {
+                return new RegisterEditResponseDto
+                {
+                    Errors = new List<Error>
+                    {
+                        new Error("Invalid register dto", "Register dto cannot be null")
+                    }
+                };
+            }
+
+            var identityUser = await this.userManager.FindByEmailAsync(user.Email).ConfigureAwait(false);
+
+            if (identityUser == null)
+            {
+                return new RegisterEditResponseDto
+                {
+                    Errors = new List<Error>
+                    {
+                        new Error("Invalid user email", "Email not found")
+                    }
+                };
+            }
+
+            var customer = this.identityDbContext
+                .Customers
+                .Include(x => x.Genders)
+                .Include(x => x.Roles)
+                .Include(x => x.Tracks)
+                .FirstOrDefault(x => x.IdentityId == identityUser.Id);
+
+            if (customer == null)
+            {
+                return new RegisterEditResponseDto
+                {
+                    Errors = new List<Error>
+                    {
+                        new Error("Customer not found", "Customer not found")
+                    }
+                };
+            }
+
+            customer.Description = user.Description;
+            customer.CustomerType = (CustomerType)user.AccountType;
+            customer.ProfileName = user.ProfileName;
+            customer.Price = user.Price;
+
+            byte[] profilePhotoBytes = System.Convert.FromBase64String(user.ProfilePhoto.Content);
+
+            Directory.CreateDirectory($@"C:\TurnItUp\ProfilePhotos\{customer.Id}");
+
+            File.WriteAllBytes($@"C:\TurnItUp\ProfilePhotos\{customer.Id}\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
+
+            customer.ProfilePhoto = new Domain.Model.Images.Image
+            {
+                Name = user.ProfilePhoto.Name,
+                Extension = user.ProfilePhoto.Extension
+            };
+            
+            Directory.CreateDirectory($@"C:\TurnItUp\HeaderPhotos\{customer.Id}");
+
+            byte[] headerPhotoBytes = System.Convert.FromBase64String(user.HeaderPhoto.Content);
+
+            File.WriteAllBytes($@"C:\TurnItUp\HeaderPhotos\{customer.Id}\{user.HeaderPhoto.Name}.{user.HeaderPhoto.Extension}", headerPhotoBytes);
+
+            customer.HeaderPhoto = new Domain.Model.Images.Image
+            {
+                Name = user.HeaderPhoto.Name,
+                Extension = user.HeaderPhoto.Extension
+            };
+
+            if (customer.Roles == null)
+            {
+                customer.Roles = new List<Domain.Model.ValueObjects.Role>();
+            }
+
+            foreach (var role in user.Roles)
+            {
+                customer.Roles.Add(new Domain.Model.ValueObjects.Role
+                {
+                    Name = role.Name,
+                });
+            }
+
+            if (customer.Genders == null)
+            {
+                customer.Genders = new List<Domain.Model.ValueObjects.Gender>();
+            }
+
+            foreach (var genre in user.Genres)
+            {
+                customer.Genders.Add(new Domain.Model.ValueObjects.Gender
+                {
+                    Name = genre.Name
+                });
+            }
+
+            this.identityDbContext.Customers.Update(customer);
+            await this.identityDbContext.SaveChangesAsync();
+
+            return new RegisterEditResponseDto
+            {
+                Errors = new List<Error>()
+            };
+        }
+    }
 }

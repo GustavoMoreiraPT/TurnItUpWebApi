@@ -1,23 +1,44 @@
-﻿using System.Collections.Generic;
+﻿using Domain.Model.Images;
+using Domain.Model.ValueObjects;
+using Domain.Model.Tracks;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Domain.Model.Users
 {
-	public class Customer 
-	{
-		public int Id { get; set; }
+    public class Customer
+    {
+        public int Id { get; set; }
 
-		public string IdentityId { get; set; }
+        public string IdentityId { get; set; }
 
-		public AppUser Identity { get; set; }  // navigation property
+        public AppUser Identity { get; set; }  // navigation property
 
-		public string Location { get; set; }
+        public string Location { get; set; }
 
-		public string Locale { get; set; }
+        public string Locale { get; set; }
 
-		public string Gender { get; set; }
+        public string Gender { get; set; }
 
-		private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
+        public decimal Price { get; set; }
+
+        public string ProfileName { get; set; }
+
+        public CustomerType CustomerType { get; set; }
+
+        public string Description { get; set; }
+
+        public Image ProfilePhoto { get; set; }
+
+        public Image HeaderPhoto {get;set;}
+
+        public ICollection<Track> Tracks { get; set; }
+
+        public ICollection<Gender> Genders { get; set; }
+
+        public ICollection<Role> Roles { get; set; }
+
+        private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
 
 		public List<RefreshToken> RefreshTokens => _refreshTokens;
 

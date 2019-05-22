@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Domain.Model.Musician;
 using Domain.Model.ValueObjects;
 
 namespace Domain.Model.Events
@@ -29,10 +26,6 @@ namespace Domain.Model.Events
 		public Rating Rating { get; set; }
 
 		public EventState State { get; set; }
-
-		public virtual  Musician.Musician Musician { get; set; }
-
-		public virtual Recruiter.Recruiter Recruiter { get; set; }
 
 		public virtual Role Role { get; set; }
 	}

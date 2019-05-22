@@ -23,8 +23,12 @@ namespace Application.Services.Configuration
 			services.AddScoped<IMusicianService, MusicianService>();
             services.AddScoped<IRecruiterService, RecruiterService>();
 			services.AddScoped<IEventService, EventService>();
+            services.AddScoped<ICountriesService, CountriesService>();
+            services.AddScoped<IRolesService, RolesService>();
+            services.AddScoped<IGenresService, GenresService>();
+            services.AddScoped<ITrackService, TrackService>();
 
-			services.AddScoped<UserManager<AppUser>>();
+            services.AddScoped<UserManager<AppUser>>();
 
 			services.AddScoped<IUsersService, UsersService>();
 			services.AddScoped<IJwtFactory, JwtFactory>();

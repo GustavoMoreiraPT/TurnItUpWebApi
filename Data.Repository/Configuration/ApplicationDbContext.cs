@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using Domain.Model;
 using Domain.Model.Events;
-using Domain.Model.Musician;
-using Domain.Model.Recruiter;
+using Domain.Model.Genres;
+using Domain.Model.Images;
+using Domain.Model.Roles;
+using Domain.Model.Tracks;
 using Domain.Model.Users;
 using Domain.Model.ValueObjects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -16,17 +18,13 @@ namespace Data.Repository.Configuration
 
 		public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-		public DbSet<TurnItUpUser> TurnItUpUsers { get; set; }
-
-		public DbSet<Musician> Musicians { get; set; }
-
 		public DbSet<City> Cities { get; set; }
 
 		public DbSet<Age> Ages { get; set; }
 
 		public DbSet<Country> Countries { get; set; }
 
-		public DbSet<Gender> Genders { get; set; }
+		public DbSet<Gender> CustomerGenres { get; set; }
 
 		public DbSet<Location> Locations { get; set; }
 
@@ -34,7 +32,7 @@ namespace Data.Repository.Configuration
 
 		public DbSet<Rating> Ratings { get; set; }
 
-		public DbSet<Role> Role { get; set; }
+		public DbSet<Role> CustomerRoles { get; set; }
 
 		public DbSet<Event> Events { get; set; }
 
@@ -42,14 +40,35 @@ namespace Data.Repository.Configuration
 
 		public DbSet<EventLocation> EventLocations { get; set; }
 
-		public DbSet<Recruiter> Recruiters { get; set; }
+        public DbSet<Image> Images { get; set; }
+
+        public DbSet<LanguageRole> LanguageRoles { get; set; }
+
+        public DbSet<LanguageGenrer> LanguageGenres { get; set; }
+
+        public DbSet<Track> Tracks { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseMySql(GetConnectionString(), b => b.MigrationsAssembly("Data.Repository"));
 		}
 
-		private static string GetConnectionString()
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Genders);
+
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Tracks);
+
+            modelBuilder.Entity<Customer>()
+                .HasMany(c => c.Roles)
+                .WithOne(x => x.customer);
+        }
+
+        private static string GetConnectionString()
 		{
 			const string databaseName = "webapijwt";
 
