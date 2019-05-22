@@ -37,8 +37,15 @@ namespace TurnItUpWebApi
 
 			services.AddDbContext<ApplicationDbContext>();
 
-			// add identity
-			var builder = services.AddIdentityCore<AppUser>(o =>
+            services.AddCors(o => o.AddPolicy("CorsPolicy", cors =>
+            {
+                cors.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
+
+            // add identity
+            var builder = services.AddIdentityCore<AppUser>(o =>
 			{
 				// configure identity options
 				o.Password.RequireDigit = false;
@@ -117,6 +124,8 @@ namespace TurnItUpWebApi
 			dbContext.Database.EnsureCreated();
 
             app.UseSwagger();
+
+            app.UseCors("CorsPolicy");
 
             //// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
