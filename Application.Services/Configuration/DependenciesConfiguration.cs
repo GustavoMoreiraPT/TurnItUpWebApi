@@ -27,6 +27,7 @@ namespace Application.Services.Configuration
             services.AddScoped<IGenresService, GenresService>();
             services.AddScoped<ITrackService, TrackService>();
             services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IFollowersService, FollowersService>();
 
             services.AddScoped<UserManager<AppUser>>();
 

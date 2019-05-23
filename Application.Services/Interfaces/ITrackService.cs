@@ -9,6 +9,6 @@ namespace Application.Services.Interfaces
 {
     public interface ITrackService
     {
-        Task<CreateTracksResponse> UploadTrack(int customerId, Track track);
+        Task<CreateTracksResponse> UploadTrack(Guid customerId, Track track);
     }
 }

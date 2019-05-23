@@ -37,7 +37,7 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "TracksThrottle", Seconds = 10)]
-        public async Task<IActionResult> UploadFile([FromRoute] int id, [FromBody]Track audioTrack)
+        public async Task<IActionResult> UploadFile([FromRoute] Guid id, [FromBody]Track audioTrack)
         {
             //check for identityId here
 

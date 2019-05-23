@@ -33,7 +33,7 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
-        public async Task<IActionResult> GetProfileSummary([FromRoute] int id)
+        public async Task<IActionResult> GetProfileSummary([FromRoute] Guid id)
         {
             throw new NotImplementedException();
         }
@@ -49,7 +49,7 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
-        public async Task<IActionResult> GetProfileAboutInfo([FromRoute] int id)
+        public async Task<IActionResult> GetProfileAboutInfo([FromRoute] Guid id)
         {
             throw new NotImplementedException();
         }
@@ -65,7 +65,23 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
-        public async Task<IActionResult> GetReviews([FromRoute] int id)
+        public async Task<IActionResult> GetReviews([FromRoute] Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Get all the events associated with a certain user profile.
+        /// </summary>
+        /// <param name="id">The id of the user to read the profile events.</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("events")]
+        [ProducesResponseType(typeof(List<EventSummary>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
+        public async Task<IActionResult> GetEvents([FromRoute] Guid id)
         {
             throw new NotImplementedException();
         }

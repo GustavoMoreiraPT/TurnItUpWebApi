@@ -21,11 +21,12 @@ namespace Application.Services.Implementations
             this.context = context;
         }
 
-        public async Task<CreateTracksResponse> UploadTrack(int customerId, Track track)
+        public async Task<CreateTracksResponse> UploadTrack(Guid customerId, Track track)
         {
+            //FIX THIS!!!!!
             var customer = this.context.Customers
-                .Include(x => x.Tracks)
-                .FirstOrDefault(x => x.Id == customerId);
+                .Include(x => x.Tracks).FirstOrDefault();
+                //.FirstOrDefault(x => x.Id == customerId);
 
             if (customer == null)
             {
