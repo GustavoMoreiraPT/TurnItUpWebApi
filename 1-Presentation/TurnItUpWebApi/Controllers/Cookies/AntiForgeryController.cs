@@ -14,7 +14,7 @@ namespace TurnItUpWebApi.Controllers.Cookies
         [GenerateAntiforgeryTokenCookieForAjax]
         public IActionResult Index()
         {
-            return View();
+            return Ok();
         }
     }
 }

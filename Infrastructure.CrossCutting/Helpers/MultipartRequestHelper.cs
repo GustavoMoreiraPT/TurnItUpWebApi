@@ -11,7 +11,7 @@ namespace Infrastructure.CrossCutting.Helpers
         public static string GetBoundary(MediaTypeHeaderValue contentType, int lengthLimit)
         {
             var boundary = HeaderUtilities.RemoveQuotes(contentType.Boundary);
-            if (string.IsNullOrWhiteSpace(boundary))
+            if (string.IsNullOrWhiteSpace(boundary.ToString()))
             {
                 throw new InvalidDataException("Missing content-type boundary.");
             }
@@ -22,7 +22,7 @@ namespace Infrastructure.CrossCutting.Helpers
                     $"Multipart boundary length limit {lengthLimit} exceeded.");
             }
 
-            return boundary;
+            return boundary.ToString();
         }
 
         public static bool IsMultipartContentType(string contentType)
@@ -36,8 +36,8 @@ namespace Infrastructure.CrossCutting.Helpers
             // Content-Disposition: form-data; name="key";
             return contentDisposition != null
                    && contentDisposition.DispositionType.Equals("form-data")
-                   && string.IsNullOrEmpty(contentDisposition.FileName)
-                   && string.IsNullOrEmpty(contentDisposition.FileNameStar);
+                   && string.IsNullOrEmpty(contentDisposition.FileName.ToString())
+                   && string.IsNullOrEmpty(contentDisposition.FileNameStar.ToString());
         }
 
         public static bool HasFileContentDisposition(ContentDispositionHeaderValue contentDisposition)
@@ -45,8 +45,8 @@ namespace Infrastructure.CrossCutting.Helpers
             // Content-Disposition: form-data; name="myfile1"; filename="Misc 002.jpg"
             return contentDisposition != null
                    && contentDisposition.DispositionType.Equals("form-data")
-                   && (!string.IsNullOrEmpty(contentDisposition.FileName)
-                       || !string.IsNullOrEmpty(contentDisposition.FileNameStar));
+                   && (!string.IsNullOrEmpty(contentDisposition.FileName.ToString())
+                       || !string.IsNullOrEmpty(contentDisposition.FileNameStar.ToString()));
         }
     }
 }

@@ -87,7 +87,7 @@ namespace TurnItUpWebApi.Controllers
         [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "TracksThrottle", Seconds = 10)]
         [DisableFormValueModelBinding]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         // 1. Disable the form value model binding here to take control of handling 
         //    potentially large files.
         // 2. Typically antiforgery tokens are sent in request body, but since we 
@@ -106,8 +106,7 @@ namespace TurnItUpWebApi.Controllers
                 string targetFilePath = null;
 
                 var boundary = MultipartRequestHelper.GetBoundary(
-                    //MediaTypeHeaderValue.Parse(Request.ContentType),
-                    null,defaultFormOptions.MultipartBoundaryLengthLimit);
+                    MediaTypeHeaderValue.Parse(Request.ContentType),defaultFormOptions.MultipartBoundaryLengthLimit);
 
                 var reader = new MultipartReader(boundary, HttpContext.Request.Body);
 
