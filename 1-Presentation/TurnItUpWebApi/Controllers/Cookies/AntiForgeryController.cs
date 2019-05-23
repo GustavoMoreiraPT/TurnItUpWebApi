@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TurnItUpWebApi.Filters;
 
 namespace TurnItUpWebApi.Controllers.Cookies
 {
@@ -10,7 +11,7 @@ namespace TurnItUpWebApi.Controllers.Cookies
     public class AntiForgeryController : Controller
     {
         [HttpGet]
-        //[GenerateAntiforgeryTokenCookieForAjax]
+        [GenerateAntiforgeryTokenCookieForAjax]
         public IActionResult Index()
         {
             return View();
