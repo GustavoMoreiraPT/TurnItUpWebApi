@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Net.Http;
+using System.Web;
+using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TurnItUpWebApi.Filters;
@@ -55,6 +58,31 @@ namespace TurnItUpWebApi.Controllers
             await this.trackService.UploadTrack(id, audioTrack);
 
             return this.Ok();
+        }
+
+        /// <summary>
+        ///  Uploads an audio file related to the given account.
+        /// </summary>
+        /// <param name="id"> The id of the account to add a track.</param>
+        /// <param name="audioTrack">The audio file to be uploaded</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("test")]
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
+        [Throttle(Name = "TracksThrottle", Seconds = 10)]
+        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id)
+        {
+         
+            var result = await this.trackService.UploadTrack(id, null);
+
+            return this.Ok(result);
         }
 
         /// <summary>

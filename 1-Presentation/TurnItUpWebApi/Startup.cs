@@ -44,6 +44,8 @@ namespace TurnItUpWebApi
                        .AllowAnyHeader();
             }));
 
+            services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
+
             // add identity
             var builder = services.AddIdentityCore<AppUser>(o =>
 			{
