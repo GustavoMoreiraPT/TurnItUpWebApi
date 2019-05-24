@@ -6,6 +6,7 @@ using FluentValidation.AspNetCore;
 using Infrastructure.CrossCutting.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -45,6 +46,18 @@ namespace TurnItUpWebApi
             }));
 
             services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
+
+            services.Configure<FormOptions>(options =>
+
+            {
+
+                options.ValueLengthLimit = int.MaxValue;
+
+                options.MultipartBodyLengthLimit = int.MaxValue;
+
+                options.MultipartHeadersLengthLimit = int.MaxValue;
+
+            });
 
             // add identity
             var builder = services.AddIdentityCore<AppUser>(o =>
