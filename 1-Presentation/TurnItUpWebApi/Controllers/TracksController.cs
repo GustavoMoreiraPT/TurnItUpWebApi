@@ -86,23 +86,22 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         //[Authorize(Policy = "ApiUser")]
         [Throttle(Name = "TracksThrottle", Seconds = 10)]
-        [DisableFormValueModelBinding]
-        [ValidateAntiForgeryToken]
-        // 1. Disable the form value model binding here to take control of handling 
-        //    potentially large files.
-        // 2. Typically antiforgery tokens are sent in request body, but since we 
-        //    do not want to read the request body early, the tokens are made to be 
-        //    sent via headers. The antiforgery token filter first looks for tokens
-        //    in the request header and then falls back to reading the body.
-        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, IFormFile track)
+          [DisableFormValueModelBinding]
+        //[ValidateAntiForgeryToken]
+        [Consumes("application/json", "application/json-patch+json", "multipart/form-data")]
+        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromBody]IFormFile track)
         {
-            var filePath = Path.GetTempFileName();
+            if (track == null || track.Length == 0)
+                return Content("file not selected");
 
-            var stream = new FileStream(filePath, FileMode.Create);
+            var path = Path.Combine(
+                        Directory.GetCurrentDirectory(), "wwwroot",
+                        track.FileName);
 
-            await track.CopyToAsync(stream);
-
-
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await track.CopyToAsync(stream);
+            }
 
             var result = await this.trackService.UploadTrack(id, null);
 
