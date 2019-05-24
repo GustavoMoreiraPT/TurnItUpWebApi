@@ -9,24 +9,43 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.IO;
 using Application.Dto.Tracks.Responses;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Domain.Model.Users;
 
 namespace Application.Services.Implementations
 {
     public class TrackService : ITrackService
     {
         private readonly ApplicationDbContext context;
+        private readonly UserManager<AppUser> userManager;
 
-        public TrackService(ApplicationDbContext context)
+        public TrackService(ApplicationDbContext context, UserManager<AppUser> userRepository)
         {
             this.context = context;
+            this.userManager = userRepository;
         }
 
-        public async Task<CreateTracksResponse> UploadTrack(Guid customerId, Track track)
+        public async Task<CreateTracksResponse> UploadTrack(Guid customerId, IFormFile track)
         {
+
+            var identityUser = await this.userManager.FindByIdAsync(customerId.ToString());
+
+            if (identityUser == null)
+            {
+                return new CreateTracksResponse
+                {
+                    Errors = new List<Infrastructure.CrossCutting.Helpers.Error>
+                    {
+                        new Infrastructure.CrossCutting.Helpers.Error("Invalid track request", "Customer id provided does not belong to any customer")
+                    }
+                };
+            }
+
             //FIX THIS!!!!!
             var customer = this.context.Customers
-                .Include(x => x.Tracks).FirstOrDefault();
-                //.FirstOrDefault(x => x.Id == customerId);
+                .Include(x => x.Tracks)
+                .FirstOrDefault(x => x.IdentityId == identityUser.Id);
 
             if (customer == null)
             {
@@ -46,9 +65,16 @@ namespace Application.Services.Implementations
 
             Directory.CreateDirectory($@"C:\TurnItUp\Tracks\{customer.Id}");
 
-            byte[] trackBytes = System.Convert.FromBase64String(track.Content);
+            var path = Path.Combine(
+                       $@"C:\TurnItUp\Tracks\{customer.Id}\",
+                       track.FileName);
 
-            float mb = (trackBytes.Length / 1024f) / 1024f;
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await track.CopyToAsync(stream);
+            }
+
+            float mb = track.Length / 1024 / 1024;
 
             if (mb > 50)
             {
@@ -61,19 +87,22 @@ namespace Application.Services.Implementations
                 };
             }
 
-            File.WriteAllBytes($@"C:\TurnItUp\Tracks\{customer.Id}\{track.Name}.{track.Extension}", trackBytes);
-
-            customer.Tracks.Add(new Domain.Model.Tracks.Track
+            var trackToCreate = new Domain.Model.Tracks.Track
             {
-                Name = track.Name,
-                Extension = track.Extension
-            });
+                Name = track.FileName.Split('.')[0],
+                Extension = track.FileName.Split('.')[1]
+            };
+
+            customer.Tracks.Add(trackToCreate);
 
             this.context.Customers.Update(customer);
 
             await this.context.SaveChangesAsync();
 
-            return new CreateTracksResponse();
+            return new CreateTracksResponse
+            {
+                TrackId = trackToCreate.Id
+            };
         }
     }
 }

@@ -5,6 +5,8 @@ namespace Application.Dto.Tracks.Responses
 {
     public class CreateTracksResponse
     {
+        public int TrackId { get; set; }
+
         public List<Error> Errors { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
+        [Throttle(Name = "CreateUserThrottle", Seconds = 3)]
         public async Task<IActionResult> Post([FromBody]RegisterCreateDto registerDto)
         {
             if (!ModelState.IsValid)
@@ -102,7 +102,7 @@ namespace TurnItUpWebApi.Controllers
 
         [HttpPost]
         [Route("login")]
-        [Throttle(Name = "LoginThrottle", Seconds = 10)]
+        [Throttle(Name = "LoginThrottle", Seconds = 3)]
         public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
         {
             if (!ModelState.IsValid)

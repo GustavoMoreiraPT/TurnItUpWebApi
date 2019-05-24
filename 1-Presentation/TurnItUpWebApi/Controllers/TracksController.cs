@@ -40,6 +40,7 @@ namespace TurnItUpWebApi.Controllers
         /// <param name="audioTrack">The audio file to be uploaded</param>
         /// <returns></returns>
         [HttpPost]
+        [Route("test")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -48,11 +49,10 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Policy = "ApiUser")]
-        [Throttle(Name = "TracksThrottle", Seconds = 10)]
-        public async Task<IActionResult> UploadFile([FromRoute] Guid id, [FromBody]Track audioTrack)
+        [Throttle(Name = "TracksThrottle", Seconds = 5)]
+        [Consumes("application/json", "application/json-patch+json", "multipart/form-data")]
+        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromForm]IFormFile track)
         {
-            //check for identityId here
-
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             var userIdFromToken = identity.Claims.FirstOrDefault(x => x.Type == "id");
@@ -64,46 +64,10 @@ namespace TurnItUpWebApi.Controllers
                 return this.StatusCode(403);
             }
 
-            await this.trackService.UploadTrack(id, audioTrack);
-
-            return this.Ok();
-        }
-
-        /// <summary>
-        ///  Uploads an audio file related to the given account.
-        /// </summary>
-        /// <param name="id"> The id of the account to add a track.</param>
-        /// <param name="audioTrack">The audio file to be uploaded</param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("test")]
-        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //[Authorize(Policy = "ApiUser")]
-        [Throttle(Name = "TracksThrottle", Seconds = 10)]
-          [DisableFormValueModelBinding]
-        //[ValidateAntiForgeryToken]
-        [Consumes("application/json", "application/json-patch+json", "multipart/form-data")]
-        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromBody]IFormFile track)
-        {
             if (track == null || track.Length == 0)
                 return Content("file not selected");
 
-            var path = Path.Combine(
-                        Directory.GetCurrentDirectory(), "wwwroot",
-                        track.FileName);
-
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                await track.CopyToAsync(stream);
-            }
-
-            var result = await this.trackService.UploadTrack(id, null);
+            var result = await this.trackService.UploadTrack(id, track);
 
             return this.Ok(result);
         }
@@ -127,19 +91,6 @@ namespace TurnItUpWebApi.Controllers
         public async Task<IActionResult> DeleteTrack([FromRoute] int id, [FromRoute] int trackId)
         {
             throw new NotImplementedException();
-        }
-
-        private static Encoding GetEncoding(MultipartSection section)
-        {
-            MediaTypeHeaderValue mediaType;
-            var hasMediaTypeHeader = MediaTypeHeaderValue.TryParse(section.ContentType, out mediaType);
-            // UTF-7 is insecure and should not be honored. UTF-8 will succeed in 
-            // most cases.
-            if (!hasMediaTypeHeader || Encoding.UTF7.Equals(mediaType.Encoding))
-            {
-                return Encoding.UTF8;
-            }
-            return mediaType.Encoding;
         }
     }
 }
