@@ -19,7 +19,7 @@ namespace Application.Dto.Profile
 
         public int FollowersCount { get; set; }
 
-        public List<SocialMediaLink> SocialMediaLinks { get; set; }
+        public List<SocialNetwork> SocialMediaLinks { get; set; }
 
         public decimal Rating { get; set; }
 

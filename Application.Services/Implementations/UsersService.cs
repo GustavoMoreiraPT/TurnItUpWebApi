@@ -226,6 +226,11 @@ namespace Application.Services.Implementations
             // get the user to verifty
             var userToVerify = await this.userManager.FindByNameAsync(userName);
 
+            if (userToVerify == null)
+            {
+                return await Task.FromResult<ClaimsIdentity>(null);
+            }
+
             var userClaims = await this.userManager.GetClaimsAsync(userToVerify);
 
             userClaims.Add(new Claim(Constants.Strings.JwtClaimIdentifiers.Id, userToVerify.Id));
@@ -303,9 +308,7 @@ namespace Application.Services.Implementations
                 };
             }
 
-            var identityUser = await this.userManager.FindByEmailAsync(user.Email).ConfigureAwait(false);
-
-            //this.userManager.FindByIdAsync();
+            var identityUser = await this.userManager.FindByIdAsync(customerId.ToString()).ConfigureAwait(false);
 
             if (identityUser == null)
             {
@@ -323,6 +326,7 @@ namespace Application.Services.Implementations
                 .Include(x => x.Genders)
                 .Include(x => x.Roles)
                 .Include(x => x.Tracks)
+                .Include(x => x.SocialNetworks)
                 .FirstOrDefault(x => x.IdentityId == identityUser.Id);
 
             if (customer == null)
@@ -341,34 +345,43 @@ namespace Application.Services.Implementations
             customer.ProfileName = user.ProfileName;
             customer.Price = user.Price;
 
-            byte[] profilePhotoBytes = System.Convert.FromBase64String(user.ProfilePhoto.Content);
-
-            Directory.CreateDirectory($@"C:\TurnItUp\ProfilePhotos\{customer.Id}");
-
-            File.WriteAllBytes($@"C:\TurnItUp\ProfilePhotos\{customer.Id}\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
-
-            customer.ProfilePhoto = new Domain.Model.Images.Image
+            try
             {
-                Name = user.ProfilePhoto.Name,
-                Extension = user.ProfilePhoto.Extension
-            };
-            
-            Directory.CreateDirectory($@"C:\TurnItUp\HeaderPhotos\{customer.Id}");
+                byte[] profilePhotoBytes = System.Convert.FromBase64String(user.ProfilePhoto.Content);
 
-            byte[] headerPhotoBytes = System.Convert.FromBase64String(user.HeaderPhoto.Content);
+                Directory.CreateDirectory($@"C:\TurnItUp\ProfilePhotos\{customer.Id}");
 
-            File.WriteAllBytes($@"C:\TurnItUp\HeaderPhotos\{customer.Id}\{user.HeaderPhoto.Name}.{user.HeaderPhoto.Extension}", headerPhotoBytes);
+                File.WriteAllBytes($@"C:\TurnItUp\ProfilePhotos\{customer.Id}\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
 
-            customer.HeaderPhoto = new Domain.Model.Images.Image
-            {
-                Name = user.HeaderPhoto.Name,
-                Extension = user.HeaderPhoto.Extension
-            };
+                customer.ProfilePhoto = new Domain.Model.Images.Image
+                {
+                    Name = user.ProfilePhoto.Name,
+                    Extension = user.ProfilePhoto.Extension
+                };
 
-            if (customer.Roles == null)
-            {
-                customer.Roles = new List<Domain.Model.ValueObjects.Role>();
+                Directory.CreateDirectory($@"C:\TurnItUp\HeaderPhotos\{customer.Id}");
+
+                byte[] headerPhotoBytes = System.Convert.FromBase64String(user.HeaderPhoto.Content);
+
+                File.WriteAllBytes($@"C:\TurnItUp\HeaderPhotos\{customer.Id}\{user.HeaderPhoto.Name}.{user.HeaderPhoto.Extension}", headerPhotoBytes);
+
+                customer.HeaderPhoto = new Domain.Model.Images.Image
+                {
+                    Name = user.HeaderPhoto.Name,
+                    Extension = user.HeaderPhoto.Extension
+                };
             }
+            catch (Exception ex)
+            {
+                return new RegisterEditResponseDto
+                {
+                    Errors = new List<Error>
+                    {
+                        new Error(string.Empty, ex.Message)
+                    }
+                };
+            }
+            
 
             foreach (var role in user.Roles)
             {
@@ -378,16 +391,20 @@ namespace Application.Services.Implementations
                 });
             }
 
-            if (customer.Genders == null)
-            {
-                customer.Genders = new List<Domain.Model.ValueObjects.Gender>();
-            }
-
             foreach (var genre in user.Genres)
             {
                 customer.Genders.Add(new Domain.Model.ValueObjects.Gender
                 {
                     Name = genre.Name
+                });
+            }
+
+            foreach (var socialNetwork in user.SocialNetworks)
+            {
+                customer.SocialNetworks.Add(new Domain.Model.SocialMedia.SocialNetwork
+                {
+                    Name = socialNetwork.Name,
+                    Url = socialNetwork.Url
                 });
             }
 
