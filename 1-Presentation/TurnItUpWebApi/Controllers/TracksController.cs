@@ -37,10 +37,9 @@ namespace TurnItUpWebApi.Controllers
         ///  Uploads an audio file related to the given account.
         /// </summary>
         /// <param name="id"> The id of the account to add a track.</param>
-        /// <param name="audioTrack">The audio file to be uploaded</param>
+        /// <param name="track">The audio file to be uploaded</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("test")]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
