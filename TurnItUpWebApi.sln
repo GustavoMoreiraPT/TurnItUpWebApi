@@ -62,6 +62,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4094
 		05- Initial ages from 5 to 99.sql = 05- Initial ages from 5 to 99.sql
 		06-Ratings.sql = 06-Ratings.sql
 		07-Initial event states.sql = 07-Initial event states.sql
+		SocialNetworkTable.sql = SocialNetworkTable.sql
 	EndProjectSection
 EndProject
 Global
