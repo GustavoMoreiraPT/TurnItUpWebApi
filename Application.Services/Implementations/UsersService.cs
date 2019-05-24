@@ -120,7 +120,7 @@ namespace Application.Services.Implementations
 			return new RegisterResponseDto
             {
                 IdentityResult = result,
-                UserCreatedId = customer.Entity.Id.ToString(),
+                UserCreatedId = userIdentity.Id,
                 Errors = new List<Error>(),
             };
 		}
@@ -290,7 +290,7 @@ namespace Application.Services.Implementations
 			return null;
 		}
 
-        public async Task<RegisterEditResponseDto> EditUserAsync(int customerId, ClaimsIdentity identity, RegisterEditDto user)
+        public async Task<RegisterEditResponseDto> EditUserAsync(Guid customerId, ClaimsIdentity identity, RegisterEditDto user)
         {
             if (user == null)
             {
@@ -304,6 +304,8 @@ namespace Application.Services.Implementations
             }
 
             var identityUser = await this.userManager.FindByEmailAsync(user.Email).ConfigureAwait(false);
+
+            //this.userManager.FindByIdAsync();
 
             if (identityUser == null)
             {
