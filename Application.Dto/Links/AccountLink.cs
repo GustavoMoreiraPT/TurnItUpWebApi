@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Dto.Links
 {
-    public class UserLink
+    public class AccountLink
     {
         public int UserId { get; set; }
 

@@ -28,6 +28,8 @@ namespace Application.Services.Configuration
             services.AddScoped<ITrackService, TrackService>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IFollowersService, FollowersService>();
+            services.AddScoped<ITrackLikesService, TrackLikesService>();
+            services.AddScoped<ITrackPlayService, TrackPlayService>();
 
             services.AddScoped<UserManager<AppUser>>();
 

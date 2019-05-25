@@ -7,7 +7,7 @@ namespace Application.Dto.Profile
     {
         public EventLink EventLink { get; set; }
 
-        public UserLink UserLink { get; set; }
+        public AccountLink UserLink { get; set; }
 
         public DateTime Date { get; set; }
 

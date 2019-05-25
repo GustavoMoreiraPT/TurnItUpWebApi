@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Application.Dto;
+using System.Collections.Generic;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -37,7 +39,8 @@ namespace TurnItUpWebApi.Controllers
         ///  Uploads an audio file related to the given account.
         /// </summary>
         /// <param name="id"> The id of the account to add a track.</param>
-        /// <param name="track">The audio file to be uploaded</param>
+        /// <param name="trackPhoto"> The photo to be saved alongside the track.</param>
+        /// <param name="track">The audio file to be uploaded.</param>
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
@@ -50,7 +53,7 @@ namespace TurnItUpWebApi.Controllers
         [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "TracksThrottle", Seconds = 5)]
         [Consumes("application/json", "application/json-patch+json", "multipart/form-data")]
-        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromForm]IFormFile track)
+        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromBody] Photo trackPhoto, [FromForm]IFormFile track)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
@@ -88,6 +91,25 @@ namespace TurnItUpWebApi.Controllers
         [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "TracksThrottle", Seconds = 10)]
         public async Task<IActionResult> DeleteTrack([FromRoute] int id, [FromRoute] int trackId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        ///  Getsall tracks informations for a specific user.
+        /// </summary>
+        /// <param name="id"> The id of the account to read tracks information.</param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(List<TrackInfo>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
+        [Throttle(Name = "TracksThrottle", Seconds = 10)]
+        public async Task<IActionResult> GetTracks([FromRoute] int id)
         {
             throw new NotImplementedException();
         }

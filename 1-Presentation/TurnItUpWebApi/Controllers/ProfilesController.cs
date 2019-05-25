@@ -39,22 +39,6 @@ namespace TurnItUpWebApi.Controllers
         }
 
         /// <summary>
-        /// Get the descriptions details for the profile of a certain user.
-        /// </summary>
-        /// <param name="id">The id of the user to read the profile.</param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("details")]
-        [ProducesResponseType(typeof(AboutInfo), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
-        public async Task<IActionResult> GetProfileAboutInfo([FromRoute] Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Get all the review associated with a certain user profile.
         /// </summary>
         /// <param name="id">The id of the user to read the profile reviews.</param>

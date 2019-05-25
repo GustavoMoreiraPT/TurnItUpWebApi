@@ -37,8 +37,4 @@
     <ProjectReference Include="..\..\Infrastructure.CrossCutting\Infrastructure.CrossCutting.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\Cookies\" />
-  </ItemGroup>
-
 </Project>

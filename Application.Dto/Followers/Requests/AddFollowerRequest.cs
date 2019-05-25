@@ -6,8 +6,8 @@ namespace Application.Dto.Followers.Requests
 {
     public class AddFollowerRequest
     {
-        public Guid CustomerToFollow { get; set; }
+        public Guid Followed { get; set; }
 
-        public Guid CustomerToBeFollowed { get; set; }
+        public Guid Follower { get; set; }
     }
 }

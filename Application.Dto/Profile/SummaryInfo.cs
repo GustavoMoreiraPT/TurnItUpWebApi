@@ -1,4 +1,5 @@
-﻿using Application.Dto.SocialMedia;
+﻿using Application.Dto.Enum;
+using Application.Dto.SocialMedia;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,9 +14,7 @@ namespace Application.Dto.Profile
 
         public string Name { get; set; }
 
-        public string PlaceHolderName { get; set; }
-
-        public Local Location { get; set; }
+        public List<string> Roles { get; set; }
 
         public int FollowersCount { get; set; }
 
@@ -24,5 +23,15 @@ namespace Application.Dto.Profile
         public decimal Rating { get; set; }
 
         public int ReviewsCount { get; set; }
+
+        public decimal Price { get; set; }
+
+        public List<string> Genres { get; set; }
+
+        public string Country { get; set; }
+
+        public string City { get; set; }
+
+        public AccountTypes Type { get; set; }
     }
 }
