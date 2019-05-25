@@ -4,6 +4,7 @@ using Domain.Model.Events;
 using Domain.Model.Genres;
 using Domain.Model.Images;
 using Domain.Model.Roles;
+using Domain.Model.SocialMedia;
 using Domain.Model.Tracks;
 using Domain.Model.Users;
 using Domain.Model.ValueObjects;
@@ -47,6 +48,8 @@ namespace Data.Repository.Configuration
         public DbSet<LanguageGenrer> LanguageGenres { get; set; }
 
         public DbSet<Track> Tracks { get; set; }
+
+        public DbSet<SocialNetwork> SocialNetworks { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

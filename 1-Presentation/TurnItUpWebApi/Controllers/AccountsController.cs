@@ -12,6 +12,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using TurnItUpWebApi.Filters;
+using System;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -33,13 +34,13 @@ namespace TurnItUpWebApi.Controllers
         /// <summary>
         /// Creates a new account within the system.
         /// </summary>
-        /// <param name="registerDto">TBody containing password and email to create the account.</param>
+        /// <param name="registerDto">The Body containing password and email to create the account.</param>
         /// <returns></returns>
 		[HttpPost]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
+        [Throttle(Name = "CreateUserThrottle", Seconds = 3)]
         public async Task<IActionResult> Post([FromBody]RegisterCreateDto registerDto)
         {
             if (!ModelState.IsValid)
@@ -54,7 +55,7 @@ namespace TurnItUpWebApi.Controllers
                 return this.BadRequest(result.Errors);
             }
 
-            return new CreatedResult(result.UserCreatedId, "Account created");
+            return new CreatedResult(result.UserCreatedId, Json("Account Created"));
         }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "EditUserThrottle", Seconds = 5)]
-        public async Task<IActionResult> EditUserAsync([FromRoute] int id, [FromBody] RegisterEditDto editDto)
+        public async Task<IActionResult> EditUserAsync([FromRoute] Guid id, [FromBody] RegisterEditDto editDto)
         {
             if (!ModelState.IsValid)
             {
@@ -101,7 +102,7 @@ namespace TurnItUpWebApi.Controllers
 
         [HttpPost]
         [Route("login")]
-        [Throttle(Name = "LoginThrottle", Seconds = 10)]
+        [Throttle(Name = "LoginThrottle", Seconds = 3)]
         public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
         {
             if (!ModelState.IsValid)

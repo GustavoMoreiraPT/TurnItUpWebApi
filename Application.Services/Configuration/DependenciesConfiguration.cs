@@ -22,11 +22,14 @@ namespace Application.Services.Configuration
 
 			services.AddScoped<IMusicianService, MusicianService>();
             services.AddScoped<IRecruiterService, RecruiterService>();
-			services.AddScoped<IEventService, EventService>();
             services.AddScoped<ICountriesService, CountriesService>();
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<IGenresService, GenresService>();
             services.AddScoped<ITrackService, TrackService>();
+            services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IFollowersService, FollowersService>();
+            services.AddScoped<ITrackLikesService, TrackLikesService>();
+            services.AddScoped<ITrackPlayService, TrackPlayService>();
 
             services.AddScoped<UserManager<AppUser>>();
 

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using static Infrastructure.CrossCutting.Helpers.FacebookApiResponses;
 using Application.Dto.Musicians;
 using Application.Dto.Users.Responses;
+using System;
 
 namespace Application.Services.Interfaces
 {
@@ -14,7 +15,7 @@ namespace Application.Services.Interfaces
     {
         Task<RegisterResponseDto> CreateUserAsync(RegisterCreateDto user, string password);
 
-        Task<RegisterEditResponseDto> EditUserAsync(int customerId, ClaimsIdentity identity, RegisterEditDto user);
+        Task<RegisterEditResponseDto> EditUserAsync(Guid customerId, ClaimsIdentity identity, RegisterEditDto user);
 
         Task<ClaimsIdentity> GetClaimsIdentity(string userName, string password);
 

@@ -3,6 +3,7 @@ using Domain.Model.ValueObjects;
 using Domain.Model.Tracks;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Model.SocialMedia;
 
 namespace Domain.Model.Users
 {
@@ -37,6 +38,8 @@ namespace Domain.Model.Users
         public ICollection<Gender> Genders { get; set; }
 
         public ICollection<Role> Roles { get; set; }
+
+        public ICollection<SocialNetwork> SocialNetworks { get; set; }
 
         private readonly List<RefreshToken> _refreshTokens = new List<RefreshToken>();
 

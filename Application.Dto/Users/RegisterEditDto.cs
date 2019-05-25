@@ -1,4 +1,5 @@
-﻿using Application.Requests.Enums;
+﻿using Application.Dto.SocialMedia;
+using Application.Requests.Enums;
 using System.Collections.Generic;
 
 namespace Application.Dto.Users
@@ -6,8 +7,6 @@ namespace Application.Dto.Users
     public class RegisterEditDto
     {
         public AccountType AccountType { get; set; }
-
-        public string Email { get; set; }
 
         public string ProfileName { get; set; }
 
@@ -18,6 +17,8 @@ namespace Application.Dto.Users
         public List<RoleDto> Roles { get; set; }
 
         public List<GenreDto> Genres { get; set; }
+
+        public List<SocialNetwork> SocialNetworks { get; set; }
 
         public decimal Price { get; set; }
 

@@ -1,0 +1,7 @@
+﻿CREATE TABLE IF NOT EXISTS webapijwt.socialnetworks (
+    Id INT AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    Url VARCHAR(500) NOT NULL,
+    CustomerId INT NOT NULL,
+    PRIMARY KEY (Id)
+) ENGINE=INNODB;
