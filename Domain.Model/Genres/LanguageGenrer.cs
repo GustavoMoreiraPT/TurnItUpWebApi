@@ -11,5 +11,9 @@ namespace Domain.Model.Genres
         public string Name { get; set; }
 
         public string Language { get; set; }
+
+        public int LanguageGroupId { get; set; }
+
+        public virtual GenrerGroup GenrerGroup { get; set; }
     }
 }
