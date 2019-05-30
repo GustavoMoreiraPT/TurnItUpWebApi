@@ -383,7 +383,7 @@ namespace Application.Services.Implementations
             }
             
 
-            foreach (var role in user.Roles)
+            foreach (var role in user.RoleGroup)
             {
                 customer.Roles.Add(new Domain.Model.ValueObjects.Role
                 {

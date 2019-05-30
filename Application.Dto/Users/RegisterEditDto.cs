@@ -14,9 +14,9 @@ namespace Application.Dto.Users
         
         public Photo HeaderPhoto { get; set; }
 
-        public List<RoleDto> Roles { get; set; }
+        public List<int> RoleGroup { get; set; }
 
-        public List<GenreDto> Genres { get; set; }
+        public List<int> GenresGroup { get; set; }
 
         public List<SocialNetwork> SocialNetworks { get; set; }
 

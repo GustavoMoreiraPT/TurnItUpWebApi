@@ -21,7 +21,7 @@ namespace Application.Services.Implementations
                 .Countries
                 .Where(x => x.Language == language);
 
-            return allCountries.Select(x => new Country { Name = x.Name }).ToList();
+            return allCountries.Select(x => new Country { Name = x.Name, Id = x.Id, GroupId = x.CountryGroupId }).ToList();
         }
     }
 }
