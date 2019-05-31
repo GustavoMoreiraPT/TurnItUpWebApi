@@ -163,7 +163,7 @@ namespace Application.Services.Implementations
 			await this.identityDbContext.Customers
 				.AddAsync(new Customer
 				{
-					IdentityId = user.Id, Location = "",
+					IdentityId = user.Id, Location = new Domain.Model.ValueObjects.Location(),
 					Locale = facebookUserData.Locale,
 					Gender = facebookUserData.Gender
 				});
@@ -382,20 +382,19 @@ namespace Application.Services.Implementations
                 };
             }
             
-
-            foreach (var role in user.Roles)
+            foreach (var role in user.RoleGroup)
             {
                 customer.Roles.Add(new Domain.Model.ValueObjects.Role
                 {
-                    Name = role.Name,
+                    GroupId = role.RoleGroupId
                 });
             }
 
-            foreach (var genre in user.Genres)
+            foreach (var genre in user.GenresGroup)
             {
                 customer.Genders.Add(new Domain.Model.ValueObjects.Gender
                 {
-                    Name = genre.Name
+                    GroupId = genre.GenreGroupId
                 });
             }
 

@@ -15,7 +15,7 @@ namespace Domain.Model.Users
 
         public AppUser Identity { get; set; }  // navigation property
 
-        public string Location { get; set; }
+        public Location Location { get; set; }
 
         public string Locale { get; set; }
 

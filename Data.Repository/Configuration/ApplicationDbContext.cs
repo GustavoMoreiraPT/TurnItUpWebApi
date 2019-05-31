@@ -23,17 +23,18 @@ namespace Data.Repository.Configuration
 
 		public DbSet<Age> Ages { get; set; }
 
-		public DbSet<Country> Countries { get; set; }
+        //Collections from the user
+		public DbSet<Country> CustomerCountries { get; set; }
 
 		public DbSet<Gender> CustomerGenres { get; set; }
 
-		public DbSet<Location> Locations { get; set; }
+        public DbSet<Role> CustomerRoles { get; set; }
+
+        public DbSet<Location> Locations { get; set; }
 
 		public DbSet<Price> Prices { get; set; }
 
 		public DbSet<Rating> Ratings { get; set; }
-
-		public DbSet<Role> CustomerRoles { get; set; }
 
 		public DbSet<Event> Events { get; set; }
 
@@ -43,13 +44,24 @@ namespace Data.Repository.Configuration
 
         public DbSet<Image> Images { get; set; }
 
+        //Set of collections associated to a specific country Code: Usage: search for countryCode.
+
         public DbSet<LanguageRole> LanguageRoles { get; set; }
 
         public DbSet<LanguageGenrer> LanguageGenres { get; set; }
 
+        public DbSet<LanguageCountry> LanguageCountries { get; set; }
+
         public DbSet<Track> Tracks { get; set; }
 
         public DbSet<SocialNetwork> SocialNetworks { get; set; }
+
+        //Collections groups
+        public DbSet<CountryGroup> GroupsOfCountries { get; set; }
+
+        public DbSet<RoleGroup> GroupsOfRoles { get; set; }
+
+        public DbSet<GenrerGroup> GroupsOfGenrers { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

@@ -21,7 +21,7 @@ namespace Application.Services.Implementations
                 .LanguageGenres
                 .Where(x => x.Language == language);
 
-            return allGenres.Select(x => new GenreDto { Name = x.Name }).ToList();
+            return allGenres.Select(x => new GenreDto { Name = x.Name, Id = x.Id, GroupId = x.LanguageGroupId }).ToList();
         }
     }
 }

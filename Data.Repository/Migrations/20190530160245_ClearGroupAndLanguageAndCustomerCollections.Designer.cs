@@ -3,14 +3,16 @@ using System;
 using Data.Repository.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190530160245_ClearGroupAndLanguageAndCustomerCollections")]
+    partial class ClearGroupAndLanguageAndCustomerCollections
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,7 +98,7 @@ namespace Data.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupsOfGenrers");
+                    b.ToTable("GenrerGroups");
                 });
 
             modelBuilder.Entity("Domain.Model.Genres.LanguageGenrer", b =>
@@ -182,7 +184,7 @@ namespace Data.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupsOfRoles");
+                    b.ToTable("RoleGroups");
                 });
 
             modelBuilder.Entity("Domain.Model.SocialMedia.SocialNetwork", b =>
@@ -238,7 +240,7 @@ namespace Data.Repository.Migrations
 
                     b.Property<string>("Locale");
 
-                    b.Property<int?>("LocationId");
+                    b.Property<string>("Location");
 
                     b.Property<decimal>("Price");
 
@@ -251,8 +253,6 @@ namespace Data.Repository.Migrations
                     b.HasIndex("HeaderPhotoId");
 
                     b.HasIndex("IdentityId");
-
-                    b.HasIndex("LocationId");
 
                     b.HasIndex("ProfilePhotoId");
 
@@ -312,7 +312,7 @@ namespace Data.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupsOfCountries");
+                    b.ToTable("CountryGroups");
                 });
 
             modelBuilder.Entity("Domain.Model.ValueObjects.Gender", b =>
@@ -354,11 +354,15 @@ namespace Data.Repository.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("City");
+                    b.Property<int?>("CityId");
 
-                    b.Property<int>("CountryGroupId");
+                    b.Property<int?>("CountryId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("CountryId");
 
                     b.ToTable("Locations");
                 });
@@ -657,10 +661,6 @@ namespace Data.Repository.Migrations
                         .WithMany()
                         .HasForeignKey("IdentityId");
 
-                    b.HasOne("Domain.Model.ValueObjects.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
                     b.HasOne("Domain.Model.Images.Image", "ProfilePhoto")
                         .WithMany()
                         .HasForeignKey("ProfilePhotoId");
@@ -694,6 +694,17 @@ namespace Data.Repository.Migrations
                         .WithMany()
                         .HasForeignKey("CountryGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Domain.Model.ValueObjects.Location", b =>
+                {
+                    b.HasOne("Domain.Model.ValueObjects.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
+
+                    b.HasOne("Domain.Model.ValueObjects.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId");
                 });
 
             modelBuilder.Entity("Domain.Model.ValueObjects.Role", b =>

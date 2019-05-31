@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Model.Genres
+namespace Domain.Model.ValueObjects
 {
-    public class LanguageGenrer
+    public class LanguageCountry
     {
         public int Id { get; set; }
+
+        public int CountryGroupId { get; set; }
 
         public string Name { get; set; }
 
         public string Language { get; set; }
 
-        public int LanguageGroupId { get; set; }
-
-        public virtual GenrerGroup GenrerGroup { get; set; }
+        public virtual CountryGroup Group { get; set; }
     }
 }

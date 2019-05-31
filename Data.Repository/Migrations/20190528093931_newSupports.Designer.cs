@@ -3,14 +3,16 @@ using System;
 using Data.Repository.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190528093931_newSupports")]
+    partial class newSupports
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,7 +98,7 @@ namespace Data.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupsOfGenrers");
+                    b.ToTable("GenrerGroup");
                 });
 
             modelBuilder.Entity("Domain.Model.Genres.LanguageGenrer", b =>
@@ -182,7 +184,7 @@ namespace Data.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupsOfRoles");
+                    b.ToTable("RoleGroup");
                 });
 
             modelBuilder.Entity("Domain.Model.SocialMedia.SocialNetwork", b =>
@@ -238,7 +240,7 @@ namespace Data.Repository.Migrations
 
                     b.Property<string>("Locale");
 
-                    b.Property<int?>("LocationId");
+                    b.Property<string>("Location");
 
                     b.Property<decimal>("Price");
 
@@ -251,8 +253,6 @@ namespace Data.Repository.Migrations
                     b.HasIndex("HeaderPhotoId");
 
                     b.HasIndex("IdentityId");
-
-                    b.HasIndex("LocationId");
 
                     b.HasIndex("ProfilePhotoId");
 
@@ -292,15 +292,17 @@ namespace Data.Repository.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("CustomerId");
+                    b.Property<int>("CountryGroupId");
 
-                    b.Property<int>("GroupId");
+                    b.Property<string>("Language");
+
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CountryGroupId");
 
-                    b.ToTable("CustomerCountries");
+                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("Domain.Model.ValueObjects.CountryGroup", b =>
@@ -312,7 +314,7 @@ namespace Data.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupsOfCountries");
+                    b.ToTable("CountryGroup");
                 });
 
             modelBuilder.Entity("Domain.Model.ValueObjects.Gender", b =>
@@ -322,7 +324,9 @@ namespace Data.Repository.Migrations
 
                     b.Property<int?>("CustomerId");
 
-                    b.Property<int>("GroupId");
+                    b.Property<string>("Language");
+
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
@@ -331,34 +335,20 @@ namespace Data.Repository.Migrations
                     b.ToTable("CustomerGenres");
                 });
 
-            modelBuilder.Entity("Domain.Model.ValueObjects.LanguageCountry", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("CountryGroupId");
-
-                    b.Property<string>("Language");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CountryGroupId");
-
-                    b.ToTable("LanguageCountries");
-                });
-
             modelBuilder.Entity("Domain.Model.ValueObjects.Location", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("City");
+                    b.Property<int?>("CityId");
 
-                    b.Property<int>("CountryGroupId");
+                    b.Property<int?>("CountryId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("CountryId");
 
                     b.ToTable("Locations");
                 });
@@ -392,7 +382,9 @@ namespace Data.Repository.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("GroupId");
+                    b.Property<string>("Language");
+
+                    b.Property<string>("Name");
 
                     b.Property<int?>("customerId");
 
@@ -657,10 +649,6 @@ namespace Data.Repository.Migrations
                         .WithMany()
                         .HasForeignKey("IdentityId");
 
-                    b.HasOne("Domain.Model.ValueObjects.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
-
                     b.HasOne("Domain.Model.Images.Image", "ProfilePhoto")
                         .WithMany()
                         .HasForeignKey("ProfilePhotoId");
@@ -669,31 +657,35 @@ namespace Data.Repository.Migrations
             modelBuilder.Entity("Domain.Model.ValueObjects.City", b =>
                 {
                     b.HasOne("Domain.Model.ValueObjects.Country", "Country")
-                        .WithMany()
+                        .WithMany("Cities")
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.Model.ValueObjects.Country", b =>
                 {
-                    b.HasOne("Domain.Model.Users.Customer", "Customer")
+                    b.HasOne("Domain.Model.ValueObjects.CountryGroup", "CountryGroup")
                         .WithMany()
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CountryGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.Model.ValueObjects.Gender", b =>
                 {
-                    b.HasOne("Domain.Model.Users.Customer", "Customer")
+                    b.HasOne("Domain.Model.Users.Customer")
                         .WithMany("Genders")
                         .HasForeignKey("CustomerId");
                 });
 
-            modelBuilder.Entity("Domain.Model.ValueObjects.LanguageCountry", b =>
+            modelBuilder.Entity("Domain.Model.ValueObjects.Location", b =>
                 {
-                    b.HasOne("Domain.Model.ValueObjects.CountryGroup", "Group")
+                    b.HasOne("Domain.Model.ValueObjects.City", "City")
                         .WithMany()
-                        .HasForeignKey("CountryGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CityId");
+
+                    b.HasOne("Domain.Model.ValueObjects.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId");
                 });
 
             modelBuilder.Entity("Domain.Model.ValueObjects.Role", b =>

@@ -53,7 +53,8 @@ namespace TurnItUpWebApi.Controllers
         [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "TracksThrottle", Seconds = 5)]
         [Consumes("application/json", "application/json-patch+json", "multipart/form-data")]
-        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromBody] Photo trackPhoto, [FromForm]IFormFile track)
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromForm]IFormFile track)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 

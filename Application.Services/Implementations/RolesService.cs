@@ -23,7 +23,7 @@ namespace Application.Services.Implementations
                 .LanguageRoles
                 .Where(x => x.Language == language);
 
-            return allRoles.Select(x => new RoleDto { Name = x.Name }).ToList();
+            return allRoles.Select(x => new RoleDto { Name = x.Name, Id = x.Id, GroupId = x.RoleGroupId }).ToList();
         }
     }
 }

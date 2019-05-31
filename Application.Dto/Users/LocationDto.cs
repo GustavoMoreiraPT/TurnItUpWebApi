@@ -2,8 +2,6 @@
 {
     public class LocationDto
     {
-        public string CityName { get; set; }
-
-        public string CountryName { get; set; }
+        public int CountryGroupId { get; set; }
     }
 }
