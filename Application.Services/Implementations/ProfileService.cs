@@ -1,6 +1,7 @@
 ﻿using Application.Dto.Profile;
 using Application.Services.Interfaces;
 using Data.Repository.Configuration;
+using Domain.Model.Events;
 using Domain.Model.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -86,6 +87,67 @@ namespace Application.Services.Implementations
             summaryInfo.Type = (Dto.Enum.AccountTypes)customer.CustomerType;
 
             return summaryInfo;
+        }
+
+        public async Task<List<EventSummary>> GetEventsSummary(Guid accountId, string languageCode)
+        {
+            var identityUser = await this.userManager.FindByIdAsync(accountId.ToString());
+
+            if (identityUser == null)
+            {
+                return null;
+            }
+
+            var customer = this.context.Customers.FirstOrDefault(x => x.IdentityId == accountId.ToString());
+
+            var customerEvents = new List<Event>();
+
+            if (customer.CustomerType == CustomerType.Musician)
+            {//get events by musician Id
+                customerEvents = this.context.Events.Where(x => x.MusicianId == customer.Id).ToList();
+            }
+
+            if (customer.CustomerType == CustomerType.EventManager)
+            {//get events by event manager
+                customerEvents = this.context.Events.Where(x => x.EventManagerId == customer.Id).ToList();
+            }
+
+            var languageRoles = this.context.LanguageRoles.Where(x => x.Language == languageCode);
+
+            var eventSummaries = new List<EventSummary>();
+
+            foreach (var item in customerEvents)
+            {
+                var summary = new EventSummary();
+
+                var creator = this.context.Customers.FirstOrDefault(x => x.Id == customer.Id);
+
+                if (creator == null)
+                {
+                    continue;
+                }
+
+                summary.EventLink = new Dto.Links.EventLink
+                {
+                    EventId = item.Id,
+                    EventName = item.Name
+                };
+
+                summary.UserLink = new Dto.Links.AccountLink
+                {
+                    UserId = creator.Id,
+                    UserName = creator.ProfileName
+                };
+
+                summary.Date = item.Date;
+                summary.DurationInHours = item.Duration;
+                summary.Price = (int)item.Price;
+                summary.Role = languageRoles.FirstOrDefault(x => x.RoleGroupId == item.RoleGroupId)?.Name;
+
+                eventSummaries.Add(summary);
+            }
+
+            return eventSummaries;
         }
     }
 }

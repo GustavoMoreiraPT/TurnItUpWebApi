@@ -9,5 +9,7 @@ namespace Application.Services.Interfaces
     public interface IProfileService
     {
         Task<SummaryInfo> GetSummaryInfo(Guid accountId, string languageCode);
+
+        Task<List<EventSummary>> GetEventsSummary(Guid accountId, string languageCode);
     }
 }

@@ -1,32 +1,31 @@
-﻿using System;
+﻿using Domain.Model.Reviews;
 using Domain.Model.ValueObjects;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Domain.Model.Events
 {
-	public class Event
-	{
-		public int Id { get; set; }
+    public class Event
+    {
+        public int Id { get; set; }
 
-		public int MusicianId { get; set; }
+        public int MusicianId { get; set; }
 
-		public int CreatorId { get; set; }
+        public int EventManagerId { get; set; }
 
-		public int RoleId { get; set; }
+        public string Name { get; set; }
 
-		public string Name { get; set; }
-		
-		public DateTime EndTime { get; set; }
+        public int RoleGroupId { get; set; }
 
-		public DateTime StartTime { get; set; }
+        public DateTime Date { get; set; }
 
-		public Price Price { get; set; }
+        public int Duration { get; set; }
 
-		public EventLocation Location { get; set; }
+        public decimal Price { get; set; }
 
-		public Rating Rating { get; set; }
+        public Location Location { get; set; }
 
-		public EventState State { get; set; }
-
-		public virtual Role Role { get; set; }
-	}
+        public ICollection<EventReview> Reviews { get; set; }
+    }
 }
