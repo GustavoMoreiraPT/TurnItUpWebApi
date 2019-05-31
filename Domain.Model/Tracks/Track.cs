@@ -11,5 +11,9 @@ namespace Domain.Model.Tracks
         public string Name { get; set; }
 
         public string Extension { get; set; }
+
+        public ICollection<TrackPlay> Plays { get; set; }
+
+        public ICollection<TrackLike> Likes { get; set; }
     }
 }

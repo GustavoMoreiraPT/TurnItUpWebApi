@@ -62,6 +62,10 @@ namespace Data.Repository.Configuration
 
         public DbSet<EventReview> EventReviews { get; set; }
 
+        public DbSet<TrackLike> TrackLikes { get; set; }
+
+        public DbSet<TrackPlay> TrackPlays { get; set; }
+
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseMySql(GetConnectionString(), b => b.MigrationsAssembly("Data.Repository"));
@@ -76,6 +80,9 @@ namespace Data.Repository.Configuration
 
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.Tracks);
+
+            modelBuilder.Entity<Track>().HasMany(c => c.Plays);
+            modelBuilder.Entity<Track>().HasMany(c => c.Likes);
 
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.Roles)
