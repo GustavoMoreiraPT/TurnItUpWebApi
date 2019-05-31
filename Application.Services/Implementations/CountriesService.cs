@@ -18,7 +18,7 @@ namespace Application.Services.Implementations
         public List<Country> GettAllCountries(string language)
         {
             var allCountries = this.applicationDbContext
-                .Countries
+                .LanguageCountries
                 .Where(x => x.Language == language);
 
             return allCountries.Select(x => new Country { Name = x.Name, Id = x.Id, GroupId = x.CountryGroupId }).ToList();

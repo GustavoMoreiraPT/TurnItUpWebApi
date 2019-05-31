@@ -8,8 +8,8 @@ namespace Domain.Model.ValueObjects
 	{
 		public int Id { get; set; }
 
-		public City City { get; set; }
+		public string City { get; set; }
 
-		public Country Country { get; set; }
+		public int CountryGroupId { get; set; }
 	}
 }

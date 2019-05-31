@@ -38,6 +38,12 @@ namespace TurnItUpWebApi
 
 			services.AddDbContext<ApplicationDbContext>();
 
+            services.Configure<FormOptions>(o => {
+                o.ValueLengthLimit = int.MaxValue;
+                o.MultipartBodyLengthLimit = int.MaxValue;
+                o.MemoryBufferThreshold = int.MaxValue;
+            });
+
             services.AddCors(o => o.AddPolicy("CorsPolicy", cors =>
             {
                 cors.AllowAnyOrigin()
