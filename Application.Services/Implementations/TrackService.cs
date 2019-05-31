@@ -42,7 +42,6 @@ namespace Application.Services.Implementations
                 };
             }
 
-            //FIX THIS!!!!!
             var customer = this.context.Customers
                 .Include(x => x.Tracks)
                 .FirstOrDefault(x => x.IdentityId == identityUser.Id);

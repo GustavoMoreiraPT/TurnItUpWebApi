@@ -384,20 +384,27 @@ namespace Application.Services.Implementations
             
             foreach (var role in user.RoleGroup)
             {
-                customer.Roles.Add(new Domain.Model.ValueObjects.Role
+                if (!customer.Roles.Select(x => x.GroupId).Contains(role.RoleGroupId))
                 {
-                    GroupId = role.RoleGroupId
-                });
+                    customer.Roles.Add(new Domain.Model.ValueObjects.Role
+                    {
+                        GroupId = role.RoleGroupId
+                    });
+                }
             }
 
             foreach (var genre in user.GenresGroup)
             {
-                customer.Genders.Add(new Domain.Model.ValueObjects.Gender
+                if (!customer.Genders.Select(x => x.GroupId).Contains(genre.GenreGroupId))
                 {
-                    GroupId = genre.GenreGroupId
-                });
+                    customer.Genders.Add(new Domain.Model.ValueObjects.Gender
+                    {
+                        GroupId = genre.GenreGroupId
+                    });
+                }
             }
 
+            customer.SocialNetworks.Clear();
             foreach (var socialNetwork in user.SocialNetworks)
             {
                 customer.SocialNetworks.Add(new Domain.Model.SocialMedia.SocialNetwork
@@ -410,7 +417,7 @@ namespace Application.Services.Implementations
             customer.Location = new Domain.Model.ValueObjects.Location
             {
                 CountryGroupId = user.Location.CountryGroupId,
-
+                City = user.Location.City
             };
 
             this.identityDbContext.Customers.Update(customer);

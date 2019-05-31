@@ -72,6 +72,11 @@ namespace TurnItUpWebApi.Controllers
 
             var result = await this.trackService.UploadTrack(id, track);
 
+            if (result.Errors.Any())
+            {
+                return this.BadRequest(result);
+            }
+
             return this.Ok(result);
         }
 
