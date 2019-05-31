@@ -11,5 +11,7 @@ namespace Application.Services.Interfaces
         Task<SummaryInfo> GetSummaryInfo(Guid accountId, string languageCode);
 
         Task<List<EventSummary>> GetEventsSummary(Guid accountId, string languageCode);
+
+        Task<List<ProfileReview>> GetEventReviews(Guid accountId, string languageCode);
     }
 }

@@ -149,5 +149,83 @@ namespace Application.Services.Implementations
 
             return eventSummaries;
         }
+
+        public async Task<List<ProfileReview>> GetEventReviews(Guid accountId, string languageCode)
+        {
+            var identityUser = await this.userManager.FindByIdAsync(accountId.ToString());
+
+            if (identityUser == null)
+            {
+                return null;
+            }
+
+            var customer = this.context.Customers.FirstOrDefault(x => x.IdentityId == accountId.ToString());
+
+            var customerEvents = new List<Event>();
+
+            if (customer.CustomerType == CustomerType.Musician)
+            {//get events by musician Id
+                customerEvents = this.context.Events.Where(x => x.MusicianId == customer.Id).ToList();
+            }
+
+            if (customer.CustomerType == CustomerType.EventManager)
+            {//get events by event manager
+                customerEvents = this.context.Events.Where(x => x.EventManagerId == customer.Id).ToList();
+            }
+
+            var eventReviews = new List<ProfileReview>();
+
+            foreach (var item in customerEvents)
+            {
+                var reviews = item.Reviews;
+
+                var creator = this.context.Customers.FirstOrDefault(x => x.Id == customer.Id);
+
+                if (creator == null)
+                {
+                    continue;
+                }
+
+                foreach (var review in reviews)
+                {
+                    var profileReview = new ProfileReview();
+
+                    var photoReviewPath = $"C:/TurnItUp/EventReviewPhotos/{item.Id}/{review.EventReviewPhoto.Id}/{review.EventReviewPhoto.Name}.{review.EventReviewPhoto.Extension}";
+                    var reviewPhotoFile = new List<byte>();
+
+                    if (File.Exists(photoReviewPath))
+                    {
+                        reviewPhotoFile = File.ReadAllBytes(photoReviewPath).ToList();
+                        var photoBytes = reviewPhotoFile.ToArray();
+                        var photoBase64 = Convert.ToBase64String(photoBytes);
+
+                        profileReview.EventReviewPhoto = new Dto.Photo
+                        {
+                            Name = review.EventReviewPhoto.Name,
+                            Extension = review.EventReviewPhoto.Extension,
+                            Content = photoBase64
+                        };
+                    }
+
+                    profileReview.Date = review.ReviewDate;
+                    profileReview.Text = review.Text;
+                    profileReview.Rating = review.Rating;
+                    profileReview.EventLink = new Dto.Links.EventLink
+                    {
+                        EventId = item.Id,
+                        EventName = item.Name
+                    };
+                    profileReview.UserLink = new Dto.Links.AccountLink
+                    {
+                        UserId = creator.Id,
+                        UserName = creator.ProfileName
+                    };
+
+                    eventReviews.Add(profileReview);
+                }
+            }
+
+            return eventReviews;
+        }
     }
 }

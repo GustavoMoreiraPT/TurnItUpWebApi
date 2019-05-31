@@ -73,7 +73,19 @@ namespace TurnItUpWebApi.Controllers
         [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
         public async Task<IActionResult> GetReviews([FromRoute] Guid id, [FromQuery] Language language)
         {
-            throw new NotImplementedException();
+            if (id == Guid.Empty)
+            {
+                return this.BadRequest();
+            }
+
+            if (language.Code == string.Empty)
+            {
+                language.Code = "en";
+            }
+
+            var result = await this.profileService.GetEventReviews(id, language.Code);
+
+            return this.Ok(result);
         }
 
         /// <summary>
