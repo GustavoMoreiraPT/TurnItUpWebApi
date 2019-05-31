@@ -407,6 +407,12 @@ namespace Application.Services.Implementations
                 });
             }
 
+            customer.Location = new Domain.Model.ValueObjects.Location
+            {
+                CountryGroupId = user.Location.CountryGroupId,
+
+            };
+
             this.identityDbContext.Customers.Update(customer);
             await this.identityDbContext.SaveChangesAsync();
 
