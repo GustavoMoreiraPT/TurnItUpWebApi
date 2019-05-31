@@ -414,12 +414,20 @@ namespace Application.Services.Implementations
                 });
             }
 
-            customer.Location = new Domain.Model.ValueObjects.Location
+            if (customer.Location == null)
             {
-                CountryGroupId = user.Location.CountryGroupId,
-                City = user.Location.City
-            };
-
+                customer.Location = new Domain.Model.ValueObjects.Location
+                {
+                    CountryGroupId = user.Location.CountryGroupId,
+                    City = user.Location.City
+                };
+            }
+            else
+            {
+                customer.Location.CountryGroupId = user.Location.CountryGroupId;
+                customer.Location.City = user.Location.City;
+            }
+            
             this.identityDbContext.Customers.Update(customer);
             await this.identityDbContext.SaveChangesAsync();
 
