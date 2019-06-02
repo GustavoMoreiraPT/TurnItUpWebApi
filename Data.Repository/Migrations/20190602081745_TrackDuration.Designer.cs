@@ -3,14 +3,16 @@ using System;
 using Data.Repository.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190602081745_TrackDuration")]
+    partial class TrackDuration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,13 +204,9 @@ namespace Data.Repository.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int?>("TrackPhotoId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("TrackPhotoId");
 
                     b.ToTable("Tracks");
                 });
@@ -672,10 +670,6 @@ namespace Data.Repository.Migrations
                     b.HasOne("Domain.Model.Users.Customer")
                         .WithMany("Tracks")
                         .HasForeignKey("CustomerId");
-
-                    b.HasOne("Domain.Model.Images.Image", "TrackPhoto")
-                        .WithMany()
-                        .HasForeignKey("TrackPhotoId");
                 });
 
             modelBuilder.Entity("Domain.Model.Tracks.TrackLike", b =>

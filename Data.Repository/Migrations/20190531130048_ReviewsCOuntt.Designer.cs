@@ -3,14 +3,16 @@ using System;
 using Data.Repository.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190531130048_ReviewsCOuntt")]
+    partial class ReviewsCOuntt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,11 +24,9 @@ namespace Data.Repository.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Date");
+                    b.Property<int>("CreatorId");
 
-                    b.Property<int>("Duration");
-
-                    b.Property<int>("EventManagerId");
+                    b.Property<DateTime>("EndTime");
 
                     b.Property<int?>("LocationId");
 
@@ -34,15 +34,59 @@ namespace Data.Repository.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<decimal>("Price");
+                    b.Property<int?>("PriceId");
 
-                    b.Property<int>("RoleGroupId");
+                    b.Property<int?>("RatingId");
+
+                    b.Property<int>("RoleId");
+
+                    b.Property<DateTime>("StartTime");
+
+                    b.Property<int?>("StateId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
 
+                    b.HasIndex("PriceId");
+
+                    b.HasIndex("RatingId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("StateId");
+
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("Domain.Model.Events.EventLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("LocationId");
+
+                    b.Property<string>("StreetName");
+
+                    b.Property<int>("StreetNumber");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("EventLocations");
+                });
+
+            modelBuilder.Entity("Domain.Model.Events.EventState", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("State");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EventState");
                 });
 
             modelBuilder.Entity("Domain.Model.Genres.GenrerGroup", b =>
@@ -113,34 +157,6 @@ namespace Data.Repository.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("Domain.Model.Reviews.EventReview", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("EventId");
-
-                    b.Property<int?>("EventReviewPhotoId");
-
-                    b.Property<int>("Rating");
-
-                    b.Property<DateTime>("ReviewDate");
-
-                    b.Property<int>("ReviewerId");
-
-                    b.Property<string>("Text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("EventReviewPhotoId");
-
-                    b.HasIndex("ReviewerId");
-
-                    b.ToTable("EventReviews");
-                });
-
             modelBuilder.Entity("Domain.Model.Roles.LanguageRole", b =>
                 {
                     b.Property<int>("Id")
@@ -196,57 +212,15 @@ namespace Data.Repository.Migrations
 
                     b.Property<int?>("CustomerId");
 
-                    b.Property<int>("DurationInSeconds");
-
                     b.Property<string>("Extension");
 
                     b.Property<string>("Name");
-
-                    b.Property<int?>("TrackPhotoId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("TrackPhotoId");
-
                     b.ToTable("Tracks");
-                });
-
-            modelBuilder.Entity("Domain.Model.Tracks.TrackLike", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("AccountId");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<int>("TrackId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrackId");
-
-                    b.ToTable("TrackLikes");
-                });
-
-            modelBuilder.Entity("Domain.Model.Tracks.TrackPlay", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("AccountId");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<int>("TrackId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrackId");
-
-                    b.ToTable("TrackPlays");
                 });
 
             modelBuilder.Entity("Domain.Model.Users.Customer", b =>
@@ -616,6 +590,30 @@ namespace Data.Repository.Migrations
 
             modelBuilder.Entity("Domain.Model.Events.Event", b =>
                 {
+                    b.HasOne("Domain.Model.Events.EventLocation", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.HasOne("Domain.Model.ValueObjects.Price", "Price")
+                        .WithMany()
+                        .HasForeignKey("PriceId");
+
+                    b.HasOne("Domain.Model.ValueObjects.Rating", "Rating")
+                        .WithMany()
+                        .HasForeignKey("RatingId");
+
+                    b.HasOne("Domain.Model.ValueObjects.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Domain.Model.Events.EventState", "State")
+                        .WithMany()
+                        .HasForeignKey("StateId");
+                });
+
+            modelBuilder.Entity("Domain.Model.Events.EventLocation", b =>
+                {
                     b.HasOne("Domain.Model.ValueObjects.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
@@ -633,23 +631,6 @@ namespace Data.Repository.Migrations
                     b.HasOne("Domain.Model.Users.Customer")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("CustomerId");
-                });
-
-            modelBuilder.Entity("Domain.Model.Reviews.EventReview", b =>
-                {
-                    b.HasOne("Domain.Model.Events.Event", "Event")
-                        .WithMany("Reviews")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Domain.Model.Images.Image", "EventReviewPhoto")
-                        .WithMany()
-                        .HasForeignKey("EventReviewPhotoId");
-
-                    b.HasOne("Domain.Model.Users.Customer", "Reviewer")
-                        .WithMany()
-                        .HasForeignKey("ReviewerId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.Model.Roles.LanguageRole", b =>
@@ -672,26 +653,6 @@ namespace Data.Repository.Migrations
                     b.HasOne("Domain.Model.Users.Customer")
                         .WithMany("Tracks")
                         .HasForeignKey("CustomerId");
-
-                    b.HasOne("Domain.Model.Images.Image", "TrackPhoto")
-                        .WithMany()
-                        .HasForeignKey("TrackPhotoId");
-                });
-
-            modelBuilder.Entity("Domain.Model.Tracks.TrackLike", b =>
-                {
-                    b.HasOne("Domain.Model.Tracks.Track")
-                        .WithMany("Likes")
-                        .HasForeignKey("TrackId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Domain.Model.Tracks.TrackPlay", b =>
-                {
-                    b.HasOne("Domain.Model.Tracks.Track")
-                        .WithMany("Plays")
-                        .HasForeignKey("TrackId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.Model.Users.Customer", b =>

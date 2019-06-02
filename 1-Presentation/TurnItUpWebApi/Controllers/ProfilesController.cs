@@ -1,6 +1,8 @@
 ﻿
 using Application.Dto.Profile;
+using Application.Dto.QueryParams;
 using Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -31,11 +33,30 @@ namespace TurnItUpWebApi.Controllers
         [Route("summary")]
         [ProducesResponseType(typeof(SummaryInfo), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
-        public async Task<IActionResult> GetProfileSummary([FromRoute] Guid id)
+        public async Task<IActionResult> GetProfileSummary([FromRoute] Guid id, [FromQuery] Language language)
         {
-            throw new NotImplementedException();
+            if (id == Guid.Empty)
+            {
+                return this.BadRequest();
+            }
+
+            if (string.IsNullOrWhiteSpace(language.Code))
+            {
+                language.Code = "en";
+            }
+
+            var summaryInfo = await this.profileService.GetSummaryInfo(id, language.Code).ConfigureAwait(false);
+
+            if (summaryInfo == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(summaryInfo);
         }
 
         /// <summary>
@@ -48,10 +69,23 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(List<ProfileReview>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
-        public async Task<IActionResult> GetReviews([FromRoute] Guid id)
+        public async Task<IActionResult> GetReviews([FromRoute] Guid id, [FromQuery] Language language)
         {
-            throw new NotImplementedException();
+            if (id == Guid.Empty)
+            {
+                return this.BadRequest();
+            }
+
+            if (string.IsNullOrWhiteSpace(language.Code))
+            {
+                language.Code = "en";
+            }
+
+            var result = await this.profileService.GetEventReviews(id, language.Code);
+
+            return this.Ok(result);
         }
 
         /// <summary>
@@ -64,10 +98,23 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(typeof(List<EventSummary>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<ApiValidationError>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "CreateUserThrottle", Seconds = 10)]
-        public async Task<IActionResult> GetEvents([FromRoute] Guid id)
+        public async Task<IActionResult> GetEvents([FromRoute] Guid id, [FromQuery] Language language)
         {
-            throw new NotImplementedException();
+            if (id == Guid.Empty)
+            {
+                return this.BadRequest();
+            }
+
+            if (string.IsNullOrWhiteSpace(language.Code))
+            {
+                language.Code = "en";
+            }
+
+            var result = await this.profileService.GetEventsSummary(id, language.Code).ConfigureAwait(false);
+
+            return this.Ok(result);
         }
     }
 }

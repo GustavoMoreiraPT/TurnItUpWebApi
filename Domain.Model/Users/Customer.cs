@@ -25,6 +25,12 @@ namespace Domain.Model.Users
 
         public string ProfileName { get; set; }
 
+        public decimal Rating { get; set; }
+
+        public int FollowersCount { get; set; }
+
+        public int ReviewsCount { get; set; }
+
         public CustomerType CustomerType { get; set; }
 
         public string Description { get; set; }

@@ -72,6 +72,11 @@ namespace TurnItUpWebApi.Controllers
 
             var result = await this.trackService.UploadTrack(id, track);
 
+            if (result.Errors.Any())
+            {
+                return this.BadRequest(result);
+            }
+
             return this.Ok(result);
         }
 
@@ -91,9 +96,32 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Policy = "ApiUser")]
         [Throttle(Name = "TracksThrottle", Seconds = 10)]
-        public async Task<IActionResult> DeleteTrack([FromRoute] int id, [FromRoute] int trackId)
+        public async Task<IActionResult> DeleteTrack([FromRoute] Guid id, [FromRoute] int trackId)
         {
-            throw new NotImplementedException();
+            if (id == Guid.Empty ||trackId < 1)
+            {
+                return this.BadRequest();
+            }
+
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            var userIdFromToken = identity.Claims.FirstOrDefault(x => x.Type == "id");
+
+            var claimValue = userIdFromToken.Value;
+
+            if (claimValue != id.ToString())
+            {
+                return this.StatusCode(403);
+            }
+
+            var result = await this.trackService.DeleteTrack(id, trackId);
+
+            if (result == false)
+            {
+                return this.NotFound();
+            }
+
+            return this.NoContent();
         }
 
         /// <summary>
@@ -109,10 +137,22 @@ namespace TurnItUpWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Policy = "ApiUser")]
-        [Throttle(Name = "TracksThrottle", Seconds = 10)]
-        public async Task<IActionResult> GetTracks([FromRoute] int id)
+        [Throttle(Name = "TracksThrottle", Seconds = 5)]
+        public async Task<IActionResult> GetTracks([FromRoute] Guid id)
         {
-            throw new NotImplementedException();
+            if (id == Guid.Empty)
+            {
+                return this.BadRequest();
+            }
+
+            var tracksInfo = await this.trackService.GetTracksInfo(id).ConfigureAwait(false);
+
+            if (tracksInfo == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.Ok(tracksInfo);
         }
     }
 }

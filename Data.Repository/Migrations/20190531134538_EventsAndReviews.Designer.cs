@@ -3,14 +3,16 @@ using System;
 using Data.Repository.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190531134538_EventsAndReviews")]
+    partial class EventsAndReviews
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,8 +33,6 @@ namespace Data.Repository.Migrations
                     b.Property<int?>("LocationId");
 
                     b.Property<int>("MusicianId");
-
-                    b.Property<string>("Name");
 
                     b.Property<decimal>("Price");
 
@@ -196,57 +196,15 @@ namespace Data.Repository.Migrations
 
                     b.Property<int?>("CustomerId");
 
-                    b.Property<int>("DurationInSeconds");
-
                     b.Property<string>("Extension");
 
                     b.Property<string>("Name");
-
-                    b.Property<int?>("TrackPhotoId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("TrackPhotoId");
-
                     b.ToTable("Tracks");
-                });
-
-            modelBuilder.Entity("Domain.Model.Tracks.TrackLike", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("AccountId");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<int>("TrackId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrackId");
-
-                    b.ToTable("TrackLikes");
-                });
-
-            modelBuilder.Entity("Domain.Model.Tracks.TrackPlay", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("AccountId");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<int>("TrackId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrackId");
-
-                    b.ToTable("TrackPlays");
                 });
 
             modelBuilder.Entity("Domain.Model.Users.Customer", b =>
@@ -672,26 +630,6 @@ namespace Data.Repository.Migrations
                     b.HasOne("Domain.Model.Users.Customer")
                         .WithMany("Tracks")
                         .HasForeignKey("CustomerId");
-
-                    b.HasOne("Domain.Model.Images.Image", "TrackPhoto")
-                        .WithMany()
-                        .HasForeignKey("TrackPhotoId");
-                });
-
-            modelBuilder.Entity("Domain.Model.Tracks.TrackLike", b =>
-                {
-                    b.HasOne("Domain.Model.Tracks.Track")
-                        .WithMany("Likes")
-                        .HasForeignKey("TrackId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Domain.Model.Tracks.TrackPlay", b =>
-                {
-                    b.HasOne("Domain.Model.Tracks.Track")
-                        .WithMany("Plays")
-                        .HasForeignKey("TrackId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Domain.Model.Users.Customer", b =>

@@ -28,7 +28,6 @@ namespace Application.Services.Implementations
 
         public async Task<CreateTracksResponse> UploadTrack(Guid customerId, IFormFile track)
         {
-
             var identityUser = await this.userManager.FindByIdAsync(customerId.ToString());
 
             if (identityUser == null)
@@ -42,7 +41,6 @@ namespace Application.Services.Implementations
                 };
             }
 
-            //FIX THIS!!!!!
             var customer = this.context.Customers
                 .Include(x => x.Tracks)
                 .FirstOrDefault(x => x.IdentityId == identityUser.Id);
@@ -74,6 +72,9 @@ namespace Application.Services.Implementations
                 await track.CopyToAsync(stream);
             }
 
+            TagLib.File fileInfo = TagLib.File.Create(path, TagLib.ReadStyle.Average);
+            var duration = (int)fileInfo.Properties.Duration.TotalSeconds;
+
             float mb = track.Length / 1024 / 1024;
 
             if (mb > 50)
@@ -90,7 +91,8 @@ namespace Application.Services.Implementations
             var trackToCreate = new Domain.Model.Tracks.Track
             {
                 Name = track.FileName.Split('.')[0],
-                Extension = track.FileName.Split('.')[1]
+                Extension = track.FileName.Split('.')[1],
+                DurationInSeconds = duration
             };
 
             customer.Tracks.Add(trackToCreate);
@@ -101,8 +103,61 @@ namespace Application.Services.Implementations
 
             return new CreateTracksResponse
             {
-                TrackId = trackToCreate.Id
+                TrackId = trackToCreate.Id,
+                Errors = new List<Infrastructure.CrossCutting.Helpers.Error>()
             };
+        }
+
+        public async Task<List<TrackInfo>> GetTracksInfo(Guid customerId)
+        {
+            var customer = this.context.Customers
+                .Include(x => x.Tracks)
+                .ThenInclude(y => y.Likes)
+                .Include(x => x.Tracks)
+                .ThenInclude(y => y.Plays)
+                .FirstOrDefault(x => x.IdentityId == customerId.ToString());
+
+            if (customer == null)
+            {
+                return null;
+            }
+
+            return customer.Tracks.Select(x => new TrackInfo
+            {
+                TrackId = x.Id,
+                Title = x.Name,
+                Photo = null,
+                TrackDurationTime = x.DurationInSeconds,
+                LikesCount = x.Likes.Count,
+                PlaysCount = x.Plays.Count
+            }).ToList();
+        }
+
+        public async Task<bool> DeleteTrack(Guid customerId, int trackId)
+        {
+            var customer = this.context.Customers
+                .Include(x => x.Tracks)
+                .ThenInclude(y => y.Plays)
+                .Include(x => x.Tracks)
+                .ThenInclude(y => y.Likes)
+                .FirstOrDefault(x => x.IdentityId == customerId.ToString());
+
+            var trackToRemove = customer.Tracks.FirstOrDefault(x => x.Id == trackId);
+
+            if (trackToRemove == null)
+            {
+                return false;
+            }
+
+            customer.Tracks.Remove(trackToRemove);
+
+            File.Delete($@"C:\TurnItUp\Tracks\{customer.Id}\{trackToRemove.Name}.{trackToRemove.Extension}");
+
+            this.context.Customers.Update(customer);
+
+            await this.context.SaveChangesAsync();
+
+            return true;
         }
     }
 }
