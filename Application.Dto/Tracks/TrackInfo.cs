@@ -12,9 +12,9 @@ namespace Application.Dto.Tracks
 
         public string Title { get; set; }
 
-        public string TrackDurationTime { get; set; }
+        public int TrackDurationTime { get; set; }
 
-        public int Likes { get; set; }
+        public int LikesCount { get; set; }
 
         public int PlaysCount { get; set; }
     }

@@ -11,5 +11,9 @@ namespace Application.Services.Interfaces
     public interface ITrackService
     {
         Task<CreateTracksResponse> UploadTrack(Guid customerId, IFormFile track);
+
+        Task<List<TrackInfo>> GetTracksInfo(Guid customerId);
+
+        Task<bool> DeleteTrack(Guid customerId, int trackId);
     }
 }
