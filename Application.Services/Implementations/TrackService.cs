@@ -28,7 +28,6 @@ namespace Application.Services.Implementations
 
         public async Task<CreateTracksResponse> UploadTrack(Guid customerId, IFormFile track)
         {
-
             var identityUser = await this.userManager.FindByIdAsync(customerId.ToString());
 
             if (identityUser == null)
@@ -104,7 +103,8 @@ namespace Application.Services.Implementations
 
             return new CreateTracksResponse
             {
-                TrackId = trackToCreate.Id
+                TrackId = trackToCreate.Id,
+                Errors = new List<Infrastructure.CrossCutting.Helpers.Error>()
             };
         }
 
@@ -150,6 +150,8 @@ namespace Application.Services.Implementations
             }
 
             customer.Tracks.Remove(trackToRemove);
+
+            File.Delete($@"C:\TurnItUp\Tracks\{customer.Id}\{trackToRemove.Name}.{trackToRemove.Extension}");
 
             this.context.Customers.Update(customer);
 

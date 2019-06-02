@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using Application.Dto.Tracks.Responses;
 
 namespace Application.Services.Implementations
 {
@@ -18,7 +19,7 @@ namespace Application.Services.Implementations
             this.context = context;
         }
 
-        public async Task LikeTrack(Guid accountId, int trackId)
+        public async Task<TrackLikeResponse> LikeTrack(Guid accountId, int trackId)
         {
             var customer = this.context.Customers
                 .Include(x => x.Tracks).ThenInclude(y => y.Likes)
@@ -28,7 +29,18 @@ namespace Application.Services.Implementations
 
             if (trackToLike == null)
             {
-                return;
+                return new TrackLikeResponse
+                {
+                    TrackNotFound = true
+                };
+            }
+
+            if (trackToLike.Likes.Select(x => x.AccountId).ToList().Contains(customer.Id))
+            {
+                return new TrackLikeResponse
+                {
+                    TrackAlreadyLiked = true
+                };
             }
 
             trackToLike.Likes.Add(new Domain.Model.Tracks.TrackLike
@@ -41,6 +53,12 @@ namespace Application.Services.Implementations
             this.context.Customers.Update(customer);
 
             await this.context.SaveChangesAsync();
+
+            return new TrackLikeResponse
+            {
+                TrackAlreadyLiked = false,
+                TrackNotFound = false
+            };
         }
     }
 }

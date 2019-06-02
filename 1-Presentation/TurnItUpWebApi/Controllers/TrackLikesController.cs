@@ -51,7 +51,12 @@ namespace TurnItUpWebApi.Controllers
                 return this.BadRequest("Track id needs to be bigger than 0");
             }
 
-            await this.trackLikesService.LikeTrack(id, trackId).ConfigureAwait(false);
+            var result = await this.trackLikesService.LikeTrack(id, trackId).ConfigureAwait(false);
+
+            if (result.TrackNotFound)
+            {
+                return this.NotFound();
+            }
 
             return this.Accepted();
         }
