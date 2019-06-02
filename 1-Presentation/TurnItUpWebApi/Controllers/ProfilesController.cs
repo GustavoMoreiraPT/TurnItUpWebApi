@@ -44,7 +44,7 @@ namespace TurnItUpWebApi.Controllers
                 return this.BadRequest();
             }
 
-            if (language.Code == string.Empty)
+            if (string.IsNullOrWhiteSpace(language.Code))
             {
                 language.Code = "en";
             }
@@ -78,7 +78,7 @@ namespace TurnItUpWebApi.Controllers
                 return this.BadRequest();
             }
 
-            if (language.Code == string.Empty)
+            if (string.IsNullOrWhiteSpace(language.Code))
             {
                 language.Code = "en";
             }
@@ -107,7 +107,7 @@ namespace TurnItUpWebApi.Controllers
                 return this.BadRequest();
             }
 
-            if (language.Code == string.Empty)
+            if (string.IsNullOrWhiteSpace(language.Code))
             {
                 language.Code = "en";
             }

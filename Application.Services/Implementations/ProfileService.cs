@@ -104,13 +104,21 @@ namespace Application.Services.Implementations
 
             if (customer.CustomerType == CustomerType.Musician)
             {//get events by musician Id
-                customerEvents = this.context.Events.Where(x => x.MusicianId == customer.Id).ToList();
+                customerEvents = this.context.Events
+                    .Include(x => x.Location)
+                    .Where(x => x.MusicianId == customer.Id)
+                    .ToList();
             }
 
             if (customer.CustomerType == CustomerType.EventManager)
             {//get events by event manager
-                customerEvents = this.context.Events.Where(x => x.EventManagerId == customer.Id).ToList();
+                customerEvents = this.context.Events
+                    .Include(x => x.Location)
+                    .Where(x => x.EventManagerId == customer.Id)
+                    .ToList();
             }
+
+            var languageCoutries = this.context.LanguageCountries.Where(x => x.Language == languageCode);
 
             var languageRoles = this.context.LanguageRoles.Where(x => x.Language == languageCode);
 
@@ -119,6 +127,8 @@ namespace Application.Services.Implementations
             foreach (var item in customerEvents)
             {
                 var summary = new EventSummary();
+
+                var eventCountry = languageCoutries.FirstOrDefault(x => x.CountryGroupId == item.Location.CountryGroupId).Name;
 
                 var creator = this.context.Customers.FirstOrDefault(x => x.Id == customer.Id);
 
@@ -144,6 +154,7 @@ namespace Application.Services.Implementations
                 summary.Price = (int)item.Price;
                 summary.Role = languageRoles.FirstOrDefault(x => x.RoleGroupId == item.RoleGroupId)?.Name;
 
+                summary.Location = $"{item.Location.City}, {eventCountry}"; 
                 eventSummaries.Add(summary);
             }
 
@@ -165,12 +176,24 @@ namespace Application.Services.Implementations
 
             if (customer.CustomerType == CustomerType.Musician)
             {//get events by musician Id
-                customerEvents = this.context.Events.Where(x => x.MusicianId == customer.Id).ToList();
+                customerEvents = this.context.Events
+                    .Include(x => x.Reviews)
+                    .ThenInclude(y => y.EventReviewPhoto)
+                    .Include(x => x.Reviews)
+                    .ThenInclude(y => y.Reviewer)
+                    .Where(x => x.MusicianId == customer.Id)
+                    .ToList();
             }
 
             if (customer.CustomerType == CustomerType.EventManager)
             {//get events by event manager
-                customerEvents = this.context.Events.Where(x => x.EventManagerId == customer.Id).ToList();
+                customerEvents = this.context.Events
+                    .Include(x => x.Reviews)
+                    .ThenInclude(y => y.EventReviewPhoto)
+                    .Include(x => x.Reviews)
+                    .ThenInclude(y => y.Reviewer)
+                    .Where(x => x.EventManagerId == customer.Id)
+                    .ToList();
             }
 
             var eventReviews = new List<ProfileReview>();
@@ -190,21 +213,24 @@ namespace Application.Services.Implementations
                 {
                     var profileReview = new ProfileReview();
 
-                    var photoReviewPath = $"C:/TurnItUp/EventReviewPhotos/{item.Id}/{review.EventReviewPhoto.Id}/{review.EventReviewPhoto.Name}.{review.EventReviewPhoto.Extension}";
-                    var reviewPhotoFile = new List<byte>();
-
-                    if (File.Exists(photoReviewPath))
+                    if (review.EventReviewPhoto != null)
                     {
-                        reviewPhotoFile = File.ReadAllBytes(photoReviewPath).ToList();
-                        var photoBytes = reviewPhotoFile.ToArray();
-                        var photoBase64 = Convert.ToBase64String(photoBytes);
+                        var photoReviewPath = $"C:/TurnItUp/EventReviewPhotos/{item.Id}/{review.EventReviewPhoto.Id}/{review.EventReviewPhoto.Name}.{review.EventReviewPhoto.Extension}";
+                        var reviewPhotoFile = new List<byte>();
 
-                        profileReview.EventReviewPhoto = new Dto.Photo
+                        if (File.Exists(photoReviewPath))
                         {
-                            Name = review.EventReviewPhoto.Name,
-                            Extension = review.EventReviewPhoto.Extension,
-                            Content = photoBase64
-                        };
+                            reviewPhotoFile = File.ReadAllBytes(photoReviewPath).ToList();
+                            var photoBytes = reviewPhotoFile.ToArray();
+                            var photoBase64 = Convert.ToBase64String(photoBytes);
+
+                            profileReview.EventReviewPhoto = new Dto.Photo
+                            {
+                                Name = review.EventReviewPhoto.Name,
+                                Extension = review.EventReviewPhoto.Extension,
+                                Content = photoBase64
+                            };
+                        }
                     }
 
                     profileReview.Date = review.ReviewDate;
