@@ -12,6 +12,7 @@ using Application.Dto.Tracks.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Domain.Model.Users;
+using Application.Dto;
 
 namespace Application.Services.Implementations
 {
@@ -158,6 +159,49 @@ namespace Application.Services.Implementations
             await this.context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<CreatePhotoTrackResponse> UploadTrackPhoto(Guid customerId, int trackId, Photo photo)
+        {
+            var customer = this.context.Customers
+                .Include(x => x.Tracks)
+                .ThenInclude(x => x.TrackPhoto)
+                .FirstOrDefault(x => x.IdentityId == customerId.ToString());
+
+            var trackToUpdatePhoto = customer.Tracks.FirstOrDefault(x => x.Id == trackId);
+
+            if (trackToUpdatePhoto == null)
+            {
+                return new CreatePhotoTrackResponse
+                {
+                    Errors = new List<Infrastructure.CrossCutting.Helpers.Error>
+                    {
+                        new Infrastructure.CrossCutting.Helpers.Error("404", string.Empty)
+                    }
+                };
+            }
+
+            byte[] trackPhotoBytes = System.Convert.FromBase64String(photo.Content);
+
+            Directory.CreateDirectory($@"C:\TurnItUp\TrackPhotos\{trackId}");
+
+            File.WriteAllBytes($@"C:\TurnItUp\TrackPhotos\{trackId}\{photo.Name}.{photo.Extension}", trackPhotoBytes);
+
+            trackToUpdatePhoto.TrackPhoto = new Domain.Model.Images.Image
+            {
+                Name = photo.Name,
+                Extension = photo.Extension
+            };
+
+            this.context.Customers.Update(customer);
+
+            await this.context.SaveChangesAsync();
+
+            return new CreatePhotoTrackResponse
+            {
+                PhotoId = trackToUpdatePhoto.TrackPhoto.Id,
+                Errors = new List<Infrastructure.CrossCutting.Helpers.Error>()
+            };
         }
     }
 }

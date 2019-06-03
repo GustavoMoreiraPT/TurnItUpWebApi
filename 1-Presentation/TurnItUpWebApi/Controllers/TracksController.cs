@@ -81,6 +81,49 @@ namespace TurnItUpWebApi.Controllers
         }
 
         /// <summary>
+        ///  Uploads an audio file related to the given account.
+        /// </summary>
+        /// <param name="id"> The id of the account to add a track.</param>
+        /// <param name="trackId"> The if of the track to upload the photo</param>
+        /// <param name="photo">The photo from the body to be added.</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("{trackId}/photo")]
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
+        [Throttle(Name = "TracksThrottle", Seconds = 5)]
+        [Consumes("application/json", "application/json-patch+json", "multipart/form-data")]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> UploadTrackPhoto([FromRoute] Guid id, int trackId, [FromBody]Photo photo)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            var userIdFromToken = identity.Claims.FirstOrDefault(x => x.Type == "id");
+
+            var claimValue = userIdFromToken.Value;
+
+            if (claimValue != id.ToString())
+            {
+                return this.StatusCode(403);
+            }
+
+            var result = await this.trackService.UploadTrackPhoto(id, trackId, photo).ConfigureAwait(false);
+
+            if (result.Errors.Any())
+            {
+                return this.BadRequest(result);
+            }
+
+            return this.Ok(result);
+        }
+
+        /// <summary>
         ///  Deletes an audio file for a certain user.
         /// </summary>
         /// <param name="id"> The id of the account to add a track.</param>
