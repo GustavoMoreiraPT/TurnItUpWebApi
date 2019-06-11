@@ -20,8 +20,6 @@ namespace Application.Services.Configuration
 			//Infra
 			services.AddSingleton<ILogger, Logger>();
 
-			services.AddSingleton<IMusicianService, MusicianService>();
-            services.AddSingleton<IRecruiterService, RecruiterService>();
             services.AddSingleton<ICountriesService, CountriesService>();
             services.AddSingleton<IRolesService, RolesService>();
             services.AddSingleton<IGenresService, GenresService>();
