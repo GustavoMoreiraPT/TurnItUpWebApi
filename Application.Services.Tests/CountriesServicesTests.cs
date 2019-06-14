@@ -1,10 +1,12 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Application.Services.Tests
 {
-    class CountriesServicesTests
+    [TestFixture]
+    public class CountriesServicesTests
     {
     }
 }
