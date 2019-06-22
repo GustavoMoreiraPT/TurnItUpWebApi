@@ -60,5 +60,44 @@ namespace Application.Services.Implementations
                 TrackNotFound = false
             };
         }
+
+        public async Task<DeleteTrackLikeResponse> DeleteTrackLike(Guid accountId, int trackId, int likeId)
+        {
+            var customer = this.context.Customers
+                .Include(x => x.Tracks).ThenInclude(y => y.Likes)
+                .FirstOrDefault(x => x.IdentityId == accountId.ToString());
+
+            var likedTrack = customer.Tracks.FirstOrDefault(x => x.Id == trackId);
+
+            if (likedTrack == null)
+            {
+                return new DeleteTrackLikeResponse
+                {
+                    IsTrackFound = false
+                };
+            }
+
+            var likeToRemove = likedTrack.Likes.FirstOrDefault(x => x.AccountId == customer.Id);
+
+            if (likeToRemove == null)
+            {
+                return new DeleteTrackLikeResponse
+                {
+                    IsDeleted = false
+                };
+            }
+
+            likedTrack.Likes.Remove(likeToRemove);
+
+            this.context.Customers.Update(customer);
+
+            await this.context.SaveChangesAsync();
+
+            return new DeleteTrackLikeResponse
+            {
+                IsDeleted = true,
+                IsTrackFound = true
+            };
+        }
     }
 }

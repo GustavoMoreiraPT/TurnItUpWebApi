@@ -9,5 +9,7 @@ namespace Application.Services.Interfaces
     public interface ITrackLikesService
     {
         Task<TrackLikeResponse> LikeTrack(Guid accountId, int trackId);
+
+        Task<DeleteTrackLikeResponse> DeleteTrackLike(Guid accountId, int trackId, int likeId);
     }
 }
