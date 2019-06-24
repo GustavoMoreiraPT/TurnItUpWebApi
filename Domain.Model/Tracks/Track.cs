@@ -15,6 +15,10 @@ namespace Domain.Model.Tracks
 
         public int DurationInSeconds { get; set; }
 
+        public string TrackAudioLocation { get; set; }
+
+        public string TrackPhotoLocation { get; set; }
+
         public Image TrackPhoto { get; set; }
 
         public ICollection<TrackPlay> Plays { get; set; }

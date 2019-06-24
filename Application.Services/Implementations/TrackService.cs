@@ -29,6 +29,8 @@ namespace Application.Services.Implementations
 
         public async Task<CreateTracksResponse> UploadTrack(Guid customerId, IFormFile track)
         {
+            var baseTrackPath = $@"TurnItUp\Tracks";
+
             var identityUser = await this.userManager.FindByIdAsync(customerId.ToString());
 
             if (identityUser == null)
@@ -62,10 +64,10 @@ namespace Application.Services.Implementations
                 customer.Tracks = new List<Domain.Model.Tracks.Track>();
             }
 
-            Directory.CreateDirectory($@"C:\TurnItUp\Tracks\{customer.Id}");
+            Directory.CreateDirectory($@"C:\{baseTrackPath}\{customer.IdentityId}");
 
             var path = Path.Combine(
-                       $@"C:\TurnItUp\Tracks\{customer.Id}\",
+                       $@"C:\{baseTrackPath}\{customer.IdentityId}\",
                        track.FileName);
 
             using (var stream = new FileStream(path, FileMode.Create))
@@ -93,7 +95,8 @@ namespace Application.Services.Implementations
             {
                 Name = track.FileName.Split('.')[0],
                 Extension = track.FileName.Split('.')[1],
-                DurationInSeconds = duration
+                DurationInSeconds = duration,
+                TrackAudioLocation = $@"{baseTrackPath}\{customer.IdentityId}\{track.FileName}"
             };
 
             customer.Tracks.Add(trackToCreate);
@@ -111,6 +114,9 @@ namespace Application.Services.Implementations
 
         public async Task<List<TrackInfo>> GetTracksInfo(Guid customerId)
         {
+            var trackPhotosBasePath = $@"TurnItUp\TrackPhotos";
+            var trackAudioBasePath = $@"TurnItUp\Tracks";
+
             var customer = this.context.Customers
                 .Include(x => x.Tracks)
                 .ThenInclude(y => y.Likes)
@@ -129,6 +135,8 @@ namespace Application.Services.Implementations
                 Title = x.Name,
                 Photo = null,
                 TrackDurationTime = x.DurationInSeconds,
+                TrackAudioLocation = x.TrackAudioLocation,
+                TrackPhotoLocation = x.TrackPhotoLocation,
                 LikesCount = x.Likes.Count,
                 PlaysCount = x.Plays.Count
             }).ToList();
@@ -163,6 +171,8 @@ namespace Application.Services.Implementations
 
         public async Task<CreatePhotoTrackResponse> UploadTrackPhoto(Guid customerId, int trackId, Photo photo)
         {
+            var trackPhotosBasePath = $@"TurnItUp\TrackPhotos";
+
             var customer = this.context.Customers
                 .Include(x => x.Tracks)
                 .ThenInclude(x => x.TrackPhoto)
@@ -183,15 +193,17 @@ namespace Application.Services.Implementations
 
             byte[] trackPhotoBytes = System.Convert.FromBase64String(photo.Content);
 
-            Directory.CreateDirectory($@"C:\TurnItUp\TrackPhotos\{trackId}");
+            Directory.CreateDirectory($@"C:\{trackPhotosBasePath}\{customerId}");
 
-            File.WriteAllBytes($@"C:\TurnItUp\TrackPhotos\{trackId}\{photo.Name}.{photo.Extension}", trackPhotoBytes);
+            File.WriteAllBytes($@"C:\{trackPhotosBasePath}\{customerId}\{trackId}\{photo.Name}.{photo.Extension}", trackPhotoBytes);
 
             trackToUpdatePhoto.TrackPhoto = new Domain.Model.Images.Image
             {
                 Name = photo.Name,
                 Extension = photo.Extension
             };
+
+            trackToUpdatePhoto.TrackPhotoLocation = $@"{trackPhotosBasePath}\{customerId}\{trackId}\{photo.Name}.{photo.Extension}";
 
             this.context.Customers.Update(customer);
 
