@@ -160,7 +160,7 @@ namespace Application.Services.Implementations
 
             customer.Tracks.Remove(trackToRemove);
 
-            File.Delete($@"C:\TurnItUp\Tracks\{customer.Id}\{trackToRemove.Name}.{trackToRemove.Extension}");
+            File.Delete($@"C:\TurnItUp\Tracks\{customer.IdentityId}\{trackToRemove.Name}.{trackToRemove.Extension}");
 
             this.context.Customers.Update(customer);
 
@@ -193,9 +193,9 @@ namespace Application.Services.Implementations
 
             byte[] trackPhotoBytes = System.Convert.FromBase64String(photo.Content);
 
-            Directory.CreateDirectory($@"C:\{trackPhotosBasePath}\{customerId}");
+            Directory.CreateDirectory($@"C:\{trackPhotosBasePath}\{customer.IdentityId}");
 
-            File.WriteAllBytes($@"C:\{trackPhotosBasePath}\{customerId}\{trackId}\{photo.Name}.{photo.Extension}", trackPhotoBytes);
+            File.WriteAllBytes($@"C:\{trackPhotosBasePath}\{customer.IdentityId}\{trackId}\{photo.Name}.{photo.Extension}", trackPhotoBytes);
 
             trackToUpdatePhoto.TrackPhoto = new Domain.Model.Images.Image
             {
@@ -203,7 +203,7 @@ namespace Application.Services.Implementations
                 Extension = photo.Extension
             };
 
-            trackToUpdatePhoto.TrackPhotoLocation = $@"{trackPhotosBasePath}\{customerId}\{trackId}\{photo.Name}.{photo.Extension}";
+            trackToUpdatePhoto.TrackPhotoLocation = $@"{trackPhotosBasePath}\{customer.IdentityId}\{trackId}\{photo.Name}.{photo.Extension}";
 
             this.context.Customers.Update(customer);
 
