@@ -55,7 +55,7 @@ namespace TurnItUpWebApi.Controllers
                 return this.BadRequest(result.Errors);
             }
 
-            return new CreatedResult(result.UserCreatedId, Json("Account Created"));
+            return new CreatedResult(result.UserCreatedId, result.AccessToken);
         }
 
         /// <summary>

@@ -10,6 +10,8 @@ namespace Application.Dto.Users.Responses
 
         public IdentityResult IdentityResult { get; set; }
 
+        public AccessToken AccessToken { get; set; }
+
         public List<Error> Errors { get; set; }
     }
 }

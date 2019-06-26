@@ -117,10 +117,20 @@ namespace Application.Services.Implementations
 			await this.CreateAccountType(customer, user);
 			await this.identityDbContext.SaveChangesAsync();
 
+            var claimsIdentity = await this.GetClaimsIdentity(user.Email, password).ConfigureAwait(false);
+
+            var loginResponse = await this.GenerateToken(
+                claimsIdentity, 
+                user.Email, 
+                password,
+                new JsonSerializerSettings { Formatting = Formatting.Indented })
+                .ConfigureAwait(false);
+
 			return new RegisterResponseDto
             {
                 IdentityResult = result,
                 UserCreatedId = userIdentity.Id,
+                AccessToken = loginResponse.AccessToken,
                 Errors = new List<Error>(),
             };
 		}
