@@ -18,27 +18,27 @@ namespace Application.Services.Configuration
 			IConfiguration configuration)
 		{
 			//Infra
-			services.AddSingleton<ILogger, Logger>();
+			services.AddScoped<ILogger, Logger>();
 
-            services.AddSingleton<ICountriesService, CountriesService>();
-            services.AddSingleton<IRolesService, RolesService>();
-            services.AddSingleton<IGenresService, GenresService>();
-            services.AddSingleton<ITrackService, TrackService>();
-            services.AddSingleton<IProfileService, ProfileService>();
-            services.AddSingleton<IFollowersService, FollowersService>();
-            services.AddSingleton<ITrackLikesService, TrackLikesService>();
-            services.AddSingleton<ITrackPlayService, TrackPlayService>();
+            services.AddScoped<ICountriesService, CountriesService>();
+            services.AddScoped<IRolesService, RolesService>();
+            services.AddScoped<IGenresService, GenresService>();
+            services.AddScoped<ITrackService, TrackService>();
+            services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IFollowersService, FollowersService>();
+            services.AddScoped<ITrackLikesService, TrackLikesService>();
+            services.AddScoped<ITrackPlayService, TrackPlayService>();
 
-            services.AddSingleton<UserManager<AppUser>>();
+            services.AddScoped<UserManager<AppUser>>();
 
-			services.AddSingleton<IUsersService, UsersService>();
-			services.AddSingleton<IJwtFactory, JwtFactory>();
-			services.AddSingleton<ITokenFactory, TokenFactory>();
-			services.AddSingleton<IJwtTokenValidator, JwtTokenValidator>();
-			services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
+			services.AddScoped<IUsersService, UsersService>();
+			services.AddScoped<IJwtFactory, JwtFactory>();
+			services.AddScoped<ITokenFactory, TokenFactory>();
+			services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
+			services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
 
 			//TEMPORARY!! JUST TO MAKE IT WORK FOR NOW
-			services.AddSingleton<IRepository<Customer>, EfRepository<Customer>>();
+			services.AddScoped<IRepository<Customer>, EfRepository<Customer>>();
 
 			return services;
 		}
