@@ -41,6 +41,7 @@ namespace TurnItUpWebApi.Controllers
         /// <param name="id"> The id of the account to add a track.</param>
         /// <param name="trackPhoto"> The photo to be saved alongside the track.</param>
         /// <param name="track">The audio file to be uploaded.</param>
+        /// <param name="createTrackRequest">Some adittional info for the track</param>
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
@@ -54,7 +55,7 @@ namespace TurnItUpWebApi.Controllers
         [Throttle(Name = "TracksThrottle", Seconds = 5)]
         [Consumes("application/json", "application/json-patch+json", "multipart/form-data")]
         [DisableRequestSizeLimit]
-        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromForm]IFormFile track)
+        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromForm]CreateTrackRequest createTrackRequest)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
@@ -67,10 +68,10 @@ namespace TurnItUpWebApi.Controllers
                 return this.StatusCode(403);
             }
 
-            if (track == null || track.Length == 0)
+            if (createTrackRequest.Track == null || createTrackRequest.Track.Length == 0)
                 return Content("file not selected");
 
-            var result = await this.trackService.UploadTrack(id, track);
+            var result = await this.trackService.UploadTrack(id, createTrackRequest.Track, createTrackRequest);
 
             if (result.Errors.Any())
             {

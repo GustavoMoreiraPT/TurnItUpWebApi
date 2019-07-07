@@ -27,7 +27,7 @@ namespace Application.Services.Implementations
             this.userManager = userRepository;
         }
 
-        public async Task<CreateTracksResponse> UploadTrack(Guid customerId, IFormFile track)
+        public async Task<CreateTracksResponse> UploadTrack(Guid customerId, IFormFile track, CreateTrackRequest creteTrackRequest)
         {
             var baseTrackPath = $@"TurnItUp\Tracks";
 
@@ -93,10 +93,12 @@ namespace Application.Services.Implementations
 
             var trackToCreate = new Domain.Model.Tracks.Track
             {
-                Name = track.FileName.Split('.')[0],
+                FileName = track.FileName.Split('.')[0],
                 Extension = track.FileName.Split('.')[1],
                 DurationInSeconds = duration,
-                TrackAudioLocation = $@"{baseTrackPath}\{customer.IdentityId}\{track.FileName}"
+                TrackAudioLocation = $@"{baseTrackPath}\{customer.IdentityId}\{track.FileName}",
+                ArtistName = creteTrackRequest.ArtistName,
+                TrackName = creteTrackRequest.TrackName
             };
 
             customer.Tracks.Add(trackToCreate);
@@ -108,6 +110,7 @@ namespace Application.Services.Implementations
             return new CreateTracksResponse
             {
                 TrackId = trackToCreate.Id,
+                TrackAudioLocation = $@"{baseTrackPath}\{customer.IdentityId}\{track.FileName}",
                 Errors = new List<Infrastructure.CrossCutting.Helpers.Error>()
             };
         }
@@ -132,8 +135,9 @@ namespace Application.Services.Implementations
             return customer.Tracks.Select(x => new TrackInfo
             {
                 TrackId = x.Id,
-                Title = x.Name,
+                Title = x.TrackName,
                 Photo = null,
+                ArtistName = x.ArtistName,
                 TrackDurationTime = x.DurationInSeconds,
                 TrackAudioLocation = x.TrackAudioLocation,
                 TrackPhotoLocation = x.TrackPhotoLocation,
@@ -160,7 +164,7 @@ namespace Application.Services.Implementations
 
             customer.Tracks.Remove(trackToRemove);
 
-            File.Delete($@"C:\TurnItUp\Tracks\{customer.IdentityId}\{trackToRemove.Name}.{trackToRemove.Extension}");
+            File.Delete($@"C:\TurnItUp\Tracks\{customer.IdentityId}\{trackToRemove.FileName}.{trackToRemove.Extension}");
 
             this.context.Customers.Update(customer);
 
