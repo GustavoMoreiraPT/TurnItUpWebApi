@@ -112,7 +112,7 @@ namespace Application.Services.Implementations
             return new CreateTracksResponse
             {
                 TrackId = trackToCreate.Id,
-                TrackAudioLocation = $@"{baseTrackPath}\{customer.IdentityId}\{track.FileName}",
+                TrackAudioLocation = $@"{trackLocationBase}/{customer.IdentityId}/{track.FileName}",
                 Errors = new List<Infrastructure.CrossCutting.Helpers.Error>()
             };
         }
@@ -165,6 +165,8 @@ namespace Application.Services.Implementations
             }
 
             customer.Tracks.Remove(trackToRemove);
+
+            this.context.Tracks.Remove(trackToRemove);
 
             File.Delete($@"C:\TurnItUp\Tracks\{customer.IdentityId}\{trackToRemove.FileName}.{trackToRemove.Extension}");
 
