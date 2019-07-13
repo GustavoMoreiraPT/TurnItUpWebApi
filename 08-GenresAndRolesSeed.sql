@@ -19,13 +19,13 @@ insert into webapijwt.groupsofroles values (null, 'DJ');
 insert into webapijwt.groupsofroles values (null, 'Guitar Player');
 insert into webapijwt.groupsofroles values (null, 'Producer');
 
-insert into webapijwt.languageroles values (null, 'DJ', 'en', 1, 1);
-insert into webapijwt.languageroles values (null, 'DJ Portugues', 'pt', 1, 1);
-insert into webapijwt.languageroles values (null, 'DJ Frances', 'fr', 1, 1);
-insert into webapijwt.languageroles values (null, 'Guitar Player', 'en', 2, 2);
-insert into webapijwt.languageroles values (null, 'Guitar Player Portugues', 'pt', 2, 2);
-insert into webapijwt.languageroles values (null, 'Guitar Player Frances', 'fr', 2, 2);
-insert into webapijwt.languageroles values (null, 'Producer', 'en', 3, 3);
-insert into webapijwt.languageroles values (null, 'Producer Portugues', 'pt', 3, 3);
-insert into webapijwt.languageroles values (null, 'Producer Frances', 'fr', 3, 3);
+insert into webapijwt.languageroles values (null, 1, 'DJ', 'en');
+insert into webapijwt.languageroles values (null, 1,  'DJ Portugues', 'pt');
+insert into webapijwt.languageroles values (null, 1, 'DJ Frances', 'fr');
+insert into webapijwt.languageroles values (null, 2, 'Guitar Player', 'en');
+insert into webapijwt.languageroles values (null, 2, 'Guitar Player Portugues', 'pt');
+insert into webapijwt.languageroles values (null, 2, 'Guitar Player Frances', 'fr');
+insert into webapijwt.languageroles values (null, 3, 'Producer', 'en');
+insert into webapijwt.languageroles values (null, 3, 'Producer Portugues', 'pt');
+insert into webapijwt.languageroles values (null, 3, 'Producer Frances', 'fr');
 
