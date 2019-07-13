@@ -197,7 +197,7 @@ namespace Application.Services.Implementations
 
             byte[] trackPhotoBytes = System.Convert.FromBase64String(photo.Content);
 
-            Directory.CreateDirectory($@"C:\{trackPhotosBasePath}\{customer.IdentityId}");
+            Directory.CreateDirectory($@"C:\{trackPhotosBasePath}\{customer.IdentityId}\{trackToUpdatePhoto.Id}");
 
             File.WriteAllBytes($@"C:\{trackPhotosBasePath}\{customer.IdentityId}\{trackId}\{photo.Name}.{photo.Extension}", trackPhotoBytes);
 
