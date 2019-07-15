@@ -48,7 +48,8 @@ namespace TurnItUpWebApi
             {
                 cors.AllowAnyOrigin()
                        .AllowAnyMethod()
-                       .AllowAnyHeader();
+                       .AllowAnyHeader()
+                       .WithExposedHeaders("Location");
             }));
 
             // add identity

@@ -12,10 +12,16 @@ namespace Application.Dto.Tracks
 
         public string Title { get; set; }
 
+        public string ArtistName { get; set; }
+
         public int TrackDurationTime { get; set; }
 
         public int LikesCount { get; set; }
 
         public int PlaysCount { get; set; }
+
+        public string TrackPhotoLocation { get; set; }
+
+        public string TrackAudioLocation { get; set; }
     }
 }

@@ -7,6 +7,8 @@ namespace Application.Dto.Tracks.Responses
     {
         public int TrackId { get; set; }
 
+        public string TrackAudioLocation { get; set; }
+
         public List<Error> Errors { get; set; }
     }
 }

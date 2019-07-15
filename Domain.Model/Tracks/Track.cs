@@ -9,11 +9,19 @@ namespace Domain.Model.Tracks
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string FileName { get; set; }
 
         public string Extension { get; set; }
 
+        public string TrackName { get; set; }
+
+        public string ArtistName { get; set; }
+
         public int DurationInSeconds { get; set; }
+
+        public string TrackAudioLocation { get; set; }
+
+        public string TrackPhotoLocation { get; set; }
 
         public Image TrackPhoto { get; set; }
 

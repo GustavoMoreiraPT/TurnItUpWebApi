@@ -117,10 +117,20 @@ namespace Application.Services.Implementations
 			await this.CreateAccountType(customer, user);
 			await this.identityDbContext.SaveChangesAsync();
 
+            var claimsIdentity = await this.GetClaimsIdentity(user.Email, password).ConfigureAwait(false);
+
+            var loginResponse = await this.GenerateToken(
+                claimsIdentity, 
+                user.Email, 
+                password,
+                new JsonSerializerSettings { Formatting = Formatting.Indented })
+                .ConfigureAwait(false);
+
 			return new RegisterResponseDto
             {
                 IdentityResult = result,
                 UserCreatedId = userIdentity.Id,
+                AccessToken = loginResponse.AccessToken,
                 Errors = new List<Error>(),
             };
 		}
@@ -347,11 +357,14 @@ namespace Application.Services.Implementations
 
             try
             {
+                var baseProfilePhotosPath = $@"C:\TurnItUp\ProfilePhotos";
+                var baseHeaderPhotosPath = $@"C:\TurnItUp\HeaderPhotos";
+
                 byte[] profilePhotoBytes = System.Convert.FromBase64String(user.ProfilePhoto.Content);
 
-                Directory.CreateDirectory($@"C:\TurnItUp\ProfilePhotos\{customer.Id}");
+                Directory.CreateDirectory($@"{baseProfilePhotosPath}\{customer.IdentityId}");
 
-                File.WriteAllBytes($@"C:\TurnItUp\ProfilePhotos\{customer.Id}\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
+                File.WriteAllBytes($@"{baseProfilePhotosPath}\{customer.IdentityId}\{user.ProfilePhoto.Name}.{user.ProfilePhoto.Extension}", profilePhotoBytes);
 
                 customer.ProfilePhoto = new Domain.Model.Images.Image
                 {
@@ -359,11 +372,11 @@ namespace Application.Services.Implementations
                     Extension = user.ProfilePhoto.Extension
                 };
 
-                Directory.CreateDirectory($@"C:\TurnItUp\HeaderPhotos\{customer.Id}");
+                Directory.CreateDirectory($@"{baseHeaderPhotosPath}\{customer.IdentityId}");
 
                 byte[] headerPhotoBytes = System.Convert.FromBase64String(user.HeaderPhoto.Content);
 
-                File.WriteAllBytes($@"C:\TurnItUp\HeaderPhotos\{customer.Id}\{user.HeaderPhoto.Name}.{user.HeaderPhoto.Extension}", headerPhotoBytes);
+                File.WriteAllBytes($@"{baseHeaderPhotosPath}\{customer.IdentityId}\{user.HeaderPhoto.Name}.{user.HeaderPhoto.Extension}", headerPhotoBytes);
 
                 customer.HeaderPhoto = new Domain.Model.Images.Image
                 {

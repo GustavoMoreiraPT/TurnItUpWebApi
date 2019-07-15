@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Application.Dto.Users;
+﻿using Application.Dto.Users;
 using Application.Services.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using TurnItUpWebApi.ResponseModels;
 using Infrastructure.CrossCutting.Helpers;
-using Newtonsoft.Json;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using TurnItUpWebApi.Filters;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using TurnItUpWebApi.Filters;
+using TurnItUpWebApi.ResponseModels;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -55,7 +55,7 @@ namespace TurnItUpWebApi.Controllers
                 return this.BadRequest(result.Errors);
             }
 
-            return new CreatedResult(result.UserCreatedId, Json("Account Created"));
+            return new CreatedResult(result.UserCreatedId, result.AccessToken);
         }
 
         /// <summary>

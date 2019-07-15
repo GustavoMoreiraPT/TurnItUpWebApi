@@ -11,7 +11,7 @@ namespace Application.Services.Interfaces
 {
     public interface ITrackService
     {
-        Task<CreateTracksResponse> UploadTrack(Guid customerId, IFormFile track);
+        Task<CreateTracksResponse> UploadTrack(Guid customerId, IFormFile track, CreateTrackRequest createTrackRequest);
 
         Task<CreatePhotoTrackResponse> UploadTrackPhoto(Guid customerId, int trackId, Photo photo);
 

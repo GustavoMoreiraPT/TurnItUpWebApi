@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Application.Dto;
 using System.Collections.Generic;
+using Application.Dto.Tracks.Pages;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -41,6 +42,7 @@ namespace TurnItUpWebApi.Controllers
         /// <param name="id"> The id of the account to add a track.</param>
         /// <param name="trackPhoto"> The photo to be saved alongside the track.</param>
         /// <param name="track">The audio file to be uploaded.</param>
+        /// <param name="createTrackRequest">Some adittional info for the track</param>
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
@@ -54,7 +56,7 @@ namespace TurnItUpWebApi.Controllers
         [Throttle(Name = "TracksThrottle", Seconds = 5)]
         [Consumes("application/json", "application/json-patch+json", "multipart/form-data")]
         [DisableRequestSizeLimit]
-        public async Task<IActionResult> UploadFileTest([FromRoute] Guid id, [FromForm]IFormFile track)
+        public async Task<IActionResult> UploadFile([FromRoute] Guid id, [FromForm]CreateTrackRequest createTrackRequest)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
@@ -67,10 +69,10 @@ namespace TurnItUpWebApi.Controllers
                 return this.StatusCode(403);
             }
 
-            if (track == null || track.Length == 0)
+            if (createTrackRequest.Track == null || createTrackRequest.Track.Length == 0)
                 return Content("file not selected");
 
-            var result = await this.trackService.UploadTrack(id, track);
+            var result = await this.trackService.UploadTrack(id, createTrackRequest.Track, createTrackRequest);
 
             if (result.Errors.Any())
             {
@@ -196,6 +198,27 @@ namespace TurnItUpWebApi.Controllers
             }
 
             return this.Ok(tracksInfo);
+        }
+
+        /// <summary>
+        ///  Getsall tracks informations for a specific user.
+        /// </summary>
+        /// <param name="id"> The id of the account to read tracks information.</param>
+        /// <param name="pageNumber"> The page number wanted.</param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(TrackInfoPage), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
+        [Throttle(Name = "TracksThrottle", Seconds = 5)]
+        [Route("Page")]
+        public async Task<IActionResult> GetTracksWithPagination([FromRoute] Guid id, [FromQuery]int pageNumber)
+        {
+            throw new NotImplementedException();
         }
     }
 }

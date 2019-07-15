@@ -62,12 +62,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4094
 		05- Initial ages from 5 to 99.sql = 05- Initial ages from 5 to 99.sql
 		06-Ratings.sql = 06-Ratings.sql
 		07-Initial event states.sql = 07-Initial event states.sql
+		08-GenresAndRolesSeed.sql = 08-GenresAndRolesSeed.sql
 		SocialNetworkTable.sql = SocialNetworkTable.sql
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Dto.Tests", "Application.Dto.Tests\Application.Dto.Tests.csproj", "{7E35C791-9435-4A93-9C4D-1318907EA1D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Dto.Tests", "Application.Dto.Tests\Application.Dto.Tests.csproj", "{7E35C791-9435-4A93-9C4D-1318907EA1D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Services.Tests", "Application.Services.Tests\Application.Services.Tests.csproj", "{8AA86393-7E7F-4EAF-9004-B755762625A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Services.Tests", "Application.Services.Tests\Application.Services.Tests.csproj", "{8AA86393-7E7F-4EAF-9004-B755762625A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
