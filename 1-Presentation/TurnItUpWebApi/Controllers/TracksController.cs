@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Application.Dto;
 using System.Collections.Generic;
+using Application.Dto.Tracks.Pages;
 
 namespace TurnItUpWebApi.Controllers
 {
@@ -197,6 +198,27 @@ namespace TurnItUpWebApi.Controllers
             }
 
             return this.Ok(tracksInfo);
+        }
+
+        /// <summary>
+        ///  Getsall tracks informations for a specific user.
+        /// </summary>
+        /// <param name="id"> The id of the account to read tracks information.</param>
+        /// <param name="pageNumber"> The page number wanted.</param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(TrackInfoPage), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Policy = "ApiUser")]
+        [Throttle(Name = "TracksThrottle", Seconds = 5)]
+        [Route("Page")]
+        public async Task<IActionResult> GetTracksWithPagination([FromRoute] Guid id, [FromQuery]int pageNumber)
+        {
+            throw new NotImplementedException();
         }
     }
 }
