@@ -4,6 +4,7 @@ using Data.Repository.Configuration;
 using Domain.Model.Users;
 using FluentValidation.AspNetCore;
 using Infrastructure.CrossCutting.Settings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
@@ -67,8 +68,15 @@ namespace TurnItUpWebApi
 
 			services.AddAutoMapper();
 
-            // Register the ConfigurationBuilder instance of FacebookAuthSettings
-            services.Configure<FacebookAuthSettings>(Configuration.GetSection(nameof(FacebookAuthSettings)));
+			services.AddAuthorization(options =>
+			{
+				options.DefaultPolicy = new AuthorizationPolicyBuilder()
+				  .RequireAuthenticatedUser()
+				  .Build();
+			});
+
+			// Register the ConfigurationBuilder instance of FacebookAuthSettings
+			services.Configure<FacebookAuthSettings>(Configuration.GetSection(nameof(FacebookAuthSettings)));
 
             services.ConfigureDependencies(this.Configuration);
 
@@ -148,9 +156,11 @@ namespace TurnItUpWebApi
 
 			app.UseAuthentication();
 
-			app.UseIdentity();
+			app.UseRouting();
 
-			app.UseMvc();
+			//app.use
+
+			//app.UseMvc();
 		}
 	}
 }
