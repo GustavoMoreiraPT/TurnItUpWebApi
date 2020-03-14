@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Domain.Model;
+﻿using Domain.Model;
 using Domain.Model.Events;
 using Domain.Model.Genres;
 using Domain.Model.Images;
@@ -91,15 +90,15 @@ namespace Data.Repository.Configuration
 
         private static string GetConnectionString()
 		{
-			const string databaseName = "webapijwt";
+			const string databaseName = "heroku_3ce26466163290f";
 
-			const string databaseUser = "root";
+			const string databaseUser = "b5d2a09c212b13";
 
-			const string databasePass = "Amsterdam2018";
+			const string databasePass = "4d98dba6";
 
 
 
-			return $"Server=localhost;" +
+			return $"Server=eu-cdbr-west-02.cleardb.net;" +
 
 				   $"database={databaseName};" +
 

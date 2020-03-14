@@ -36,7 +36,7 @@ namespace TurnItUpWebApi.Controllers
             var identity = HttpContext.User.Identity as ClaimsIdentity;
 
             var userIdFromToken = identity.Claims.FirstOrDefault(x => x.Type == "id");
-
+            
             var claimValue = userIdFromToken.Value;
 
             if (claimValue != id.ToString())
