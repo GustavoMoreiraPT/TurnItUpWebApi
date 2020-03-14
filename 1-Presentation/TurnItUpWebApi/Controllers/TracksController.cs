@@ -4,20 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Text;
 using System.Linq;
-using System.Net.Http;
-using System.Web;
-using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Globalization;
 using TurnItUpWebApi.Filters;
-using Infrastructure.CrossCutting.Helpers;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Application.Dto;
 using System.Collections.Generic;
 using Application.Dto.Tracks.Pages;
@@ -28,8 +19,6 @@ namespace TurnItUpWebApi.Controllers
     public class TracksController : Controller
     {
         public ITrackService trackService;
-
-        private static readonly FormOptions defaultFormOptions = new FormOptions();
 
         public TracksController(ITrackService trackService)
         {
