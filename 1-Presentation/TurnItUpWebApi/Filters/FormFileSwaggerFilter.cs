@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -14,7 +15,8 @@ namespace TurnItUpWebApi.Filters
         private static readonly string[] formFilePropertyNames =
             typeof(IFormFile).GetTypeInfo().DeclaredProperties.Select(p => p.Name).ToArray();
 
-        public void Apply(Operation operation, OperationFilterContext context)
+
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var parameters = operation.Parameters;
             if (parameters == null || parameters.Count == 0) return;
@@ -43,28 +45,28 @@ namespace TurnItUpWebApi.Filters
 
             if (!formFileParameterNames.Any()) return;
 
-            var consumes = operation.Consumes;
+            var consumes = operation.RequestBody.Content;
             consumes.Clear();
-            consumes.Add(formDataMimeType);
+            consumes.Add(formDataMimeType, new OpenApiMediaType {});
 
             foreach (var parameter in parameters.ToArray())
             {
-                if (!(parameter is NonBodyParameter) || parameter.In != "formData") continue;
+                //if (!(parameter is NonBodyParameter) || parameter.In != "formData") continue;
 
                 if (formFileSubParameterNames.Any(p => parameter.Name.StartsWith(p + "."))
                     || formFilePropertyNames.Contains(parameter.Name))
                     parameters.Remove(parameter);
             }
 
-            foreach (var formFileParameter in formFileParameterNames)
-            {
-                parameters.Add(new NonBodyParameter()
-                {
-                    Name = formFileParameter,
-                    Type = "file",
-                    In = "formData"
-                });
-            }
+            //foreach (var formFileParameter in formFileParameterNames)
+            //{
+            //    parameters.Add(new NonBodyParameter()
+            //    {
+            //        Name = formFileParameter,
+            //        Type = "file",
+            //        In = "formData"
+            //    });
+            //}
         }
     }
 }

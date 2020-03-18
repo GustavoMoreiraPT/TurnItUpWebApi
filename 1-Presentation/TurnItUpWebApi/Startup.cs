@@ -4,6 +4,7 @@ using Data.Repository.Configuration;
 using Domain.Model.Users;
 using FluentValidation.AspNetCore;
 using Infrastructure.CrossCutting.Settings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
@@ -67,8 +69,15 @@ namespace TurnItUpWebApi
 
 			services.AddAutoMapper();
 
-            // Register the ConfigurationBuilder instance of FacebookAuthSettings
-            services.Configure<FacebookAuthSettings>(Configuration.GetSection(nameof(FacebookAuthSettings)));
+			services.AddAuthorization(options =>
+			{
+				options.DefaultPolicy = new AuthorizationPolicyBuilder()
+				  .RequireAuthenticatedUser()
+				  .Build();
+			});
+
+			// Register the ConfigurationBuilder instance of FacebookAuthSettings
+			services.Configure<FacebookAuthSettings>(Configuration.GetSection(nameof(FacebookAuthSettings)));
 
             services.ConfigureDependencies(this.Configuration);
 
@@ -77,7 +86,7 @@ namespace TurnItUpWebApi
 			// Register the Swagger generator, defining 1 or more Swagger documents
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc("v1", new Info { Title = "TurnItUp API", Version = "v1" });
+				c.SwaggerDoc("v1", new OpenApiInfo {  Title = "TurnItUp API", Version = "v1" });
 
                 c.OperationFilter<FormFileSwaggerFilter>();
 
@@ -86,12 +95,12 @@ namespace TurnItUpWebApi
 					{"Bearer", new string[] { }},
 				};
 
-				c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+				c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 				{
 					Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
 					Name = "Authorization",
-					In = "header",
-					Type = "apiKey"
+					In = ParameterLocation.Header,
+					Type = SecuritySchemeType.ApiKey,
 				});
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -141,16 +150,18 @@ namespace TurnItUpWebApi
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "TurnItUp V1");
 
-                c.DocExpansion("none");
+				c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
             });
 
             app.UseHttpsRedirection();
 
 			app.UseAuthentication();
 
-			app.UseIdentity();
+			app.UseRouting();
 
-			app.UseMvc();
+			//app.use
+
+			//app.UseMvc();
 		}
 	}
 }
